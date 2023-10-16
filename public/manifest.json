@@ -1,0 +1,45 @@
+{
+  "name": "Mirai 探索者",
+  "short_name": "MiraiExp",
+  "description": "探索新世界",
+  "icons": [
+    {
+      "src": "/icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/icons/icon-384x384.png",
+      "sizes": "384x384",
+      "type": "image/png"
+    },
+    {
+      "src": "/icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "screenshots" : [
+    {
+      "src": "/screenshots/pic1.jpg",
+      "sizes": "1920x1200",
+      "type": "image/jpeg",
+      "form_factor": "wide",
+      "label": "首页"
+    },
+    {
+      "src": "/screenshots/pic1.jpg",
+      "sizes": "1920x1200",
+      "type": "image/jpeg",
+      "form_factor": "narrow",
+      "label": "首页"
+    }
+  ],
+  "theme_color": "#FFFFFF",
+  "background_color": "#FFFFFF",
+  "start_url": "/",
+  "scope": "/",
+  "display_override": ["fullscreen", "minimal-ui"],
+  "display": "standalone",
+  "orientation": "portrait"
+}

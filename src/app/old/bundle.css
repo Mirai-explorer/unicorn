@@ -1,0 +1,102 @@
+@charset "utf-8";
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed,
+figure, figcaption, footer, header, hgroup,
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    font-size: 100%;
+    font: inherit;
+    vertical-align: baseline;
+}
+
+/* HTML5 display-role reset for older browsers */
+article, aside, details, figcaption, figure,
+footer, header, hgroup, menu, nav, section {
+    display: block;
+}
+body {
+    line-height: 1;
+}
+
+/* 重置列表元素 - reset the list element */
+ol, ul {
+    list-style: none;
+}
+
+/* 重置文本格式元素 - reset the text format element */
+a, a:hover {
+    text-decoration: none;
+}
+
+/* 重置表单元素 - reset the form element */
+button {
+    cursor: pointer;
+}
+input {
+    font-size: 18px;
+    outline: none;
+}
+
+/* 重置表格元素 - reset the table element */
+table {
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+
+/*
+  * 图片自适应 - image responsize
+  * 1. 清空浏览器对图片的设置
+  * 2. <div>图片</div> 的情况下，图片会撑高 div，这么设置可以清除该影响
+*/
+img {
+    border: 0;
+    display: inline-block;
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+    vertical-align: middle;
+}
+
+/*
+  * 默认box-sizing是content-box，该属性导致padding会撑大div，使用border-box可以解决该问题
+  * set border-box for box-sizing when you use div, it solve the problem when you add padding and don't want to make the div width bigger
+*/
+div, input {
+    box-sizing: border-box;
+}
+
+/* 清除浮动 - clear float */
+.lz-clear:after, .clear:after {
+    content: '\20';
+    display: block;
+    height: 0;
+    clear: both;
+}
+.lz-clear, .clear {
+    zoom: 1;
+}
+/* 设置input的placeholder - set input placeholder */
+input::-webkit-input-placeholder { color: #919191; font-size: .32rem } /* Webkit browsers */
+input::-moz-placeholder { color: #919191; font-size: .32rem } /* Mozilla Firefox */
+input::-ms-input-placeholder { color: #919191; font-size: .32rem } /* Internet Explorer */
+
+/* 设置嵌套引用（embedded quotation）的引号类型 */
+blockquote, q {
+    quotes: none;
+}
+blockquote:before, blockquote:after,
+q:before, q:after {
+    content: '';
+    content: none;
+}

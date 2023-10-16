@@ -1,0 +1,2142 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#309fec">
+    <title>播放器测试</title>
+    <link rel="dns-prefetch" href="//cdn.jsdelivr.net">
+    <link rel="dns-prefetch" href="//bird.ioliu.cn/">
+    <link rel="dns-prefetch" href="//webfs.yun.kugou.com">
+    <link rel="dns-prefetch" href="//imge.kugou.com">
+    <link rel="dns-prefetch" href="//music.126.net">
+    <link rel="dns-prefetch" href="//p1.music.126.net">
+    <link rel="dns-prefetch" href="//p2.music.126.net">
+    <link rel="stylesheet" href="./bundle.css" type="text/css" />
+    <style>
+        html {
+            font-family: -apple-system, BlinkMacSystemFont, Helvetica Neue, Helvetica, Arial, PingFang SC, Hiragino Sans GB, Microsoft YaHei, sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -webkit-tap-highlight-color: transparent;
+            overflow:hidden
+        }
+        input {
+            border-radius: 0;
+            font-size: 15px;
+            outline: none;
+        }
+        input, button, ul, li {
+            -webkit-appearance: none;
+        }
+        .audio-app {
+            display: flex;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            top: 0;
+            overflow: hidden;
+        }
+        .wrapper {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            height: 100%;
+            margin: 0;
+
+            color: white;
+        }
+        .wrapper::before {
+            background: linear-gradient( 135deg, #3C8CE7 10%, #00EAFF 100%);
+            width: 100%;
+            height: 100%;
+            content: "";
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: -1;
+        }
+        .service {
+            display: flex;
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            transform: translateX(100%);
+            visibility: hidden;
+            opacity: .3;
+            flex-direction: column;
+        }
+        .form {
+            height: 50px;
+            display: flex;
+            justify-content: center;
+            overflow: hidden;
+            align-items: center;
+        }
+        #search-input {
+            color: black;
+            letter-spacing: 0.05em;
+            border: none;
+            width: 70%;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            height: 30px;
+            background: #f1f1f1;
+            margin: 0 15px;
+        }
+        input[type="text" i] {
+            padding: 2px 12px;
+        }
+        input[type="text"]:focus {
+            box-shadow: 0 0 6px 0 #14a9ff;
+            border: 1px solid #14a9ff;
+        }
+        input[type="button" i] {
+            width: 42px;
+            border: none;
+            background: none;
+            letter-spacing: 0.05em;
+            cursor: pointer;
+            height: 42px;
+            border-radius: 50%;
+        }
+        .result, .result-header {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            font-size: 14px;
+            color: #333;
+        }
+        .result-header {
+            overflow-y: scroll;
+            transition: 500ms ease-in;
+            height: calc(100vh - 50px);
+        }
+        .list-container {
+            overflow-y: scroll;
+        }
+        .result-header::-webkit-scrollbar, .list-container::-webkit-scrollbar {
+            width: 4px;
+        }
+        .result-header::-webkit-scrollbar-thumb, .list-container::-webkit-scrollbar-thumb {
+            border-radius: 2px;
+            background-color: #f0f0f0;
+        }
+        .result-tab {
+            display: flex;
+        }
+        .result li, .result-tab button {
+            display: inline-flex;
+            padding: 12px 0;
+            line-height: 30px;
+            cursor: pointer;
+            align-items: center;
+            border-bottom: 1px solid #f1f1f1;
+            transition: 200ms linear;
+        }
+        .result-tab button {
+            justify-content: center;
+            width: 100%;
+            height: 50px;
+            margin: 0;
+            padding: 0;
+            color: #999;
+            font-size: 14px;
+            cursor: auto;
+            transition: none;
+            background: #f8f8f8;
+            outline: none;
+            border: none;
+            transition: all 1s ease-out;
+        }
+        .result-tab button:active {
+            background: #e0e2e5;
+            scale: 0.9;
+        }
+        .result li {
+            min-height: 30px;
+        }
+        .result li:hover {
+            background: #f5f8fb;
+            color: #14a9ff;
+        }
+        .fileName {
+            flex: 3;
+            margin-inline-start: 15px;
+            margin-inline-end: 10px;
+        }
+        .fileName em {
+            color: #14a9ff;
+        }
+        .albumName {
+            flex: 2;
+            margin-inline-end: 25px;
+        }
+        .duration {
+            flex: 0.5;
+            margin-inline-end: 15px;
+            text-align: center;
+        }
+        .fileName, .albumName {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .main-body {
+            width: 100%;
+            height: calc(100% - 100px);
+            padding-top: 15px;
+            display: flex;
+            flex-direction: column;
+        }
+        .header {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: auto;
+            height: fit-content;
+            padding: 10px 25px;
+            color: white;
+        }
+        .h-left {
+            display: flex;
+            flex-direction: column;
+        }
+        .h-left span {
+            text-align: center;
+            justify-content: center;
+            line-height: 30px;
+            margin: 5px 0;
+        }
+        /* .song-title, .singer, .song-subtitle {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 320px;
+        } */
+        .song-title {
+            font-size: 25px;
+            font-weight: bold;
+            text-shadow: 0 3px 6px rgba(0,0,0,.16);
+            letter-spacing: 0.06em;
+            animation: transformer 5s ease-in infinite;
+        }
+        .singer {
+            font-size: 25px;
+            font-weight: bold;
+            text-shadow: 0 3px 6px rgba(0,0,0,.16);
+            letter-spacing: 0.06em;
+            animation: transformer 5s ease-in infinite;
+            display: none;
+        }
+        @keyframes transformer {
+            0% { opacity: 0;transform: translateY(10px);zoom: 0;display: none }
+            1% { opacity: 0;transform: translateY(10px);zoom: 0;display: flex }
+            10% { opacity: 1;transform: translateY(0px);zoom: 1;display: flex }
+            90% { opacity: 1;transform: translateY(0px);zoom: 1;display: flex }
+            99% { opacity: 0;transform: translateY(-10px);zoom: 0;display: flex }
+            100% { opacity: 0;transform: translateY(-10px);zoom: 0;display: none }
+        }
+        .song-subtitle {
+            font-size: 15px;
+            letter-spacing: 0.04em;
+        }
+        .middle {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            height: 100%;
+            padding-top: 30px;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .cover-img {
+            width: fit-content;
+            height: fit-content;
+            border-radius: 50%;
+            box-shadow: 0 3px 6px rgba(0,0,0,.16);
+            animation: rotate 15s linear infinite;
+            animation-play-state: paused;
+            transition: box-shadow 1s ease-out;
+        }
+        .cover-img img {
+            width: 70vw;
+            height: 70vw;
+            max-width: 420px;
+            max-height: 420px;
+            border-radius: 50%;
+        }
+        @keyframes rotate {
+            from { transform: rotate(0deg) }
+            to { transform: rotate(360deg) }
+        }
+        .cover-img:hover {
+            box-shadow: 0 0 6px 8px rgba(255,255,255,.5), 0 0 6px 2px rgba(255,255,255,.5) inset;
+            cursor: wait;
+        }
+        @keyframes press {
+            0% { box-shadow: 0 0 6px rgba(0,0,0,.16) }
+            33.3% { box-shadow: 0 0 1px 4px rgba(255,255,255,.3);transform: scale(.9) }
+            100% { box-shadow: 0 0 6px rgba(0,0,0,.16) }
+        }
+        .lyric-frame {
+            width: 100%;
+            height: 100px;
+            overflow-y: hidden;
+            overflow-x: hidden;
+        }
+        ::selection {
+            background-color: rgba(218,218,218,.1);
+        }
+        .lyric-frame::-webkit-scrollbar {
+            width: 8px;
+            height: 100%;
+            opacity: 0;
+            border-radius: 4px;
+        }
+        .lyric-frame::-webkit-scrollbar-thumb {
+            width: 10px;
+            height: 30px;
+            background-color: rgba(255,255,255,.3);
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .scrolling-lyric {
+            width: 100%;
+            height: auto;
+            letter-spacing: 0.1em;
+            overflow: hidden;
+        }
+        .scrolling-lyric p {
+            display: inline-flex;
+            justify-content: center;
+            line-height: 50px;
+            opacity: .6;
+            visibility: hidden;
+            font-size: 20px;
+            white-space: nowrap;
+            transition: font-size 150ms,text-shadow 150ms;
+            margin: 0 8vw;
+            width: 84vw;
+            white-space: nowrap;
+            overflow: hidden;
+            letter-spacing: 2px;
+        }
+        .scrolling-lyric p.bubble {
+            visibility: visible;
+            color: greenyellow;
+            font-weight: bold;
+            text-shadow: 0 3px 6px rgba(0,0,0,.16);
+            opacity: 1;
+            transition: font-size 150ms,text-shadow 150ms;
+            font-size: 25px;
+        }
+        .scrolling-lyric p.await {
+            visibility: visible;
+            color: #fff;
+            text-shadow: 0 3px 2px rgba(0,0,0,.16);
+            opacity: .8;
+            transition: font-size 150ms,text-shadow 150ms;
+            font-size: 22px;
+        }
+        .control-region {
+            width: 100%;
+            height: 100px;
+        }
+        .operation {
+            display: flex;
+            width: 100%;
+            height: 25px;
+            justify-content: center;
+            align-items: center;
+        }
+        .operation button {
+            width: fit-content;
+            height: 20px;
+            padding: 0;
+            border-style: none;
+            outline: none;
+            background-color: transparent;
+        }
+
+        .when {
+            display: flex;
+            flex-direction: column;
+            height: fit-content;
+            width: inherit;
+            margin: 5px 0;
+            align-self: flex-end;
+        }
+        .time {
+            min-height: 32px;
+            padding-left: 5%;
+            line-height: 32px;
+        }
+        .time span {
+            letter-spacing: 0.05em;
+        }
+        .time .now {
+            width: 56px;
+            font-size: 21px;
+            display: inline-flex;
+        }
+        .time em {
+            display: inline-flex;
+            margin: 0 0.3em;
+            font-size: 16px;
+        }
+        .time .duration {
+            display: inline-flex;
+            font-size: 16px;
+        }
+        .progress-bar {
+            width: 90%;
+            height: 6px;
+            background: rgba(255,255,255,.5);
+            cursor: pointer;
+            margin: 0 auto;
+            border-radius: 3px;
+        }
+        .living-progressBar {
+            width: 0;
+            height: 100%;
+            background-color: wheat;
+            transition: width 50ms linear;
+            border-radius: inherit;
+        }
+        .playhead {
+            display: none;
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            background: white;
+            border-radius: 50%;
+            box-shadow: 0 2px 4px rgba(0,0,0,.3);
+            transform: translateY(-4px);
+            margin-left: 0;
+            animation: twinkle 2s ease-in-out infinite;
+        }
+        @keyframes twinkle {
+            0% { box-shadow: 0 2px 4px 0 rgba(255,255,255,.3); }
+            50% { box-shadow: 0 2px 4px 6px rgba(255,255,255,.3); }
+            100% { box-shadow: 0 2px 4px 0 rgba(255,255,255,.3); }
+        }
+        .control-region {
+            display: flex;
+            align-self: flex-end;
+        }
+        .controller {
+            display: flex;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+            margin: 0 5%;
+        }
+        .controller button {
+            padding: 0;
+            border-style: none;
+            outline: none;
+            background-color: transparent;
+        }
+        .controller .play {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+        }
+        .c-left, .c-right {
+            display: flex;
+            width: fit-content;
+            height: 100%;
+            align-items: center;
+        }
+        .c-left {
+            justify-content: flex-start;
+        }
+        .c-middle {
+            display: flex;
+            flex: 1;
+            justify-content: center;
+            align-items: center;
+            margin: auto 0;
+            height: 60px;
+        }
+        .icon-volume, .icon-mute,
+        .icon-prev, .icon-next,
+        .icon-list, .icon-songList {
+            transition: all 500ms;
+        }
+        .c-right {
+            justify-content: flex-end;
+        }
+        .c-left>button, .c-right>button {
+            width: 20px;
+            height: 20px;
+        }
+        .volume-bar {
+            display: inline-flex;
+            align-items: center;
+        }
+        .volume-f {
+            width: 100px;
+            height: 8px;
+            background: rgba(0,176,255,.2);
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .volume-n {
+            width: 100%;
+            height: 8px;
+            background: rgba(0,176,255,1);
+            border-radius: 4px;
+        }
+        .c-middle button {
+            margin: 15px;
+            background: #ffffff30;
+            box-shadow: 0 0 3px #00000016;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .c-middle .prev, .c-middle .next {
+            width: 40px;
+            height: 40px;
+        }
+        .disappear {
+            display: none;
+        }
+        .video-app {
+            width: 976px;
+            height: 549px;
+            margin: 50px auto;
+            border: 1px solid #ccc;
+        }
+        .v-wrapper {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        .player {
+            width: inherit;
+            height: inherit;
+
+        }
+        .float-top {
+            align-self: flex-start;
+            width: 100%;
+            height: 50px;
+            background: linear-gradient(rgba(53,53,53,.8),rgba(255,255,255,.2));
+        }
+        .float-bottom {
+            align-self: flex-end;
+            width: 100%;
+            height: 50px;
+            background: linear-gradient(rgba(53,53,53,.8),rgba(255,255,255,.2));
+        }
+    </style>
+</head>
+<body>
+<div class="audio-app">
+    <div class="wrapper">
+        <div class="main-body">
+            <audio id="player" src='' type="audio/mp3"></audio>
+            <div class="header">
+                <div class="h-left">
+                    <span class="song-title">音乐🎵感动常在</span>
+                    <span class="singer">Mirai探索者</span>
+                    <span class="song-subtitle">&lt;专辑名称&gt;</span>
+                </div>
+            </div>
+            <div class="middle">
+                <div class="cover-img"><img src='//img.zcool.cn/community/01e8055541ba72000001a64b73d929.jpg@1280w_1l_2o_100sh.jpg' alt="专辑封面"></div>
+                <div class="lyric-frame">
+                    <div class="scrolling-lyric"></div>
+                </div>
+                <div class="operation">
+                    <div class="cm-left">
+
+                    </div>
+                    <div class="cm-right">
+                        <button class="search" onclick="showService()">
+                            <svg t="1590584608398" class="icon-search" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="3543" width="20" height="20">
+                                <path d="M1012.395613 955.840719l-215.113391-215.507227a450.391202 450.391202 0 0 0 104.012169-288.721398C901.294391 202.156177 699.650201 0 450.745654 0 201.762341 0 0 202.156177 0 451.612094c0 249.416534 201.762341 451.730245 450.627504 451.730246 110.74677 0 212.120235-40.053153 290.572428-106.493338l214.916473 215.42846a39.541165 39.541165 0 0 0 56.200441 0 39.895618 39.895618 0 0 0 0-56.397359h0.078767z m-561.728726-132.210848a369.969828 369.969828 0 0 1-262.413132-108.935123 370.836268 370.836268 0 0 1-108.659437-263.082654 370.32428 370.32428 0 0 1 108.698821-263.04327 369.969828 369.969828 0 0 1 524.905031 0 370.875651 370.875651 0 0 1 108.620054 263.04327 370.32428 370.32428 0 0 1-108.698821 263.082654 369.969828 369.969828 0 0 1-262.452516 108.935123z" fill="#ffffff" p-id="3544"></path>
+                            </svg>
+                        </button>
+                        <button class="volume" style="width: 34px;height: 30px;display: none">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon-volume" width="33.336" height="30" viewBox="0 0 33.336 30">
+                                <path id="路径_26" data-name="路径 26" d="M59.33,56.05a1.347,1.347,0,0,1,0-2.037,9.607,9.607,0,0,0,0-13.854,1.347,1.347,0,0,1,0-2.037,1.4,1.4,0,0,1,2.071,0,12.3,12.3,0,0,1,3.934,8.761A11.957,11.957,0,0,1,61.4,55.643a1.6,1.6,0,0,1-1.035.407.69.69,0,0,1-1.035,0Zm-4.141-2.241a1.6,1.6,0,0,1-1.035-.407,1.347,1.347,0,0,1,0-2.037,5.843,5.843,0,0,0,0-8.557,1.347,1.347,0,0,1,0-2.037,1.4,1.4,0,0,1,2.071,0,8.3,8.3,0,0,1,0,12.428c-.414.407-.621.611-1.035.611ZM47.528,32.824c1.863-1.426,3.313-.611,3.313,1.63V59.921c0,2.241-1.449,2.852-3.106,1.426l-7.454-6.112H36.14A4.12,4.12,0,0,1,32,51.161V42.807a4.12,4.12,0,0,1,4.141-4.075h3.934l7.454-5.908Z" transform="translate(-31.999 -32.115)" fill="#00b0ff"/>
+                            </svg>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon-mute disappear" width="33.668" height="30" viewBox="0 0 33.668 30">
+                                <path id="路径_26" data-name="路径 26" d="M61.338,62.88l3.871-3.871a1.585,1.585,0,0,0-2.241-2.241L59.1,60.639l-3.871-3.871a1.585,1.585,0,0,0-2.241,2.241l3.667,3.871-3.871,3.871a1.585,1.585,0,0,0,2.241,2.241l3.871-3.871,3.871,3.871a1.585,1.585,0,0,0,2.241-2.241ZM47.28,48.822c1.834-1.426,3.26-.611,3.26,1.63V75.919c0,2.241-1.426,2.852-3.056,1.426L40.15,71.233H36.075A4.087,4.087,0,0,1,32,67.158V58.805a4.087,4.087,0,0,1,4.075-4.075h3.871Z" transform="translate(-32 -48.112)" fill="#00b0ff"/>
+                            </svg>
+                        </button>
+                        <div class="volume-bar" style="display: none">
+                            <div class="volume-f">
+                                <div class="volume-n"></div>
+                            </div>
+                        </div>
+                        <script>
+                            function showService() {
+                                let w = document.querySelector('.wrapper')
+                                let s = document.querySelector('.service')
+                                w.style.transform = 'translateX(-100%)'
+                                w.style.transition = 'transform 200ms ease-out'
+                                s.style.visibility = 'visible'
+                                s.style.transform = 'translateX(0)'
+                                s.style.opacity = '1'
+                                s.style.transition = 'all 200ms ease-out'
+                            }
+                        </script>
+                    </div>
+                </div>
+            </div>
+            <div class="when">
+                <div class="time"><span class="now"></span><em>/</em><span class="duration"></span></div>
+                <div class="progress-bar">
+                    <div class="living-progressBar"><span class="playhead"></span></div>
+                </div>
+            </div>
+        </div>
+        <div class="control-region">
+            <div class="controller">
+                <div class="c-left">
+                    <button class="repeat" data-flag="0" onclick="showMode()">
+                        <!-- <svg xmlns="http://www.w3.org/2000/svg" class=.icon-list" width="34.167" height="30" viewBox="0 0 34.167 30">
+                            <path id="路径_14" data-name="路径 14" d="M121.56,162.859a1.493,1.493,0,0,0-.642.952l-1.09,5.421a1.507,1.507,0,0,0,2.956.587l.461-2.294a12.047,12.047,0,0,1-16.729,15.239,1.5,1.5,0,1,0-1.4,2.656,15.1,15.1,0,0,0,22.093-13.282,14.994,14.994,0,0,0-1.185-5.782l1.295.257a1.5,1.5,0,1,0,.591-2.944l-5.214-1.035a1.523,1.523,0,0,0-1.132.224ZM96.142,181.106l5.2,1.11a1.5,1.5,0,0,0,1.791-1.149l1.168-5.4a1.507,1.507,0,0,0-2.947-.631l-.369,1.7a12.051,12.051,0,0,1,16.491-15.35,1.514,1.514,0,0,0,2.021-.681,1.494,1.494,0,0,0-.682-2.009,14.989,14.989,0,0,0-20.293,19.855l-1.742-.374a1.5,1.5,0,1,0-.635,2.935Z" transform="translate(-94.951 -157.139)" fill="#00b0ff"/>
+                        </svg> -->
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon-list" width="20" height="20" viewBox="0 0 1024 1024">
+                            <path d="M694.4 854.4H195.2l48 44.8c9.6 6.4 16 16 16 28.8-3.2 19.2-19.2 32-38.4 32-9.6 0-22.4-6.4-28.8-12.8l-108.8-96c-12.8-12.8-16-35.2 0-48L192 704c6.4-6.4 19.2-9.6 28.8-9.6 19.2 0 35.2 16 35.2 35.2 0 9.6-6.4 19.2-12.8 25.6l-41.6 38.4h496c112 0 198.4-89.6 198.4-198.4v-86.4c0-19.2 12.8-32 32-32s32 12.8 32 32v86.4c0 140.8-118.4 259.2-265.6 259.2zM329.6 169.6h496l-48-44.8c-9.6-6.4-16-16-16-28.8 3.2-19.2 19.2-32 38.4-32 9.6 0 22.4 6.4 28.8 12.8l108.8 96c12.8 12.8 16 35.2 0 48L832 320c-6.4 6.4-19.2 9.6-28.8 9.6-19.2 0-35.2-16-35.2-35.2 0-9.6 6.4-19.2 12.8-25.6l41.6-38.4H326.4C217.6 233.6 128 323.2 128 435.2v89.6c0 19.2-12.8 32-32 32s-32-12.8-32-32v-86.4C64 288 182.4 169.6 329.6 169.6z" fill="#FFFFFF"></path>
+                        </svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon-single disappear" width="20" height="20" viewBox="0 0 1024 1024">
+                            <path data-id="circle" d="M928 476.8c-19.2 0-32 12.8-32 32v86.4c0 108.8-86.4 198.4-198.4 198.4H201.6l41.6-38.4c6.4-6.4 12.8-16 12.8-25.6 0-19.2-16-35.2-35.2-35.2-9.6 0-22.4 3.2-28.8 9.6l-108.8 99.2c-16 12.8-12.8 35.2 0 48l108.8 96c6.4 6.4 19.2 12.8 28.8 12.8 19.2 0 35.2-12.8 38.4-32 0-12.8-6.4-22.4-16-28.8l-48-44.8h499.2c147.2 0 265.6-118.4 265.6-259.2v-86.4c0-19.2-12.8-32-32-32zM96 556.8c19.2 0 32-12.8 32-32v-89.6c0-112 89.6-201.6 198.4-204.8h496l-41.6 38.4c-6.4 6.4-12.8 16-12.8 25.6 0 19.2 16 35.2 35.2 35.2 9.6 0 22.4-3.2 28.8-9.6l105.6-99.2c16-12.8 12.8-35.2 0-48l-108.8-96c-6.4-6.4-19.2-12.8-28.8-12.8-19.2 0-35.2 12.8-38.4 32 0 12.8 6.4 22.4 16 28.8l48 44.8H329.6C182.4 169.6 64 288 64 438.4v86.4c0 19.2 12.8 32 32 32z" p-id="2583" fill="#FFFFFF"></path>
+                            <path d="M544 672V352h-48L416 409.6l16 41.6 60.8-41.6V672z" fill="#FFFFFF"></path>
+                        </svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon-shuffle disappear" width="20" height="20" viewBox="0 0 1024 1024">
+                            <path d="M844.8 665.6c-6.4-6.4-16-12.8-25.6-9.6-19.2 0-35.2 16-35.2 35.2 0 9.6 6.4 19.2 12.8 25.6l41.6 41.6c-44.8-6.4-86.4-22.4-121.6-51.2-3.2 0-3.2-3.2-6.4-6.4L332.8 304C268.8 233.6 192 195.2 99.2 195.2c-19.2 0-35.2 16-35.2 35.2s16 32 35.2 32c73.6 0 134.4 32 182.4 86.4l384 400 6.4 6.4c48 38.4 108.8 64 172.8 70.4l-48 44.8c-9.6 6.4-16 19.2-16 28.8 0 19.2 19.2 35.2 38.4 32 9.6 0 19.2-6.4 25.6-12.8l99.2-92.8c16-16 16-41.6 0-57.6l-99.2-102.4z m-3.2-556.8c-12.8-16-32-19.2-48-6.4-9.6 6.4-12.8 16-12.8 25.6 0 12.8 3.2 22.4 16 28.8l41.6 41.6c-73.6 9.6-140.8 38.4-192 89.6l-115.2 118.4c-12.8 12.8-12.8 32 0 44.8 6.4 6.4 16 9.6 25.6 9.6s19.2-3.2 25.6-9.6l112-118.4c41.6-38.4 92.8-64 147.2-70.4l-44.8 44.8c-6.4 6.4-12.8 16-12.8 25.6 0 19.2 16 35.2 32 35.2 9.6 0 19.2-3.2 28.8-9.6L950.4 256c12.8-12.8 12.8-35.2 0-48l-108.8-99.2m-438.4 448c-9.6 0-19.2 3.2-25.6 9.6l-118.4 121.6c-48 44.8-96 67.2-160 67.2H96c-19.2 0-35.2 16-35.2 35.2s16 32 35.2 32h3.2c83.2 0 147.2-32 211.2-86.4l121.6-124.8c6.4-6.4 9.6-12.8 9.6-22.4 0-9.6-3.2-16-9.6-22.4-9.6-6.4-19.2-9.6-28.8-9.6z" fill="#FFFFFF"></path>
+                        </svg>
+                    </button>
+                    <div class="select-mode" style="display: none">
+                        <p style="background: rgba(255, 255, 255, 0.3)">
+                            <span class="sm-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="icon-list" width="16" height="16" viewBox="0 0 1024 1024">
+                                    <path d="M694.4 854.4H195.2l48 44.8c9.6 6.4 16 16 16 28.8-3.2 19.2-19.2 32-38.4 32-9.6 0-22.4-6.4-28.8-12.8l-108.8-96c-12.8-12.8-16-35.2 0-48L192 704c6.4-6.4 19.2-9.6 28.8-9.6 19.2 0 35.2 16 35.2 35.2 0 9.6-6.4 19.2-12.8 25.6l-41.6 38.4h496c112 0 198.4-89.6 198.4-198.4v-86.4c0-19.2 12.8-32 32-32s32 12.8 32 32v86.4c0 140.8-118.4 259.2-265.6 259.2zM329.6 169.6h496l-48-44.8c-9.6-6.4-16-16-16-28.8 3.2-19.2 19.2-32 38.4-32 9.6 0 22.4 6.4 28.8 12.8l108.8 96c12.8 12.8 16 35.2 0 48L832 320c-6.4 6.4-19.2 9.6-28.8 9.6-19.2 0-35.2-16-35.2-35.2 0-9.6 6.4-19.2 12.8-25.6l41.6-38.4H326.4C217.6 233.6 128 323.2 128 435.2v89.6c0 19.2-12.8 32-32 32s-32-12.8-32-32v-86.4C64 288 182.4 169.6 329.6 169.6z" fill="#FFFFFF"></path>
+                                </svg>
+                            </span>
+                            <input name="radio" type="radio" id="list" value="1" checked /><label for="list">列表循环</label>
+                        </p>
+                        <p>
+                            <span class="sm-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="icon-single" width="16" height="16" viewBox="0 0 1024 1024">
+                                    <path data-id="circle" d="M928 476.8c-19.2 0-32 12.8-32 32v86.4c0 108.8-86.4 198.4-198.4 198.4H201.6l41.6-38.4c6.4-6.4 12.8-16 12.8-25.6 0-19.2-16-35.2-35.2-35.2-9.6 0-22.4 3.2-28.8 9.6l-108.8 99.2c-16 12.8-12.8 35.2 0 48l108.8 96c6.4 6.4 19.2 12.8 28.8 12.8 19.2 0 35.2-12.8 38.4-32 0-12.8-6.4-22.4-16-28.8l-48-44.8h499.2c147.2 0 265.6-118.4 265.6-259.2v-86.4c0-19.2-12.8-32-32-32zM96 556.8c19.2 0 32-12.8 32-32v-89.6c0-112 89.6-201.6 198.4-204.8h496l-41.6 38.4c-6.4 6.4-12.8 16-12.8 25.6 0 19.2 16 35.2 35.2 35.2 9.6 0 22.4-3.2 28.8-9.6l105.6-99.2c16-12.8 12.8-35.2 0-48l-108.8-96c-6.4-6.4-19.2-12.8-28.8-12.8-19.2 0-35.2 12.8-38.4 32 0 12.8 6.4 22.4 16 28.8l48 44.8H329.6C182.4 169.6 64 288 64 438.4v86.4c0 19.2 12.8 32 32 32z" p-id="2583" fill="#FFFFFF"></path>
+                                    <path d="M544 672V352h-48L416 409.6l16 41.6 60.8-41.6V672z" fill="#FFFFFF"></path>
+                                </svg>
+                            </span>
+                            <input name="radio" type="radio" id="single" value="2" /><label for="single">单曲循环</label>
+                        </p>
+                        <p>
+                            <span class="sm-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="icon-shuffle" width="16" height="16" viewBox="0 0 1024 1024">
+                                    <path d="M844.8 665.6c-6.4-6.4-16-12.8-25.6-9.6-19.2 0-35.2 16-35.2 35.2 0 9.6 6.4 19.2 12.8 25.6l41.6 41.6c-44.8-6.4-86.4-22.4-121.6-51.2-3.2 0-3.2-3.2-6.4-6.4L332.8 304C268.8 233.6 192 195.2 99.2 195.2c-19.2 0-35.2 16-35.2 35.2s16 32 35.2 32c73.6 0 134.4 32 182.4 86.4l384 400 6.4 6.4c48 38.4 108.8 64 172.8 70.4l-48 44.8c-9.6 6.4-16 19.2-16 28.8 0 19.2 19.2 35.2 38.4 32 9.6 0 19.2-6.4 25.6-12.8l99.2-92.8c16-16 16-41.6 0-57.6l-99.2-102.4z m-3.2-556.8c-12.8-16-32-19.2-48-6.4-9.6 6.4-12.8 16-12.8 25.6 0 12.8 3.2 22.4 16 28.8l41.6 41.6c-73.6 9.6-140.8 38.4-192 89.6l-115.2 118.4c-12.8 12.8-12.8 32 0 44.8 6.4 6.4 16 9.6 25.6 9.6s19.2-3.2 25.6-9.6l112-118.4c41.6-38.4 92.8-64 147.2-70.4l-44.8 44.8c-6.4 6.4-12.8 16-12.8 25.6 0 19.2 16 35.2 32 35.2 9.6 0 19.2-3.2 28.8-9.6L950.4 256c12.8-12.8 12.8-35.2 0-48l-108.8-99.2m-438.4 448c-9.6 0-19.2 3.2-25.6 9.6l-118.4 121.6c-48 44.8-96 67.2-160 67.2H96c-19.2 0-35.2 16-35.2 35.2s16 32 35.2 32h3.2c83.2 0 147.2-32 211.2-86.4l121.6-124.8c6.4-6.4 9.6-12.8 9.6-22.4 0-9.6-3.2-16-9.6-22.4-9.6-6.4-19.2-9.6-28.8-9.6z" fill="#FFFFFF"></path>
+                                </svg>
+                            </span>
+                            <input name="radio" type="radio" id="shuffle" value="3" /><label for="shuffle">随机播放</label>
+                        </p>
+                    </div>
+                </div>
+                <div class="c-middle">
+                    <button class="prev">
+                        <svg t="1590493055047" class="icon-prev" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="36047" width="18" height="18">
+                            <path d="M943.705 11.8c10.321 5.183 17.325 15.601 17.534 27.675l-0.004 938.318c-0.167 12.186-7.229 22.684-17.457 27.782-4.857 2.548-10.527 4.026-16.543 4.026-6.65 0-12.876-1.806-18.217-4.955l-716.617-469c-9.689-5.299-16.151-15.421-16.151-27.053 0-11.63 6.462-21.753 15.991-26.972l716.945-468.955c5.177-3.048 11.404-4.848 18.052-4.848 6.013 0 11.682 1.473 16.665 4.077z" fill="#ffffff" p-id="36048"></path><path d="M228.435 77.809v868.712c-3.889 42.573-39.416 75.664-82.673 75.664s-78.784-33.091-82.649-75.34l-0.024-869.036c2.811-43.55 38.822-77.809 82.835-77.809s80.024 34.259 82.822 77.564z" fill="#ffffff" p-id="36049"></path>
+                        </svg>
+                    </button>
+                    <button class="play">
+                        <svg class="icon-play" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" width="30" height="30">
+                            <path d="M893.035 463.821679C839.00765 429.699141 210.584253 28.759328 179.305261 8.854514 139.495634-16.737389 99.686007 17.385148 99.686007 57.194775v909.934329c0 45.496716 42.653172 68.245075 76.775709 48.340262 45.496716-28.435448 676.763657-429.375262 716.573284-454.967165 34.122537-22.748358 34.122537-76.775709 0-96.680522z" fill="#ffffff" p-id="1818"></path>
+                        </svg>
+                        <svg class="icon-pause disappear" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" width="30" height="30">
+                            <path d="M735.9 64.9c-51.2 0-96 44.7-96 95.8v702.6c0 51.1 44.8 95.8 96 95.8s96-44.7 96-95.8V160.7c0-51.1-44.8-95.8-96-95.8z m-447.8 0c-51.2 0-96 44.7-96 95.8v702.6c0 51.1 44.8 95.8 96 95.8s96-44.7 96-95.8V160.7c-0.1-51.1-44.9-95.8-96-95.8z" p-id="18648" fill="#ffffff"></path>
+                        </svg>
+                    </button>
+                    <button class="next">
+                        <svg t="1590493286156" class="icon-next" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="38778" width="18" height="18">
+                            <path d="M91.009 992.703c-10.595-5.485-17.19-15.925-17.19-27.269l0-920.117c0-11.312 6.59599999-21.752 17.19-27.237 10.594-5.515 23.553-5.172 33.814 0.841l703.081 460.074c9.728 5.703 15.591 15.643 15.591 26.396 0 10.71999999-5.863 20.693-15.59100001 26.396l-703.08099999 460.074c-5.397 3.148-11.527 4.737-17.69 4.737-5.53 0-11.094-1.27800001-16.124-3.895z" p-id="38779" fill="#ffffff"></path><path d="M792.524 928.009l0-852.001c0-42.032 36.4-76.007 81.252-76.007 44.85000001 0 81.252 33.97500001 81.252 76.007l0 852.001c0 41.95499999-36.4 76.007-81.252 76.007s-81.252-34.051-81.252-76.007z" p-id="38780" fill="#ffffff"></path>
+                        </svg>
+                    </button>
+                </div>
+                <div class="c-right">
+                    <!--
+                    <button class="repeat" data-flag="0" onclick="showMode()">
+                        <svg xmlns="http://www.w3.org/2000/svg" class=.icon-list" width="34.167" height="30" viewBox="0 0 34.167 30">
+                            <path id="路径_14" data-name="路径 14" d="M121.56,162.859a1.493,1.493,0,0,0-.642.952l-1.09,5.421a1.507,1.507,0,0,0,2.956.587l.461-2.294a12.047,12.047,0,0,1-16.729,15.239,1.5,1.5,0,1,0-1.4,2.656,15.1,15.1,0,0,0,22.093-13.282,14.994,14.994,0,0,0-1.185-5.782l1.295.257a1.5,1.5,0,1,0,.591-2.944l-5.214-1.035a1.523,1.523,0,0,0-1.132.224ZM96.142,181.106l5.2,1.11a1.5,1.5,0,0,0,1.791-1.149l1.168-5.4a1.507,1.507,0,0,0-2.947-.631l-.369,1.7a12.051,12.051,0,0,1,16.491-15.35,1.514,1.514,0,0,0,2.021-.681,1.494,1.494,0,0,0-.682-2.009,14.989,14.989,0,0,0-20.293,19.855l-1.742-.374a1.5,1.5,0,1,0-.635,2.935Z" transform="translate(-94.951 -157.139)" fill="#00b0ff"/>
+                        </svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon-list" width="30" height="30" viewBox="0 0 1024 1024">
+                            <path d="M694.4 854.4H195.2l48 44.8c9.6 6.4 16 16 16 28.8-3.2 19.2-19.2 32-38.4 32-9.6 0-22.4-6.4-28.8-12.8l-108.8-96c-12.8-12.8-16-35.2 0-48L192 704c6.4-6.4 19.2-9.6 28.8-9.6 19.2 0 35.2 16 35.2 35.2 0 9.6-6.4 19.2-12.8 25.6l-41.6 38.4h496c112 0 198.4-89.6 198.4-198.4v-86.4c0-19.2 12.8-32 32-32s32 12.8 32 32v86.4c0 140.8-118.4 259.2-265.6 259.2zM329.6 169.6h496l-48-44.8c-9.6-6.4-16-16-16-28.8 3.2-19.2 19.2-32 38.4-32 9.6 0 22.4 6.4 28.8 12.8l108.8 96c12.8 12.8 16 35.2 0 48L832 320c-6.4 6.4-19.2 9.6-28.8 9.6-19.2 0-35.2-16-35.2-35.2 0-9.6 6.4-19.2 12.8-25.6l41.6-38.4H326.4C217.6 233.6 128 323.2 128 435.2v89.6c0 19.2-12.8 32-32 32s-32-12.8-32-32v-86.4C64 288 182.4 169.6 329.6 169.6z" fill="#00B0FF"></path>
+                        </svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon-single disappear" width="30" height="30" viewBox="0 0 1024 1024">
+                            <path data-id="circle" d="M928 476.8c-19.2 0-32 12.8-32 32v86.4c0 108.8-86.4 198.4-198.4 198.4H201.6l41.6-38.4c6.4-6.4 12.8-16 12.8-25.6 0-19.2-16-35.2-35.2-35.2-9.6 0-22.4 3.2-28.8 9.6l-108.8 99.2c-16 12.8-12.8 35.2 0 48l108.8 96c6.4 6.4 19.2 12.8 28.8 12.8 19.2 0 35.2-12.8 38.4-32 0-12.8-6.4-22.4-16-28.8l-48-44.8h499.2c147.2 0 265.6-118.4 265.6-259.2v-86.4c0-19.2-12.8-32-32-32zM96 556.8c19.2 0 32-12.8 32-32v-89.6c0-112 89.6-201.6 198.4-204.8h496l-41.6 38.4c-6.4 6.4-12.8 16-12.8 25.6 0 19.2 16 35.2 35.2 35.2 9.6 0 22.4-3.2 28.8-9.6l105.6-99.2c16-12.8 12.8-35.2 0-48l-108.8-96c-6.4-6.4-19.2-12.8-28.8-12.8-19.2 0-35.2 12.8-38.4 32 0 12.8 6.4 22.4 16 28.8l48 44.8H329.6C182.4 169.6 64 288 64 438.4v86.4c0 19.2 12.8 32 32 32z" p-id="2583" fill="#00B0FF"></path>
+                            <path d="M544 672V352h-48L416 409.6l16 41.6 60.8-41.6V672z" fill="#00B0FF"></path>
+                        </svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon-shuffle disappear" width="30" height="30" viewBox="0 0 1024 1024">
+                            <path d="M844.8 665.6c-6.4-6.4-16-12.8-25.6-9.6-19.2 0-35.2 16-35.2 35.2 0 9.6 6.4 19.2 12.8 25.6l41.6 41.6c-44.8-6.4-86.4-22.4-121.6-51.2-3.2 0-3.2-3.2-6.4-6.4L332.8 304C268.8 233.6 192 195.2 99.2 195.2c-19.2 0-35.2 16-35.2 35.2s16 32 35.2 32c73.6 0 134.4 32 182.4 86.4l384 400 6.4 6.4c48 38.4 108.8 64 172.8 70.4l-48 44.8c-9.6 6.4-16 19.2-16 28.8 0 19.2 19.2 35.2 38.4 32 9.6 0 19.2-6.4 25.6-12.8l99.2-92.8c16-16 16-41.6 0-57.6l-99.2-102.4z m-3.2-556.8c-12.8-16-32-19.2-48-6.4-9.6 6.4-12.8 16-12.8 25.6 0 12.8 3.2 22.4 16 28.8l41.6 41.6c-73.6 9.6-140.8 38.4-192 89.6l-115.2 118.4c-12.8 12.8-12.8 32 0 44.8 6.4 6.4 16 9.6 25.6 9.6s19.2-3.2 25.6-9.6l112-118.4c41.6-38.4 92.8-64 147.2-70.4l-44.8 44.8c-6.4 6.4-12.8 16-12.8 25.6 0 19.2 16 35.2 32 35.2 9.6 0 19.2-3.2 28.8-9.6L950.4 256c12.8-12.8 12.8-35.2 0-48l-108.8-99.2m-438.4 448c-9.6 0-19.2 3.2-25.6 9.6l-118.4 121.6c-48 44.8-96 67.2-160 67.2H96c-19.2 0-35.2 16-35.2 35.2s16 32 35.2 32h3.2c83.2 0 147.2-32 211.2-86.4l121.6-124.8c6.4-6.4 9.6-12.8 9.6-22.4 0-9.6-3.2-16-9.6-22.4-9.6-6.4-19.2-9.6-28.8-9.6z" fill="#00B0FF"></path>
+                        </svg>
+                    </button>
+                    <div class="select-mode" style="display: none">
+                        <p><input name="radio" type="radio" id="list" value="1" checked /><label for="list">列表循环</label></p>
+                        <p><input name="radio" type="radio" id="single" value="2" /><label for="single">单曲循环</label></p>
+                        <p><input name="radio" type="radio" id="shuffle" value="3" /><label for="shuffle">随机播放</label></p>
+                    </div>
+                    -->
+                    <style>
+                        .prev:hover .icon-prev,
+                        .next:hover .icon-next, .repeat:hover .icon-list,
+                        .song-list:hover .icon-songList {
+                            filter: drop-shadow(0 0 4px rgba(255,255,255,.8));
+                        }
+                        .icon-play {
+                            transform: translateX(3px);
+                        }
+                        .play:hover .icon-play, .play:hover .icon-pause {
+                            filter: drop-shadow(0 0 8px rgba(255,255,255,.8));
+                        }
+                        .select-mode {
+                            display: flex;
+                            position: absolute;
+                            flex-direction: column;
+                            align-items: center;
+                            height: fit-content;
+                            width: 120px;
+                            bottom: 75px;
+                            left: 5%;
+                            background: rgba(32,104,130,1);
+                            border-radius: 5px;
+                            box-shadow: 0px 1px 3px rgba(0,0,0,.16);
+                            transition: all 1s ease-in;
+                        }
+                        .select-mode p {
+                            line-height: 30px;
+                            padding: 5px;
+                            display: flex;
+                            width: 110px;
+                            justify-content: center;
+                            align-items: center;
+                            border-radius: inherit;
+                        }
+                        .sm-icon {
+                            display: inline-flex;
+                            justify-content: center;
+                            align-items: center;
+                            margin-right: 10px;
+                            padding: 0;
+                        }
+                        .sm-icon .icon-list, .sm-icon .icon-single, .sm-icon .icon-shuffle {
+
+                        }
+                        input[type="radio"] {
+                            position: absolute;
+                            clip: rect(0, 0, 0, 0);
+                        }
+                        input[type="radio"] + label {
+                            cursor: pointer;
+                            transition: 100ms linear;
+                            color: white;
+                            opacity: .5;
+                            text-shadow: 1px 1px 3px #00000050;
+                        }
+                        input[type="radio"]:checked + label {
+                            color: white;
+                            text-shadow: 1px 1px 3px #00000050;
+                            opacity: 1;
+                        }
+                    </style>
+                    <script>
+                        function showMode(){
+                            let display = document.querySelector('.select-mode');
+                            if(display.style.display === 'none') {
+                                display.style.display = ''
+                            } else {
+                                display.style.display = 'none'
+                            }
+                        }
+                    </script>
+                    <button class="song-list" onclick="showList()">
+                        <svg t="1590569436521" class="icon-songList" viewBox="0 0 1087 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="5493" width="20" height="20">
+                            <path d="M1075.944787 160.21066A576.530049 576.530049 0 0 0 851.720535 3.071565a45.013379 45.013379 0 0 0-61.40412 41.996178v556.034827a236.809514 236.809514 0 1 0 90.298578 185.816096c0-2.473561-0.244638-4.947123-0.434912-7.447865 0-1.3591 0.434912-2.473561 0.434912-3.832661V116.311743a490.933956 490.933956 0 0 1 127.755362 103.29157 45.040561 45.040561 0 0 0 67.710342-59.392653zM643.397749 933.674241a146.782756 146.782756 0 1 1 146.782756-146.782757 146.782756 146.782756 0 0 1-146.782756 146.782757zM45.176471 256.353366h519.176045a45.149289 45.149289 0 1 0 0-90.298577h-519.176045a45.149289 45.149289 0 0 0 0 90.298577z m315.963474 203.18539H45.176471a45.149289 45.149289 0 0 0 0 90.298577h315.963474a45.149289 45.149289 0 1 0 0-90.298577z m-135.447866 293.565512H45.176471a45.149289 45.149289 0 0 0 0 90.298578H225.882353a45.149289 45.149289 0 1 0 0-90.298578z" p-id="5494" fill="#ffffff"></path>
+                        </svg>
+                    </button>
+                    <div class="popup">
+                        <div class="mask"></div>
+                        <div class="containSongList">
+                            <div class="songList-item">
+                                <p>播放队列</p>
+                                <div class="songList-wrapper">
+                                    <div class="list-header">
+                                        <div class="header-l">
+                                            <button id="lh-btn">
+                                                <div class="lh-mode">
+                                                    <div class="lh-icon">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" class="icon-list" width="20" height="20" viewBox="0 0 1024 1024">
+                                                            <path d="M694.4 854.4H195.2l48 44.8c9.6 6.4 16 16 16 28.8-3.2 19.2-19.2 32-38.4 32-9.6 0-22.4-6.4-28.8-12.8l-108.8-96c-12.8-12.8-16-35.2 0-48L192 704c6.4-6.4 19.2-9.6 28.8-9.6 19.2 0 35.2 16 35.2 35.2 0 9.6-6.4 19.2-12.8 25.6l-41.6 38.4h496c112 0 198.4-89.6 198.4-198.4v-86.4c0-19.2 12.8-32 32-32s32 12.8 32 32v86.4c0 140.8-118.4 259.2-265.6 259.2zM329.6 169.6h496l-48-44.8c-9.6-6.4-16-16-16-28.8 3.2-19.2 19.2-32 38.4-32 9.6 0 22.4 6.4 28.8 12.8l108.8 96c12.8 12.8 16 35.2 0 48L832 320c-6.4 6.4-19.2 9.6-28.8 9.6-19.2 0-35.2-16-35.2-35.2 0-9.6 6.4-19.2 12.8-25.6l41.6-38.4H326.4C217.6 233.6 128 323.2 128 435.2v89.6c0 19.2-12.8 32-32 32s-32-12.8-32-32v-86.4C64 288 182.4 169.6 329.6 169.6z" fill="#66C056"></path>
+                                                        </svg>
+                                                    </div>
+                                                    <div>顺序播放(<em data-id="i"></em>)</div>
+                                                </div>
+                                                <div class="lh-mode" style="display: none">
+                                                    <div class="lh-icon">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" class="icon-single" width="20" height="20" viewBox="0 0 1024 1024">
+                                                            <path data-id="circle" d="M928 476.8c-19.2 0-32 12.8-32 32v86.4c0 108.8-86.4 198.4-198.4 198.4H201.6l41.6-38.4c6.4-6.4 12.8-16 12.8-25.6 0-19.2-16-35.2-35.2-35.2-9.6 0-22.4 3.2-28.8 9.6l-108.8 99.2c-16 12.8-12.8 35.2 0 48l108.8 96c6.4 6.4 19.2 12.8 28.8 12.8 19.2 0 35.2-12.8 38.4-32 0-12.8-6.4-22.4-16-28.8l-48-44.8h499.2c147.2 0 265.6-118.4 265.6-259.2v-86.4c0-19.2-12.8-32-32-32zM96 556.8c19.2 0 32-12.8 32-32v-89.6c0-112 89.6-201.6 198.4-204.8h496l-41.6 38.4c-6.4 6.4-12.8 16-12.8 25.6 0 19.2 16 35.2 35.2 35.2 9.6 0 22.4-3.2 28.8-9.6l105.6-99.2c16-12.8 12.8-35.2 0-48l-108.8-96c-6.4-6.4-19.2-12.8-28.8-12.8-19.2 0-35.2 12.8-38.4 32 0 12.8 6.4 22.4 16 28.8l48 44.8H329.6C182.4 169.6 64 288 64 438.4v86.4c0 19.2 12.8 32 32 32z" p-id="2583" fill="#66C056"></path>
+                                                            <path d="M544 672V352h-48L416 409.6l16 41.6 60.8-41.6V672z" fill="#66C056"></path>
+                                                        </svg>
+                                                    </div>
+                                                    <span>单曲循环(<em data-id="i"></em>)</span>
+                                                </div>
+                                                <div class="lh-mode" style="display: none">
+                                                    <div class="lh-icon">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" class="icon-shuffle" width="20" height="20" viewBox="0 0 1024 1024">
+                                                            <path d="M844.8 665.6c-6.4-6.4-16-12.8-25.6-9.6-19.2 0-35.2 16-35.2 35.2 0 9.6 6.4 19.2 12.8 25.6l41.6 41.6c-44.8-6.4-86.4-22.4-121.6-51.2-3.2 0-3.2-3.2-6.4-6.4L332.8 304C268.8 233.6 192 195.2 99.2 195.2c-19.2 0-35.2 16-35.2 35.2s16 32 35.2 32c73.6 0 134.4 32 182.4 86.4l384 400 6.4 6.4c48 38.4 108.8 64 172.8 70.4l-48 44.8c-9.6 6.4-16 19.2-16 28.8 0 19.2 19.2 35.2 38.4 32 9.6 0 19.2-6.4 25.6-12.8l99.2-92.8c16-16 16-41.6 0-57.6l-99.2-102.4z m-3.2-556.8c-12.8-16-32-19.2-48-6.4-9.6 6.4-12.8 16-12.8 25.6 0 12.8 3.2 22.4 16 28.8l41.6 41.6c-73.6 9.6-140.8 38.4-192 89.6l-115.2 118.4c-12.8 12.8-12.8 32 0 44.8 6.4 6.4 16 9.6 25.6 9.6s19.2-3.2 25.6-9.6l112-118.4c41.6-38.4 92.8-64 147.2-70.4l-44.8 44.8c-6.4 6.4-12.8 16-12.8 25.6 0 19.2 16 35.2 32 35.2 9.6 0 19.2-3.2 28.8-9.6L950.4 256c12.8-12.8 12.8-35.2 0-48l-108.8-99.2m-438.4 448c-9.6 0-19.2 3.2-25.6 9.6l-118.4 121.6c-48 44.8-96 67.2-160 67.2H96c-19.2 0-35.2 16-35.2 35.2s16 32 35.2 32h3.2c83.2 0 147.2-32 211.2-86.4l121.6-124.8c6.4-6.4 9.6-12.8 9.6-22.4 0-9.6-3.2-16-9.6-22.4-9.6-6.4-19.2-9.6-28.8-9.6z" fill="#66C056"></path>
+                                                        </svg>
+                                                    </div>
+                                                    <span>随机播放(<em data-id="i"></em>)</span>
+                                                </div>
+                                            </button>
+                                        </div>
+                                        <div class="header-r"></div>
+                                    </div>
+                                    <div class="list-container">
+                                        <ul class="song-item"></ul>
+                                    </div>
+                                </div>
+                                <div class="songList-bottom"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <style>
+                        .mask {
+                            background-color: rgba(0,0,0,.5);
+                            position: fixed;
+                            bottom: 0;
+                            left: 0;
+                            top: 0;
+                            right: 0;
+                            opacity: 0;
+                            will-change: opacity;
+                            transition: all 0.5s;
+                            visibility: hidden;
+                        }
+                        .maskpop {
+                            pointer-events: auto;
+                            opacity: 1;
+                            visibility: visible;
+                        }
+                        .containSongList {
+                            display: flex;
+                            position: absolute;
+                            left: 0;
+                            right: 0;
+                            bottom: 0;
+                            top: 50%;
+                            background-color: #fff;
+                            -webkit-transform: translate3d(0,100%,0);
+                            transform: translate3d(0,100%,0);
+                            will-change: transform;
+                            box-shadow: 0 -1px 40px rgba(0,0,0,.3);
+                            -webkit-transition: -webkit-transform .3s cubic-bezier(0,0,.25,1) 80ms;
+                            transition: transform .3s cubic-bezier(0,0,.25,1) 80ms;
+                            border-top-left-radius: 20px;
+                            border-top-right-radius: 20px;
+                        }
+                        .trans {
+                            -webkit-transform: translate3d(0,0,0);
+                            transform: translate3d(0,0,0);
+                        }
+                        .songList-item, .songList-wrapper, .list-container, .song-item {
+                            display: flex;
+                            flex-direction: column;
+                            width: 100%;
+                            height: 100%;
+                        }
+                        .songList-wrapper {
+                            color: #000000;
+                        }
+                        .songList-item p {
+                            font-size: 24px;
+                            font-weight: bold;
+                            color: #66c056;
+                            border-bottom: 4px solid #66c05680;
+                            width: auto;
+                            border-bottom: 1px solid #f1f1f1;
+                            line-height: 30px;
+                            padding: 10px;
+                            display: inline-flex;
+                            justify-content: center;
+                            letter-spacing: 0.1em;
+                        }
+                        .songList-item .songList-bottom {
+                            display: flex;
+                            height: 30px;
+                            line-height: 30px;
+                            border-top: 1px solid #f1f1f1;
+                        }
+                        .list-header {
+                            display: flex;
+                            height: 60px;
+                            border-bottom: 1px solid #f1f1f1;
+                        }
+                        .header-l {
+
+                        }
+                        #lh-btn {
+                            width: 150px;
+                            height: 100%;
+                            display: flex;
+                        }
+                        .lh-mode {
+                            display: flex;
+                            width: 100%;
+                            font-size: 15px;
+                            align-items: center;
+                        }
+                        .lh-icon {
+                            width: 60px;
+                            height: 60px;
+                            text-align: center;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                        }
+                        .header-r {
+
+                        }
+                        .song-item li {
+                            display: flex;
+                            line-height: 60px;
+                            cursor: pointer;
+                        }
+                        .list-id {
+                            width: 60px;
+                            height: auto;
+                            text-align: center;
+                            display: inline-flex;
+                            align-items: center;
+                            justify-content: center;
+                            flex: 1;
+                            max-width: 60px;
+                        }
+                        .list-item {
+                            border-bottom: 1px solid #f1f1f1;
+                            width: auto;
+                            flex: 3;
+                            align-items: center;
+                            display: flex;
+                            font-size: 16px;
+                            padding: 10px 0;
+                        }
+                        .song-detail {
+                            display: flex;
+                            flex-direction: column;
+                            width: 100%;
+                        }
+                        .ls-title {
+                            line-height: 24px;
+                        }
+                        .ls-singer {
+                            font-size: 14px;
+                            color: #888;
+                            line-height: 16px;
+                        }
+                        .trash-btn {
+                            width: 40px;
+                            height: 40px;
+                            border-radius: 50%;
+                        }
+                        .icon-trash {
+                            display: flex;
+                            justify-content: center;
+                            align-items: center;
+                            margin: auto 10px;
+                        }
+                        .active .ls-title, .active .ls-singer {
+                            color: #66c056;
+                        }
+                    </style>
+                    <script>
+                        function showList(){
+                            let csl = document.querySelector('.containSongList')
+                            let mask = document.querySelector('.mask')
+                            csl.classList.add('trans')
+                            mask.classList.add('maskpop')
+                        }
+                    </script>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="service">
+        <div class="search-wrapper">
+            <div class="form">
+                <button class="back" onclick="hideService()">
+                    <svg t="1590587358703" class="icon-back" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="4409" width="20" height="20">
+                        <path d="M834.922523 15.057695C810.374779-5.019232 770.601216-5.019232 746.115618 15.057695L188.539996 472.985719C175.42715 483.741215 169.833991 497.928226 170.766186 512.012803 169.833991 526.046164 175.42715 540.284392 188.539996 550.98867L746.115618 1009.019133C770.601216 1028.993621 810.374779 1028.993621 834.922523 1009.019133 859.470271 989.04464 859.470271 956.265987 834.922523 935.779328L318.549825 512.012803 834.922523 87.93898C859.470271 67.862054 859.470271 35.237052 834.922523 15.057695L834.922523 15.057695Z" p-id="4410" fill="#333333"></path>
+                    </svg>
+                </button>
+                <input type="text" value="" id="search-input" autocomplete="off"><input type="button" onclick="query($('#search-input').val())" value="搜索">
+                <style>
+                    .back {
+                        background: none;
+                        border: none;
+                        outline: none;
+                        width: 32px;
+                        height: 32px;
+                        border-radius: 50%;
+                    }
+                    .back, .form input[type="button"] {
+                        transition: all 500ms ease-out;
+                    }
+                    .back:active, .form input[type="button"]:active {
+                        background: #F1F1F1;
+                        scale: 0.9;
+                    }
+                </style>
+                <script>
+                    function hideService() {
+                        let w = document.querySelector('.wrapper')
+                        let s = document.querySelector('.service')
+                        s.style.visibility = ''
+                        s.style.transform = ''
+                        s.style.opacity = ''
+                        w.style.transform = ''
+                    }
+                </script>
+            </div>
+            <div class="result-wrapper">
+                <div class="result-tab">
+                    <button class="kugou" onclick="resultToggle(this.className)">
+                        <svg t="1590640185342" class="icon-kugou" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="2769" width="25" height="25"><path d="M510.723192 1024c-280.897756 0-510.723192-229.825436-510.723192-510.723192s229.825436-510.723192 510.723192-510.723192 510.723192 229.825436 510.723192 510.723192c0 283.451372-229.825436 510.723192-510.723192 510.723192z m0-967.820449c-252.80798 0-457.097257 206.842893-457.097257 457.097257C53.625935 766.084788 260.468828 970.374065 510.723192 970.374065c252.80798 0 457.097257-206.842893 457.097257-457.097257 0-252.80798-204.289277-457.097257-457.097257-457.097257z" fill="#2F94FD" p-id="2770"></path><path d="M331.970075 273.236908h127.680798v165.985037l160.877805-165.985037h178.753118s-219.610973 204.289277-229.825437 214.50374c-10.214464 10.214464-15.321696 28.089776-2.553616 48.518704 15.321696 20.428928 191.521197 224.718204 191.521197 224.718204l-160.877805-2.553616-160.877806-191.521197-15.321696 194.074813-132.78803 2.553616L331.970075 273.236908z" fill="#2F94FD" p-id="2771"></path></svg>
+                    </button>
+                    <button class="ncmusic" onclick="resultToggle(this.className)">
+                        <svg t="1590643823578" class="icon-ncmusic" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="3893" width="25" height="25" style="filter: grayscale(1) brightness(2.5)"><path d="M627.086668 5.114963c28.132297-7.672445 58.822075-7.672445 86.954372 0 33.24726 7.672445 63.937038 23.017334 89.511853 43.477186 10.229926 7.672445 17.902371 15.344889 23.017334 28.132297 7.672445 17.902371 5.114963 38.362223-5.114963 53.707112-7.672445 12.787408-23.017334 23.017334-40.919704 25.574815-12.787408 2.557482-25.574815 0-38.362223-7.672445-5.114963-2.557482-10.229926-10.229926-17.902371-12.787407-17.902371-10.229926-35.804741-20.459852-56.264593-17.902371-15.344889 0-28.132297 7.672445-35.804742 17.902371-10.229926 10.229926-12.787408 23.017334-10.229926 35.804741 7.672445 25.574815 12.787408 53.707112 20.459853 79.281927 51.14963 2.557482 99.741779 15.344889 143.218965 40.919704 40.919704 25.574815 79.281927 58.822075 109.971705 97.184298 25.574815 33.24726 46.034667 71.609483 56.264593 112.529187 12.787408 43.477186 17.902371 89.511853 12.787408 132.989039-2.557482 38.362223-10.229926 74.166964-23.017334 109.971705-33.24726 84.39689-92.069335 161.121336-171.351261 209.713485-56.264593 35.804741-122.759113 58.822075-189.253633 66.49452-46.034667 5.114963-92.069335 5.114963-138.104002-2.557482-94.626816-15.344889-181.581188-61.379556-250.633189-130.431558-66.49452-66.49452-112.529187-153.448891-132.989039-245.518225-7.672445-69.052001-7.672445-138.104002 7.672445-207.156004 17.902371-81.839409 61.379556-161.121336 117.644149-222.500892 48.592149-51.14963 107.414224-89.511853 171.351262-117.64415 7.672445-2.557482 12.787408-5.114963 20.459852-7.672444 15.344889-2.557482 30.689778 0 43.477186 10.229926 17.902371 12.787408 25.574815 33.24726 23.017334 53.707112-2.557482 20.459852-17.902371 38.362223-35.804741 46.034667-63.937038 25.574815-122.759113 69.052001-163.678818 122.759113C205.102218 373.392302 179.527402 432.214377 171.854958 493.593933c-7.672445 61.379556 0 122.759113 20.459852 181.581188 30.689778 84.39689 94.626816 156.006373 173.908743 196.926077 48.592149 25.574815 102.299261 38.362223 156.006373 38.362223 43.477186 0 89.511853-7.672445 130.431558-23.017334 35.804741-12.787408 71.609483-33.24726 99.741779-58.822074 28.132297-23.017334 51.14963-53.707112 66.494519-84.396891 7.672445-15.344889 17.902371-33.24726 20.459853-51.14963 15.344889-51.14963 17.902371-107.414224 2.557481-158.563854-12.787408-43.477186-38.362223-81.839409-71.609482-109.971706-15.344889-12.787408-30.689778-25.574815-48.592149-35.804741-15.344889-7.672445-30.689778-15.344889-48.592149-17.902371 12.787408 46.034667 23.017334 92.069335 35.804741 135.546521 2.557482 10.229926 5.114963 23.017334 5.114963 33.24726 2.557482 46.034667-15.344889 94.626816-46.034667 130.431557-28.132297 33.24726-69.052001 58.822075-112.529187 66.49452-46.034667 10.229926-97.184298 0-138.104002-25.574815-38.362223-25.574815-66.49452-63.937038-81.839409-104.856743-7.672445-23.017334-12.787408-48.592149-12.787407-74.166964-2.557482-56.264593 12.787408-109.971705 43.477185-156.006373 35.804741-53.707112 94.626816-92.069335 158.563855-109.971705-5.114963-17.902371-10.229926-35.804741-12.787408-53.707112-12.787408-38.362223-10.229926-81.839409 7.672445-115.086668 10.229926-20.459852 23.017334-38.362223 40.919704-51.149631C583.609483 25.574815 604.069335 12.787408 627.086668 5.114963m-148.333928 414.312006c-17.902371 17.902371-28.132297 40.919704-33.24726 63.937038-5.114963 20.459852-5.114963 43.477186 0 66.49452 5.114963 23.017334 17.902371 46.034667 38.362223 61.379556 15.344889 10.229926 35.804741 15.344889 56.264594 10.229926 35.804741-5.114963 63.937038-38.362223 63.937038-74.166964-2.557482-7.672445-2.557482-17.902371-5.114963-25.574815-12.787408-48.592149-25.574815-99.741779-38.362223-148.333928-30.689778 7.672445-58.822075 23.017334-81.839409 46.034667z" fill="#E72D2C" p-id="3894"></path></svg>
+                    </button>
+                    <style>
+                        .icon-kugou, .icon-ncmusic {
+                            transition: all 600ms ease;
+                        }
+                    </style>
+                    <script>
+                        resultToggle = (name) => {
+                            let header = document.querySelectorAll('.result-header')
+                            let i_k = document.querySelector('.icon-kugou')
+                            let i_n = document.querySelector('.icon-ncmusic')
+                            if(name==='kugou') {
+                                header[1].style.display = 'none'
+                                header[0].style.display = ''
+                                i_k.style.filter = 'grayscale(0) brightness(1)'
+                                i_n.style.filter = 'grayscale(1) brightness(2.5)'
+                            } else {
+                                header[0].style.display = 'none'
+                                header[1].style.display = ''
+                                i_n.style.filter = 'grayscale(0) brightness(1)'
+                                i_k.style.filter = 'grayscale(1) brightness(1.5)'
+                            }
+                        }
+                    </script>
+                </div>
+                <div class="result-header">
+                    <ul class="result" data-id="kugou"></ul>
+                </div>
+                <div class="result-header" style="display: none">
+                    <ul class="result" data-id="ncmusic"></ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--
+<div class="video-app">
+    <div class="v-wrapper">
+        <div class="player">
+            <div class="float-top"></div>
+            <video src="./Chinese_dream.mp4" width="100%" height="100%"></video>
+            <div class="float-bottom">
+                <div class="fb-left">
+                    <button>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20.833" height="25" viewBox="0 0 20.833 25">
+                            <path id="路径_21" data-name="路径 21" d="M212.13,139l-18.125-10.788a1.367,1.367,0,0,0-.71-.208,1.3,1.3,0,0,0-1.289,1.3H192v22.4h.007A1.3,1.3,0,0,0,193.3,153a1.489,1.489,0,0,0,.729-.221L212.13,142a1.96,1.96,0,0,0,0-3.008Z" transform="translate(-192 -128)" fill="#e6e6e6"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+-->
+<script src="//cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js">/* ./js/jquery-3.5.0.min.js */</script>
+<script>
+    let a = document.querySelector('.play')
+    let b = document.querySelector('.cover-img')
+    let c = document.querySelector('.bubble')
+    let d = document.querySelector('.await')
+    let e = document.querySelector('.forward')
+    const cover = document.querySelector('.cover-img img')
+    const audio = document.getElementById('player')
+    const title = document.querySelector('.song-title')
+    const singer = document.querySelector('.singer')
+    const subtitle = document.querySelector('.song-subtitle')
+    const i_play = document.querySelector('.icon-play')
+    const i_pause = document.querySelector('.icon-pause')
+    const i_vol = document.querySelector('.icon-volume')
+    const i_mute = document.querySelector('.icon-mute')
+    const progress = document.querySelector('.progress-bar')
+    const volumeBar = document.querySelector('.volume-f')
+    const playhead = document.querySelector('.playhead')
+    setInterval(function () {
+        document.querySelector('.song-title').style.display = 'none'
+        document.querySelector('.singer').style.display = 'flex'
+    },5000)
+    setInterval(function () {
+        document.querySelector('.singer').style.display = 'none'
+        document.querySelector('.song-title').style.display = 'flex'
+    },10000)
+    document.querySelector('.volume').setAttribute('onclick','player(this.className)')
+    document.querySelector('.play').setAttribute('onclick','player(this.className)')
+    document.querySelector('.prev').setAttribute('onclick','player(this.className)')
+    document.querySelector('.next').setAttribute('onclick','player(this.className)')
+    const Base64 = {
+        _keyStr: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",
+        encode: function(e) {
+            let t = "";
+            let n, r, i, s, o, u, a;
+            let f = 0;
+            e = Base64._utf8_encode(e);
+            while (f < e.length) {
+                n = e.charCodeAt(f++);
+                r = e.charCodeAt(f++);
+                i = e.charCodeAt(f++);
+                s = n >> 2;
+                o = (n & 3) << 4 | r >> 4;
+                u = (r & 15) << 2 | i >> 6;
+                a = i & 63;
+                if (isNaN(r)) {
+                    u = a = 64
+                } else if (isNaN(i)) {
+                    a = 64
+                }
+                t = t + this._keyStr.charAt(s) + this._keyStr.charAt(o) + this._keyStr.charAt(u) + this._keyStr.charAt(a)
+            }
+            return t
+        },
+        decode: function(e) {
+            let t = "";
+            let n, r, i;
+            let s, o, u, a;
+            let f = 0;
+            e=e.replace(/[^A-Za-z0-9+/=]/g,"");
+            while (f < e.length) {
+                s = this._keyStr.indexOf(e.charAt(f++));
+                o = this._keyStr.indexOf(e.charAt(f++));
+                u = this._keyStr.indexOf(e.charAt(f++));
+                a = this._keyStr.indexOf(e.charAt(f++));
+                n = s << 2 | o >> 4;
+                r = (o & 15) << 4 | u >> 2;
+                i = (u & 3) << 6 | a;
+                t = t + String.fromCharCode(n);
+                if (u != 64) {
+                    t = t + String.fromCharCode(r)
+                }
+                if (a != 64) {
+                    t = t + String.fromCharCode(i)
+                }
+            }
+            t = Base64._utf8_decode(t);
+            return t
+        },
+        _utf8_encode: function(e) {
+            e = e.replace(/rn/g, "n");
+            let t = "";
+            for (let n = 0; n < e.length; n++) {
+                let r = e.charCodeAt(n);
+                if (r < 128) {
+                    t += String.fromCharCode(r)
+                } else if (r > 127 && r < 2048) {
+                    t += String.fromCharCode(r >> 6 | 192);
+                    t += String.fromCharCode(r & 63 | 128)
+                } else {
+                    t += String.fromCharCode(r >> 12 | 224);
+                    t += String.fromCharCode(r >> 6 & 63 | 128);
+                    t += String.fromCharCode(r & 63 | 128)
+                }
+            }
+            return t
+        },
+        _utf8_decode: function(e) {
+            let t = "";
+            let n = 0;
+            let r = c1 = c2 = 0;
+            while (n < e.length) {
+                r = e.charCodeAt(n);
+                if (r < 128) {
+                    t += String.fromCharCode(r);
+                    n++
+                } else if (r > 191 && r < 224) {
+                    c2 = e.charCodeAt(n + 1);
+                    t += String.fromCharCode((r & 31) << 6 | c2 & 63);
+                    n += 2
+                } else {
+                    c2 = e.charCodeAt(n + 1);
+                    c3 = e.charCodeAt(n + 2);
+                    t += String.fromCharCode((r & 15) << 12 | (c2 & 63) << 6 | c3 & 63);
+                    n += 3
+                }
+            }
+            return t
+        }
+    }
+    let n = Guid()
+    document.cookie = `kg_mid=${md5(n)};expires = Session`;
+    function storageList() {
+        let date = new Date()
+        date.setDate(date.getDate()+3)
+        let str = btoa(encodeURIComponent(JSON.stringify(music)))
+        localStorage.setItem('music',str);
+        console.log('存储成功')
+    }
+    function getCookie(name) {
+        let cookies = document.cookie;
+        let list = cookies.split("; ");
+        for(let i = 0; i < list.length; i++) {
+            let arr = list[i].split("=");
+            if(arr[0] == name)
+                return decodeURIComponent(arr[1]);
+        }
+        return "";
+    }
+    let music
+    if(localStorage.getItem('music')!==null){
+        let str = localStorage.getItem('music')
+        music = JSON.parse(decodeURIComponent(atob(str)))
+    } else {
+        music = {track1:[{src:'https://webfs.yun.kugou.com/202005302346/0de4282782fffb97dc597d1935a33603/G170/M06/13/04/SocBAF1ySSyAFCVFACISzVt4TmM896.mp3',code:'CA731EA1E9A9C7FF263CD61514920885',timestamp:1590939960000,cover:'//p3fx.kgimg.com/stdmusic/20190906/20190906194502479607.jpg',album_id:'28378420',title:'嘘',subtitle:'电影《罗小黑战记》片尾曲',singer:'艾索',lyric:'./81.lrc'},{src:'https://webfs.yun.kugou.com/202005302346/3f2202466a98a9fc9c239723cda764a0/G167/M0A/00/15/h5QEAF1uMZOAOL5BADtvWWHuEzQ719.mp3',code:'A9B736C861369BBBCEC698DF97DDE81E',timestamp:1590939960000,cover:'//p3fx.kgimg.com/stdmusic/20190903/20190903171802930123.jpg',album_id:'28214886',title:'走过世界每个角落',subtitle:'电影《罗小黑战记》宣传曲',singer:'周笔畅',lyric:'./82.lrc'},{src:'https://webfs.yun.kugou.com/202005302346/72a85c058e0d8ad302b3abf5059f13be/G170/M06/06/15/ipQEAF11056AP2pzADLBs7-quTE491.mp3',code:'41F59F4C1326C635743A4892FCBF6688',timestamp:1590939960000,cover:'//p3fx.kgimg.com/stdmusic/20190829/20190829142458750431.jpg',album_id:'27818427',title:'不再流浪',subtitle:'电影《罗小黑战记》宣传曲',singer:'周深',lyric:'./83.lrc'}]}
+    }
+    let l_progress = document.querySelector('.living-progressBar')
+    let n_volumeBar = document.querySelector('.volume-n')
+    let i = 0
+    let len = music.track1.length
+    function prejudge() {
+        let timestamp = music.track1[i].timestamp
+        let new_stamp = Date.parse(new Date())
+        if(timestamp-60000<=new_stamp) {
+            update(music.track1[i].code)
+        }
+    }
+    function change() {
+        l_progress.style.width = '0'
+        cover.src = music.track1[i].cover
+        title.innerText = music.track1[i].title
+        singer.innerText = music.track1[i].singer
+        subtitle.innerText = music.track1[i].subtitle
+        $('.song-item li').removeClass('active')
+        document.querySelectorAll('.song-item li')[i].classList.add('active')
+        prejudge()
+        audio.src = music.track1[i].src
+        i_play.classList.add('disappear')
+        audio.play()
+    }
+    let volume = () => {
+        if(audio.muted) {
+            audio.muted = false
+            i_mute.classList.add('disappear')
+            i_vol.classList.remove('disappear')
+            n_volumeBar.classList.remove('disappear')
+        }
+        else {
+            audio.muted = true
+            i_vol.classList.add('disappear')
+            i_mute.classList.remove('disappear')
+            n_volumeBar.classList.add('disappear')
+        }
+    }
+    let prev = n => {
+        i <= 0 ? i = len - 1 : i--
+        change()
+    }
+    let next = n => {
+        i >= len - 1 ? i = 0 : i++
+        change()
+    }
+    let play = () => {
+        audio.paused ? audio.play() : audio.pause()
+    }
+    function player(type) {
+        if(len) {
+            eval(type+'()')
+        }
+    }
+    window.onload = () => {
+        cover.src = music.track1[i].cover
+        title.innerText = music.track1[i].title
+        singer.innerText = music.track1[i].singer
+        subtitle.innerText = music.track1[i].subtitle
+        parseLrc(i)
+        renderSongList()
+        watchman()
+        if(music.track1[i].timestamp-60000<=Date.parse(new Date())) {
+            update(music.track1[i].code)
+        }
+        audio.src = music.track1[i].src
+        document.querySelector('.duration').innerText = getTime(audio.duration)
+        document.querySelector('.now').innerText = getTime(audio.currentTime)
+        /****
+         * audio.src = music.track1[i].src
+         * renderSongList()
+         * watchman()
+         * prejudge()
+         * document.querySelector('.duration').innerText = getTime(audio.duration)
+         * document.querySelector('.now').innerText = getTime(audio.currentTime)
+         * parseLrc(i)
+         ****/
+    }
+    audio.addEventListener('loadstart',function () {
+        i_pause.classList.add('disappear')
+        i_play.classList.remove('disappear')
+    })
+    audio.addEventListener('pause',function () {
+        i_pause.classList.add('disappear')
+        i_play.classList.remove('disappear')
+        b.setAttribute('style', 'animation-play-state: paused')
+    })
+    function getTime(type) {
+        let timeDisplay = Math.floor(type)
+        let min = timeDisplay / 60
+        let mins = parseInt(min)
+        if (mins < 10) {
+            mins = "0"+mins
+        }
+        let sec = timeDisplay % 60
+        let secs = Math.round(sec)
+        if (secs < 10) {
+            secs = "0"+secs
+        }
+        return mins+":"+secs
+    }
+    function Percentage(num, total) {
+        if (num === 0 || total === 0){
+            return 0;
+        }
+        return (Math.round(num / total * 10000) / 100.00);// 小数点后两位百分比
+    }
+    function parseLrc(i){
+        let lyric
+        if(music.track1[i].lyric.indexOf('[')===-1){
+            lyric = $.ajax({url:music.track1[i].lyric,async:false}).responseText;
+        } else {
+            lyric = music.track1[i].lyric
+        }
+        let arr
+        if(lyric.indexOf('\r\n')!==-1){
+            arr = lyric.split("\r\n")
+        } else {
+            arr = lyric.split("\n")
+        }
+        let parseTime = function(time){
+            let tl = time.split(":");
+            switch(tl.length){
+                case 1 :
+                    return parseFloat(tl[0]);
+                case 2:
+                    return parseFloat(tl[0]) * 60 + parseFloat(tl[1]);
+                case 3:
+                    return parseFloat(tl[0]) * 3600 + parseFloat(tl[1]) * 60 + parseFloat(tl[2]);
+            }
+        }
+        let lrcArray = [];
+        let html = "";
+        for(let k=0;k<arr.length;k++){
+            if(arr[k] !== ""){
+                let tempArray = arr[k].split("]");
+                if(tempArray.length >1 ){
+                    let offset = tempArray[0].substring(1,tempArray[0].length);
+                    let text = tempArray[1];
+                    lrcArray.push({"offset":offset,"text":text});
+                    if(text !== ""){
+                        html+="<p data-time="+parseTime(offset).toFixed(2)+">"+text+"</p>";
+                    }
+                }
+            }
+        }
+        $(".scrolling-lyric").html(html);
+        return lrcArray;
+    }
+    function renderLyric(ct) {
+        let pList = $('.scrolling-lyric').find('p');
+        let sc = document.querySelector('.lyric-frame').scrollHeight;
+        let sh = document.querySelector('.lyric-frame').scrollTop;
+        pList.each(function(index,element){
+            let t = parseFloat($(this).attr("data-time")) - 0.18;
+            let pt = parseFloat($(this).prev().attr("data-time"));
+            let nt = parseFloat($(this).next().attr("data-time"));
+            if(ct >= t && ct <= nt){
+                $(this).prev().removeClass('bubble');
+                $(this).attr("class","bubble");//高亮
+                $(this).next().addClass("await");
+                let x = index*sc/pList.length;
+                sh = x > 0 ? x : 0;
+            } else if(ct >= t && isNaN(nt)){
+                $(this).prev().removeClass('bubble');
+                $(this).attr("class","bubble");
+                sh = sc-sc/pList.length;
+            }
+        })
+        if(document.querySelector('.bubble')!==null){
+            if(document.querySelector('.bubble').scrollWidth > document.querySelector('.bubble').clientWidth){
+                let delay = ($('.bubble').next().attr('data-time') - $('.bubble').attr('data-time') - 0.18)*1000
+                console.log(delay)
+                $('.bubble').animate({"scrollLeft":document.querySelector('.bubble').scrollWidth},delay);
+            }
+        }
+        if(!document.hidden) {
+            $(".lyric-frame").animate({"scrollTop":sh},120);
+        }
+    }
+    function renderSongList(id) {
+        let num
+        let i_trash = '<svg t="1590658835513" class="icon-trash" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="6730" width="20" height="20"><path d="M358.016 781.10208a27.96032 27.96032 0 0 0 27.9296-27.9296V401.60768c0-15.40096-12.52864-27.9296-27.9296-27.9296s-27.9296 12.52864-27.9296 27.9296v351.55968c0.59392 15.31392 13.12768 27.93472 27.9296 27.93472zM665.984 781.10208a27.9552 27.9552 0 0 0 27.92448-27.9296V401.60768c0-15.40096-12.52352-27.9296-27.92448-27.9296s-27.92448 12.52864-27.92448 27.9296v351.55968a27.96032 27.96032 0 0 0 27.92448 27.93472zM512 781.10208a27.96032 27.96032 0 0 0 27.9296-27.9296V401.60768c0-15.40096-12.52864-27.9296-27.9296-27.9296s-27.9296 12.52864-27.9296 27.9296v351.55968a27.96544 27.96544 0 0 0 27.9296 27.93472z" p-id="6731" fill="#333333"></path><path d="M928.95232 188.0576h-213.23776v-38.1696c0-39.43424-32.08704-71.52128-71.52128-71.52128h-263.68c-39.43424 0-71.52128 32.08704-71.52128 71.52128v38.1696H95.04768a27.96032 27.96032 0 0 0-27.9296 27.9296 27.9552 27.9552 0 0 0 27.9296 27.92448H198.6048V830.5152c0 63.86176 51.95264 115.8144 115.81952 115.8144h395.15648c63.86176 0 115.8144-51.95264 115.8144-115.8144V243.20512h103.55712a27.96032 27.96032 0 0 0 27.9296-27.9296c0-15.26272-12.27264-27.21792-27.9296-27.21792zM364.14464 149.888a16.19456 16.19456 0 0 1 16.36864-16.36864h263.67488a16.19456 16.19456 0 0 1 16.36864 16.36864v38.1696H364.14464v-38.1696z m405.39648 680.6272c0 33.06496-26.90048 59.96544-59.96032 59.96544H314.42432c-33.06496 0-59.96544-26.90048-59.96544-59.96544V243.20512h515.08224V830.5152z" p-id="6732" fill="#333333"></path></svg>'
+        $('.song-item').html('')
+        for(let k=0;k<len;k++) {
+            num = k+1>10 ? '':'0'
+            $('.song-item').append(`<li data-id="${k}"><div class="list-id">${num}${k+1}</div><div class="list-item"><div class="song-detail"><span class="ls-title">${music.track1[k].title}</span><span class="ls-singer">${music.track1[k].singer}</span></div><div class="icon-trash"><button class="trash-btn" data-id=${k} onclick="removeSong(event,$(this).attr('data-id'),)">${i_trash}</button></div></div></li>`)
+        }
+        if(len-1!==0) {
+            if(id<i){
+                document.querySelectorAll('.song-item li')[len-1].classList.add('active')
+            } else {
+                document.querySelectorAll('.song-item li')[i].classList.add('active')
+            }
+        } else {
+            document.querySelector('.song-item li').classList.add('active')
+        }
+        $('em[data-id="i"]').html(len)
+    }
+    function removeSong(event,id) {
+        event.stopPropagation()
+        console.log(id + ',' + i)
+        id = parseInt(id)
+        if (len - 1 !== 0) {
+            music.track1.splice(id, 1)
+            len--
+            if (id === i) {
+                i - 1 >= 0 ? i-- : i = len - 1
+                next(i)
+            } else {
+                if((i - 1 >= 0) && (id < i)){
+                    i--
+                }
+            }
+            renderSongList()
+            watchman()
+            storageList()
+        } else {
+            alert('这是最后一首了喵~')
+        }
+    }
+    function watchman(){
+        let li = Array.from(document.querySelectorAll('.song-item li'))
+        li.forEach(ele => {
+            ele.onclick = () => {
+                if(parseInt(ele.getAttribute('data-id'))===i) {
+                    play()
+                } else {
+                    i = ele.getAttribute('data-id')-1
+                    next(i)
+                }
+            }
+        })
+    }
+    function playMode(flag) {
+        switch (flag) {
+            case 1 :
+                next()
+                break;
+            case 2 :
+                audio.play()
+                break;
+            case 3 :
+                i = parseInt(Math.random()*(len+1),10);
+                next(i);
+                break;
+        }
+    }
+    $('input[type="radio"][name="radio"]').change(function () {
+        if(this.value==='1'){
+            $('.repeat svg').each(function () {
+                $(this).addClass('disappear')
+            })
+            $('.icon-list').removeClass('disappear')
+        } else if(this.value==='2') {
+            $('.repeat svg').each(function () {
+                $(this).addClass('disappear')
+            })
+            $('.icon-single').removeClass('disappear')
+        } else {
+            $('.repeat svg').each(function () {
+                $(this).addClass('disappear')
+            })
+            $('.icon-shuffle').removeClass('disappear')
+        }
+        document.querySelector('.select-mode').style.display = 'none'
+    })
+    audio.addEventListener('loadedmetadata',function () {
+        document.querySelector('.duration').innerText = getTime(audio.duration)
+        document.querySelector('.now').innerText = getTime(audio.currentTime)
+        parseLrc(i)
+    })
+    audio.addEventListener('playing',function () {
+        i_play.classList.add('disappear')
+        i_pause.classList.remove('disappear')
+        b.setAttribute('style', 'animation-play-state: running')
+    })
+    audio.addEventListener('timeupdate',function () {
+        document.querySelector('.now').innerText = getTime(audio.currentTime)
+        l_progress.style.width = Percentage(audio.currentTime,audio.duration)+'%'
+        playhead.style.marginLeft = Percentage(audio.currentTime,audio.duration)*7.08+'px'
+        if(audio.volume===0||audio.muted){
+            i_vol.classList.add('disappear')
+            i_mute.classList.remove('disappear')
+        } else {
+            i_mute.classList.add('disappear')
+            i_vol.classList.remove('disappear')
+        }
+        renderLyric(audio.currentTime)
+    },false)
+    let radio = $('input[type=radio][name=radio]')
+    radio.change(function() {
+        let p = $('.select-mode p')
+        Array.from(p).forEach(ele => ele.style.background = '')
+        if(radio[0].checked) {
+            p[0].style.background = 'rgba(255,255,255,.3)'
+        } else if(radio[2].checked) {
+            p[2].style.background = 'rgba(255,255,255,.3)'
+        } else {
+            p[1].style.background = 'rgba(255,255,255,.3)'
+        }
+    })
+    audio.addEventListener('ended',function () {
+        let radio = $('input[type=radio][name=radio]');
+        if(radio[0].checked){
+            playMode(1)
+        } else if(radio[2].checked) {
+            playMode(3)
+        } else {
+            playMode(2)
+        }
+    })
+    function getOffsetLeft(obj){
+        let tmp = obj.offsetLeft;
+        let val = obj.offsetParent;
+        while(val != null){
+            tmp += val.offsetLeft;
+            val = val.offsetParent;
+        }
+        return tmp;
+    }
+    progress.addEventListener('click',function (event) {
+        let objLeft = getOffsetLeft(this);
+        let mouseX = event.clientX+document.body.scrollLeft;
+        let clickObjPosition = mouseX - objLeft;
+        console.log(clickObjPosition/progress.offsetWidth)
+        audio.currentTime = (clickObjPosition/progress.offsetWidth)*audio.duration
+        for(let k=0;k<$('.scrolling-lyric p').length;k++) {
+            $('.scrolling-lyric p')[k].className = ''
+            console.log('success')
+        }
+    })
+    volumeBar.addEventListener('click',function (event) {
+        let objLeft = getOffsetLeft(this);
+        let mouseX = event.clientX+document.body.scrollLeft;
+        let clickObjPosition = mouseX - objLeft;
+        console.log((clickObjPosition/volumeBar.offsetWidth).toFixed(2))
+        audio.volume = (clickObjPosition/volumeBar.offsetWidth).toFixed(2)
+        n_volumeBar.style.width = Percentage(audio.volume,1)+'%'
+    })
+    $(document).mouseup(function(e){
+        let s_mode = $('.select-mode')
+        if(!s_mode.is(e.target) && s_mode.has(e.target).length === 0){
+            s_mode.hide()
+        }
+    })
+    function Guid(){
+        function S4(){
+            return(((1 +Math.random()) * 0x100000) | 0).toString(16).substring(1)
+        }
+        return (S4() + S4() + '-' +S4() + '-' + S4() + '-' + S4() + S4() + S4())
+    }
+    function md5(string) {
+        function md5_RotateLeft(lValue, iShiftBits) {
+            return (lValue << iShiftBits) | (lValue >>> (32 - iShiftBits));
+        }
+        function md5_AddUnsigned(lX, lY) {
+            var lX4, lY4, lX8, lY8, lResult;
+            lX8 = (lX & 0x80000000);
+            lY8 = (lY & 0x80000000);
+            lX4 = (lX & 0x40000000);
+            lY4 = (lY & 0x40000000);
+            lResult = (lX & 0x3FFFFFFF) + (lY & 0x3FFFFFFF);
+            if (lX4 & lY4) {
+                return (lResult ^ 0x80000000 ^ lX8 ^ lY8);
+            }
+            if (lX4 | lY4) {
+                if (lResult & 0x40000000) {
+                    return (lResult ^ 0xC0000000 ^ lX8 ^ lY8);
+                } else {
+                    return (lResult ^ 0x40000000 ^ lX8 ^ lY8);
+                }
+            } else {
+                return (lResult ^ lX8 ^ lY8);
+            }
+        }
+        function md5_F(x, y, z) {
+            return (x & y) | ((~x) & z);
+        }
+        function md5_G(x, y, z) {
+            return (x & z) | (y & (~z));
+        }
+        function md5_H(x, y, z) {
+            return (x ^ y ^ z);
+        }
+        function md5_I(x, y, z) {
+            return (y ^ (x | (~z)));
+        }
+        function md5_FF(a, b, c, d, x, s, ac) {
+            a = md5_AddUnsigned(a, md5_AddUnsigned(md5_AddUnsigned(md5_F(b, c, d), x), ac));
+            return md5_AddUnsigned(md5_RotateLeft(a, s), b);
+        };
+        function md5_GG(a, b, c, d, x, s, ac) {
+            a = md5_AddUnsigned(a, md5_AddUnsigned(md5_AddUnsigned(md5_G(b, c, d), x), ac));
+            return md5_AddUnsigned(md5_RotateLeft(a, s), b);
+        };
+        function md5_HH(a, b, c, d, x, s, ac) {
+            a = md5_AddUnsigned(a, md5_AddUnsigned(md5_AddUnsigned(md5_H(b, c, d), x), ac));
+            return md5_AddUnsigned(md5_RotateLeft(a, s), b);
+        };
+        function md5_II(a, b, c, d, x, s, ac) {
+            a = md5_AddUnsigned(a, md5_AddUnsigned(md5_AddUnsigned(md5_I(b, c, d), x), ac));
+            return md5_AddUnsigned(md5_RotateLeft(a, s), b);
+        };
+        function md5_ConvertToWordArray(string) {
+            var lWordCount;
+            var lMessageLength = string.length;
+            var lNumberOfWords_temp1 = lMessageLength + 8;
+            var lNumberOfWords_temp2 = (lNumberOfWords_temp1 - (lNumberOfWords_temp1 % 64)) / 64;
+            var lNumberOfWords = (lNumberOfWords_temp2 + 1) * 16;
+            var lWordArray = Array(lNumberOfWords - 1);
+            var lBytePosition = 0;
+            var lByteCount = 0;
+            while (lByteCount < lMessageLength) {
+                lWordCount = (lByteCount - (lByteCount % 4)) / 4;
+                lBytePosition = (lByteCount % 4) * 8;
+                lWordArray[lWordCount] = (lWordArray[lWordCount] | (string.charCodeAt(lByteCount) << lBytePosition));
+                lByteCount++;
+            }
+            lWordCount = (lByteCount - (lByteCount % 4)) / 4;
+            lBytePosition = (lByteCount % 4) * 8;
+            lWordArray[lWordCount] = lWordArray[lWordCount] | (0x80 << lBytePosition);
+            lWordArray[lNumberOfWords - 2] = lMessageLength << 3;
+            lWordArray[lNumberOfWords - 1] = lMessageLength >>> 29;
+            return lWordArray;
+        };
+        function md5_WordToHex(lValue) {
+            var WordToHexValue = "", WordToHexValue_temp = "", lByte, lCount;
+            for (lCount = 0; lCount <= 3; lCount++) {
+                lByte = (lValue >>> (lCount * 8)) & 255;
+                WordToHexValue_temp = "0" + lByte.toString(16);
+                WordToHexValue = WordToHexValue + WordToHexValue_temp.substr(WordToHexValue_temp.length - 2, 2);
+            }
+            return WordToHexValue;
+        };
+        function md5_Utf8Encode(string) {
+            string = string.replace(/\r\n/g, "\n");
+            var utftext = "";
+            for (var n = 0; n < string.length; n++) {
+                var c = string.charCodeAt(n);
+                if (c < 128) {
+                    utftext += String.fromCharCode(c);
+                } else if ((c > 127) && (c < 2048)) {
+                    utftext += String.fromCharCode((c >> 6) | 192);
+                    utftext += String.fromCharCode((c & 63) | 128);
+                } else {
+                    utftext += String.fromCharCode((c >> 12) | 224);
+                    utftext += String.fromCharCode(((c >> 6) & 63) | 128);
+                    utftext += String.fromCharCode((c & 63) | 128);
+                }
+            }
+            return utftext;
+        };
+        var x = Array();
+        var k, AA, BB, CC, DD, a, b, c, d;
+        var S11 = 7, S12 = 12, S13 = 17, S14 = 22;
+        var S21 = 5, S22 = 9, S23 = 14, S24 = 20;
+        var S31 = 4, S32 = 11, S33 = 16, S34 = 23;
+        var S41 = 6, S42 = 10, S43 = 15, S44 = 21;
+        string = md5_Utf8Encode(string);
+        x = md5_ConvertToWordArray(string);
+        a = 0x67452301; b = 0xEFCDAB89; c = 0x98BADCFE; d = 0x10325476;
+        for (k = 0; k < x.length; k += 16) {
+            AA = a; BB = b; CC = c; DD = d;
+            a = md5_FF(a, b, c, d, x[k + 0], S11, 0xD76AA478);
+            d = md5_FF(d, a, b, c, x[k + 1], S12, 0xE8C7B756);
+            c = md5_FF(c, d, a, b, x[k + 2], S13, 0x242070DB);
+            b = md5_FF(b, c, d, a, x[k + 3], S14, 0xC1BDCEEE);
+            a = md5_FF(a, b, c, d, x[k + 4], S11, 0xF57C0FAF);
+            d = md5_FF(d, a, b, c, x[k + 5], S12, 0x4787C62A);
+            c = md5_FF(c, d, a, b, x[k + 6], S13, 0xA8304613);
+            b = md5_FF(b, c, d, a, x[k + 7], S14, 0xFD469501);
+            a = md5_FF(a, b, c, d, x[k + 8], S11, 0x698098D8);
+            d = md5_FF(d, a, b, c, x[k + 9], S12, 0x8B44F7AF);
+            c = md5_FF(c, d, a, b, x[k + 10], S13, 0xFFFF5BB1);
+            b = md5_FF(b, c, d, a, x[k + 11], S14, 0x895CD7BE);
+            a = md5_FF(a, b, c, d, x[k + 12], S11, 0x6B901122);
+            d = md5_FF(d, a, b, c, x[k + 13], S12, 0xFD987193);
+            c = md5_FF(c, d, a, b, x[k + 14], S13, 0xA679438E);
+            b = md5_FF(b, c, d, a, x[k + 15], S14, 0x49B40821);
+            a = md5_GG(a, b, c, d, x[k + 1], S21, 0xF61E2562);
+            d = md5_GG(d, a, b, c, x[k + 6], S22, 0xC040B340);
+            c = md5_GG(c, d, a, b, x[k + 11], S23, 0x265E5A51);
+            b = md5_GG(b, c, d, a, x[k + 0], S24, 0xE9B6C7AA);
+            a = md5_GG(a, b, c, d, x[k + 5], S21, 0xD62F105D);
+            d = md5_GG(d, a, b, c, x[k + 10], S22, 0x2441453);
+            c = md5_GG(c, d, a, b, x[k + 15], S23, 0xD8A1E681);
+            b = md5_GG(b, c, d, a, x[k + 4], S24, 0xE7D3FBC8);
+            a = md5_GG(a, b, c, d, x[k + 9], S21, 0x21E1CDE6);
+            d = md5_GG(d, a, b, c, x[k + 14], S22, 0xC33707D6);
+            c = md5_GG(c, d, a, b, x[k + 3], S23, 0xF4D50D87);
+            b = md5_GG(b, c, d, a, x[k + 8], S24, 0x455A14ED);
+            a = md5_GG(a, b, c, d, x[k + 13], S21, 0xA9E3E905);
+            d = md5_GG(d, a, b, c, x[k + 2], S22, 0xFCEFA3F8);
+            c = md5_GG(c, d, a, b, x[k + 7], S23, 0x676F02D9);
+            b = md5_GG(b, c, d, a, x[k + 12], S24, 0x8D2A4C8A);
+            a = md5_HH(a, b, c, d, x[k + 5], S31, 0xFFFA3942);
+            d = md5_HH(d, a, b, c, x[k + 8], S32, 0x8771F681);
+            c = md5_HH(c, d, a, b, x[k + 11], S33, 0x6D9D6122);
+            b = md5_HH(b, c, d, a, x[k + 14], S34, 0xFDE5380C);
+            a = md5_HH(a, b, c, d, x[k + 1], S31, 0xA4BEEA44);
+            d = md5_HH(d, a, b, c, x[k + 4], S32, 0x4BDECFA9);
+            c = md5_HH(c, d, a, b, x[k + 7], S33, 0xF6BB4B60);
+            b = md5_HH(b, c, d, a, x[k + 10], S34, 0xBEBFBC70);
+            a = md5_HH(a, b, c, d, x[k + 13], S31, 0x289B7EC6);
+            d = md5_HH(d, a, b, c, x[k + 0], S32, 0xEAA127FA);
+            c = md5_HH(c, d, a, b, x[k + 3], S33, 0xD4EF3085);
+            b = md5_HH(b, c, d, a, x[k + 6], S34, 0x4881D05);
+            a = md5_HH(a, b, c, d, x[k + 9], S31, 0xD9D4D039);
+            d = md5_HH(d, a, b, c, x[k + 12], S32, 0xE6DB99E5);
+            c = md5_HH(c, d, a, b, x[k + 15], S33, 0x1FA27CF8);
+            b = md5_HH(b, c, d, a, x[k + 2], S34, 0xC4AC5665);
+            a = md5_II(a, b, c, d, x[k + 0], S41, 0xF4292244);
+            d = md5_II(d, a, b, c, x[k + 7], S42, 0x432AFF97);
+            c = md5_II(c, d, a, b, x[k + 14], S43, 0xAB9423A7);
+            b = md5_II(b, c, d, a, x[k + 5], S44, 0xFC93A039);
+            a = md5_II(a, b, c, d, x[k + 12], S41, 0x655B59C3);
+            d = md5_II(d, a, b, c, x[k + 3], S42, 0x8F0CCC92);
+            c = md5_II(c, d, a, b, x[k + 10], S43, 0xFFEFF47D);
+            b = md5_II(b, c, d, a, x[k + 1], S44, 0x85845DD1);
+            a = md5_II(a, b, c, d, x[k + 8], S41, 0x6FA87E4F);
+            d = md5_II(d, a, b, c, x[k + 15], S42, 0xFE2CE6E0);
+            c = md5_II(c, d, a, b, x[k + 6], S43, 0xA3014314);
+            b = md5_II(b, c, d, a, x[k + 13], S44, 0x4E0811A1);
+            a = md5_II(a, b, c, d, x[k + 4], S41, 0xF7537E82);
+            d = md5_II(d, a, b, c, x[k + 11], S42, 0xBD3AF235);
+            c = md5_II(c, d, a, b, x[k + 2], S43, 0x2AD7D2BB);
+            b = md5_II(b, c, d, a, x[k + 9], S44, 0xEB86D391);
+            a = md5_AddUnsigned(a, AA);
+            b = md5_AddUnsigned(b, BB);
+            c = md5_AddUnsigned(c, CC);
+            d = md5_AddUnsigned(d, DD);
+        }
+        return (md5_WordToHex(a) + md5_WordToHex(b) + md5_WordToHex(c) + md5_WordToHex(d)).toLowerCase();
+    }
+    function query(keyword){
+        if($('#search-input').val()!==''){
+            $('.result').html('')
+            $.ajax({
+                type:"GET",
+                async:true,
+                url:"https://bird.ioliu.cn/v1?url=https://songsearch.kugou.com/song_search_v2",
+                data:{
+                    keyword:keyword,
+                    page:1,
+                    pagesize:30,
+                    userid:-1,
+                    clientver:'',
+                    platform:'WebFilter',
+                    tag:'em',
+                    filter:2,
+                    iscorrection:1,
+                    privilege_filter:0
+                },
+                dataType:"json",
+                success: function(data){
+                    let result = data.data.lists
+                    let sec
+                    result.forEach(ele => {
+                        sec = parseInt(ele.Duration%60)
+                        if(sec<10)
+                            sec = '0'+sec
+                        let duration = parseInt(ele.Duration/60)+':'+sec
+                        $('.result[data-id="kugou"]').append('<li data-hash="'+ele.FileHash+'" data-album="'+ele.AlbumID+'"><span class="fileName" title="'+ele.FileName+'">'+ele.FileName+'</span><span class="albumName" title="'+ele.AlbumName+'">'+ele.AlbumName+'</span><span class="duration">'+duration+'</span></li>')
+                    })
+                    getKugou()
+                }
+            })
+            $.ajax({
+                type:"POST",
+                async:true,
+                url:"https://bird.ioliu.cn/v1?url=http://music.163.com/api/search/get/web?csrf_token=",
+                data:{
+                    hlpretag:'',
+                    hlposttag:'',
+                    s:keyword,
+                    type:1,
+                    offset:0,
+                    total:true,
+                    limit:50
+                },
+                dataType:"json",
+                success: function(data){
+                    let result = data.result.songs
+                    let combine = (ele) =>{
+                        let a = []
+                        let ar = ele.artists
+                        for(let k=0;k<ar.length;k++) {
+                            a.push(ar[k].name)
+                        }
+                        return a.join('/')
+                    }
+                    result.forEach(ele => {
+                        let title = combine(ele)+' - '+ele.name
+                        sec = parseInt(ele.duration/1000%60)
+                        if(sec<10)
+                            sec = '0'+sec
+                        let duration = parseInt(ele.duration/1000/60)+':'+sec
+                        $('.result[data-id="ncmusic"]').append('<li data-id="'+ele.id+'"><span class="fileName" title="'+title+'">'+title+'</span><span class="albumName" title="'+ele.album.name+'">'+ele.album.name+'</span><span class="duration">'+duration+'</span></li>')
+                    })
+                    getNC()
+                }
+            })
+        } else {
+            $('.result').html('<p  style="line-height:50px;text-align:center;font-size:16px;">您没有输入关键词！！</p>')
+        }
+    }
+    function toTimestamp(time){
+        function insertStr(source, start, newStr){
+            return source.slice(0, start) + newStr + source.slice(start);
+        }
+        let new_time
+        if(time.length===12){
+            new_time = insertStr(insertStr(insertStr(insertStr(insertStr(time,4,"/"),7,"/"),10," "),13,":"),16,":00")
+        } else if(time.length===14) {
+            new_time = insertStr(insertStr(insertStr(insertStr(insertStr(time,4,"/"),7,"/"),10," "),13,":"),16,":")
+        }
+        let timestamp = new Date(new_time).getTime()
+        return timestamp
+    }
+    function getKugou() {
+        let kugou = Array.from(document.querySelectorAll('ul[data-id="kugou"] li'))
+        kugou.forEach(ele => {
+            ele.onclick = () => {
+                $.ajax({
+                    type:"GET",
+                    url:"https://bird.ioliu.cn/v1?url=https://wwwapi.kugou.com/yy/index.php?",
+                    data:{
+                        r:'play/getdata',
+                        hash:ele.getAttribute('data-hash'),
+                        album_id:ele.getAttribute('data-album'),
+                        dfid:'0hWg5b0DHEyF0n5Sth36GXer',
+                        mid:getCookie('kg_mid'),
+                        platid:4
+                    },
+                    dataType:"json",
+                    async:false,
+                    success: function(data){
+                        let url = data.data.play_url
+                        let cover = data.data.img
+                        let singer = data.data.author_name
+                        let album_id = data.data.album_id
+                        let code = data.data.hash
+                        let title_reg = new RegExp('[^\\(]*(?=\\s\\()')
+                        let subtitle_reg
+                        let subtitle2_reg
+                        let subtitle
+                        let lyrics_reg = new RegExp('\\[00[\\s\\S]*')
+                        if(data.status === 1){
+                            if(url!==''){
+                                let title = data.data.song_name.match(title_reg)===null? data.data.song_name:data.data.song_name.match(title_reg)[0]
+                                let lyrics = data.data.lyrics===null? '[00:00.01]暂无歌词':data.data.lyrics.match(lyrics_reg)[0]
+                                let timestamp = toTimestamp(url.split('/')[3])+86400000
+                                try {
+                                    subtitle_reg = new RegExp('(?<=\\()[^\\(]*(?=\\)\\])')
+                                    subtitle2_reg = new RegExp('(?<=\\[ti:)[^\\[]*(?=\\])')
+                                    subtitle = data.data.lyrics.match(subtitle_reg)===null? data.data.lyrics.match(subtitle2_reg):data.data.lyrics.match(subtitle_reg)[0]
+                                } catch (e) {
+                                    console.log(e)
+                                    subtitle_reg = new RegExp('(["=]?)[^\\(]*(?=\\)\\])')
+                                    subtitle2_reg = new RegExp('\\[ti:([^\\]]*)(?=\\])')
+                                    subtitle = data.data.lyrics.match(subtitle_reg)===null? data.data.lyrics.match(subtitle2_reg)[1]:data.data.lyrics.match(subtitle_reg)
+                                }
+                                music.track1.push({src: url, code: code, timestamp: timestamp, cover: cover, album_id: album_id, title: title, subtitle: subtitle, singer: singer, lyric: lyrics})
+                                len++
+                                renderSongList()
+                                watchman()
+                                window.alert('已添加至歌单')
+                                storageList()
+                            } else {
+                                window.alert('客官，您选择的歌曲暂无版权呢~~ >_<')
+                            }
+                        } else {
+                            $.ajax({
+                                type:"GET",
+                                url:"https://bird.ioliu.cn/v2?url=https://wwwapi.kugou.com/yy/index.php?",
+                                data:{
+                                    r:'play/getdata',
+                                    hash:ele.getAttribute('data-hash'),
+                                    album_id:ele.getAttribute('data-album'),
+                                    dfid:'0hWg5b0DHEyF0n5Sth36GXer',
+                                    mid:getCookie('kg_mid'),
+                                    platid:4
+                                },
+                                dataType:"json",
+                                async:false,
+                                success: function(data){
+                                    if(data.data.play_url!==''){
+                                        let title = data.data.song_name.match(title_reg)===null? data.data.song_name:data.data.song_name.match(title_reg)[0]
+                                        url = data.data.play_url
+                                        let timestamp = toTimestamp(url.split('/')[3])+86400000
+                                        let lyrics = data.data.lyrics===null? '[00:00.01]暂无歌词':data.data.lyrics.match(lyrics_reg)[0]
+                                        cover = data.data.img
+                                        singer = data.data.author_name
+                                        album_id = data.data.album_id
+                                        code = data.data.hash
+                                        try {
+                                            subtitle_reg = new RegExp('(?<=\\()[^\\(]*(?=\\)\\])')
+                                            subtitle2_reg = new RegExp('(?<=\\[ti:)[^\\[]*(?=\\])')
+                                            subtitle = data.data.lyrics.match(subtitle_reg)===null? data.data.lyrics.match(subtitle2_reg):data.data.lyrics.match(subtitle_reg)[0]
+                                            console.log('Method 1: succeed')
+                                        } catch (e) {
+                                            console.log('Method 2: '+e)
+                                            subtitle_reg = new RegExp('(["=]?)[^\\(]*(?=\\)\\])')
+                                            subtitle2_reg = new RegExp('\\[ti:([^\\]]*)(?=\\])')
+                                            subtitle = data.data.lyrics.match(subtitle_reg)===null? data.data.lyrics.match(subtitle2_reg)[1]:data.data.lyrics.match(subtitle_reg)
+                                        }
+                                        music.track1.push({src: url, code: code, timestamp: timestamp, cover: cover, album_id: album_id, title: title, subtitle: subtitle, singer: singer, lyric: lyrics})
+                                        len++
+                                        renderSongList()
+                                        watchman()
+                                        window.alert('已添加至歌单')
+                                        storageList()
+                                    } else {
+                                        window.alert('客官，您选择的歌曲暂无版权呢~~ >_<')
+                                    }
+                                }
+                            })
+                        }
+                    }
+                })
+            }
+        })
+    }
+    function getNC(){
+        let nc = Array.from(document.querySelectorAll('ul[data-id="ncmusic"] li'))
+        nc.forEach(ele => {
+            ele.onclick = () => {
+                let id = ele.getAttribute('data-id')
+                let obj1
+                let obj2
+                let obj3
+                $.ajax({
+                    type:"GET",
+                    url:"https://api.imjad.cn/cloudmusic/?",
+                    data:{
+                        type:'song',
+                        id:id,
+                        br:320000
+                    },
+                    dataType:"json",
+                    async:false,
+                    success: function(data){
+                        let url = data.data[0].url
+                        let nid = data.data[0].id
+                        let timestamp = toTimestamp(url.split('/')[3])
+                        obj1 = {src: url, code: nid, timestamp: timestamp}
+                    }
+                })
+                if(obj1.src!==''){
+                    $.ajax({
+                        type:"GET",
+                        url:"https://bird.ioliu.cn/v1?url=https://music.163.com/api/song/detail/?",
+                        data:{
+                            id:id,
+                            ids:'['+id+']'
+                        },
+                        dataType:"json",
+                        async:false,
+                        success: function(data){
+                            let cover = data.songs[0].album.picUrl
+                            let album_id = data.songs[0].album.id
+                            let title = data.songs[0].name
+                            let subtitle = data.songs[0].alias[0]
+                            let combine = () => {
+                                let a = []
+                                let ar = data.songs[0].artists
+                                for(let k=0;k<ar.length;k++) {
+                                    a.push(ar[k].name)
+                                }
+                                return a.join('/')
+                            }
+                            let singer = combine()
+                            obj2 = {cover: cover, album_id: album_id, title: title, subtitle: subtitle, singer: singer}
+                        }
+                    })
+                    $.ajax({
+                        type:"GET",
+                        url:"https://bird.ioliu.cn/v1?url=https://music.163.com/api/song/lyric?",
+                        data:{
+                            os:'pc',
+                            id:id,
+                            lv:-1,
+                            kv:-1,
+                            tv:-1
+                        },
+                        dataType:"json",
+                        async:false,
+                        success: function(data){
+                            let lyric = data.lrc.lyric
+                            obj3 = {lyric: lyric}
+                        }
+                    })
+                    let obj = {
+                        ...obj1,
+                        ...obj2,
+                        ...obj3
+                    }
+                    music.track1.push(obj)
+                    obj1 = obj2 = obj3 = null
+                    len++
+                    renderSongList()
+                    watchman()
+                    window.alert('已添加至歌单')
+                    storageList()
+                } else {
+                    window.alert('客官，您选择的歌曲暂无版权呢~~ >_<')
+                }
+            }
+        })
+    }
+    function update(code){
+        if(typeof(code)==='string'){
+            $.ajax({
+                type:"GET",
+                url:"https://bird.ioliu.cn/v1?url=https://wwwapi.kugou.com/yy/index.php?",
+                data:{
+                    r:'play/getdata',
+                    hash:code,
+                    album_id:music.track1[i].album_id,
+                    dfid:'0hWg5b0DHEyF0n5Sth36GXer',
+                    mid:getCookie('kg_mid'),
+                    platid:4
+                },
+                dataType:"json",
+                async:false,
+                success: function(data){
+                    let url = data.data.play_url
+                    if(data.status === 1){
+                        if(url!==''){
+                            let timestamp = toTimestamp(url.split('/')[3])+86400000
+                            music.track1[i].src = url
+                            music.track1[i].timestamp = timestamp
+                            renderSongList()
+                            watchman()
+                            storageList()
+                        } else if(url===undefined) {
+                            window.alert('>_< 很抱歉遇到了些问题，该歌曲暂时无法播放')
+                        } else {
+                            window.alert('抱歉，该歌曲因版权问题已暂时下架 >_<')
+                        }
+                    } else {
+                        $.ajax({
+                            type:"GET",
+                            url:"https://bird.ioliu.cn/v2?url=https://wwwapi.kugou.com/yy/index.php?",
+                            data:{
+                                r:'play/getdata',
+                                hash:code,
+                                album_id:music.track1[i].album_id,
+                                dfid:'0hWg5b0DHEyF0n5Sth36GXer',
+                                mid:getCookie('kg_mid'),
+                                platid:4
+                            },
+                            dataType:"json",
+                            async:false,
+                            success: function(data){
+                                if(data.data.play_url!==''){
+                                    url = data.data.play_url
+                                    let timestamp = toTimestamp(url.split('/')[3])+86400000
+                                    music.track1[i].src = url
+                                    music.track1[i].timestamp = timestamp
+                                    renderSongList()
+                                    watchman()
+                                    storageList()
+                                } else if(data.data.play_url===undefined) {
+                                    window.alert('>_< 很抱歉遇到了些问题，该歌曲暂时无法播放')
+                                } else {
+                                    window.alert('抱歉，该歌曲因版权问题已暂时下架 >_<')
+                                }
+                            }
+                        })
+                    }
+                }
+            })
+        } else {
+            let obj1
+            $.ajax({
+                type:"GET",
+                url:"https://api.imjad.cn/cloudmusic/?",
+                data:{
+                    type:'song',
+                    id:code,
+                    br:320000
+                },
+                dataType:"json",
+                async:false,
+                success: function(data){
+                    let url = data.data[0].url
+                    let timestamp = toTimestamp(url.split('/')[3])
+                    obj1 = {src: url, timestamp: timestamp}
+                }
+            })
+            if(obj1.src!==''){
+                music.track1[i].src = obj1.src
+                music.track1[i].timestamp = obj1.timestamp
+                obj1 = null
+                renderSongList()
+                watchman()
+                storageList()
+            } else if(obj1.src===undefined) {
+                window.alert('>_< 很抱歉遇到了些问题，该歌曲暂时无法播放')
+            } else {
+                window.alert('抱歉，该歌曲因版权问题已暂时下架 >_<')
+            }
+        }
+    }
+    $('.popup').click(function(e){
+        let csl = $('.containSongList');   // 设置目标区域///////////
+        let mask = $('.mask');
+        if(!csl.is(e.target) && csl.has(e.target).length === 0){
+            csl.removeClass('trans')
+            mask.removeClass('maskpop')
+        }
+    });
+</script>
+</body>
+</html>
