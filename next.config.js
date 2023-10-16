@@ -5,7 +5,7 @@ const withPWA = require('next-pwa')({
 
 
 const nextConfig = {
-    output: 'standalone'
+    output: 'export'
 }
 
 module.exports = withPWA(nextConfig)
