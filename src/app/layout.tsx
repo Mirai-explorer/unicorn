@@ -1,12 +1,14 @@
 import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
 import './globals.css'
-
-const inter = Inter({ subsets: ['latin'] })
+import React from "react";
 
 export const metadata: Metadata = {
-  title: 'Mirai 探索者',
+  title: {
+    template: '%s - Mirai探索者',
+    default: 'Mirai探索者'
+  },
   description: '探索新世界',
+  icons: './favicon.ico'
 }
 
 export default function RootLayout({
@@ -27,32 +29,32 @@ export default function RootLayout({
         <meta name="msapplication-tap-highlight" content="no" />
         <meta name="theme-color" content="#000000" />
 
-        <link rel="apple-touch-icon" href="/public/icons/touch-icon-iphone.png" />
-        <link rel="apple-touch-icon" sizes="152x152" href="/public/icons/touch-icon-ipad.png" />
-        <link rel="apple-touch-icon" sizes="180x180" href="/public/icons/touch-icon-iphone-retina.png" />
-        <link rel="apple-touch-icon" sizes="167x167" href="/public/icons/touch-icon-ipad-retina.png" />
+        <link rel="apple-touch-icon" href="/public/icons/apple-touch-icon.png" />
+        <link rel="apple-touch-icon" sizes="152x152" href="/icons/apple-touch-icon-152x152.png" />
+        <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon-180x180.png" />
+        <link rel="apple-touch-icon" sizes="167x167" href="/icons/touch-icon-ipad-retina.png" />
 
-        <link rel="icon" type="image/png" sizes="32x32" href="/public/icons/favicon-32x32.png" />
-        <link rel="icon" type="image/png" sizes="16x16" href="/public/icons/favicon-16x16.png" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/icons/icon-32x32.png" />
+        <link rel="icon" type="image/png" sizes="16x16" href="/icons/icon-16x16.png" />
         <link rel="manifest" href="/manifest.json" />
-        <link rel="mask-icon" href="/public/icons/safari-pinned-tab.svg" color="#5bbad5" />
+        <link rel="mask-icon" href="/icons/safari-pinned-tab.svg" color="#5bbad5" />
         <link rel="shortcut icon" href="/favicon.ico" />
         <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500" />
 
         <meta name="twitter:card" content="summary" />
-        <meta name="twitter:url" content="https://yourdomain.com" />
-        <meta name="twitter:title" content="PWA App" />
-        <meta name="twitter:description" content="Best PWA App in the world" />
-        <meta name="twitter:image" content="https://yourdomain.com/icons/android-chrome-192x192.png" />
-        <meta name="twitter:creator" content="@DavidWShadow" />
+        <meta name="twitter:url" content="https://unicorn.js.org" />
+        <meta name="twitter:title" content="Mirai 探索者" />
+        <meta name="twitter:description" content="探索新世界" />
+        <meta name="twitter:image" content="https://unicorn.js.org/icons/icon-192x192.png" />
+        <meta name="twitter:creator" content="@Aubrey Tang" />
         <meta property="og:type" content="website" />
-        <meta property="og:title" content="PWA App" />
-        <meta property="og:description" content="Best PWA App in the world" />
-        <meta property="og:site_name" content="PWA App" />
-        <meta property="og:url" content="https://yourdomain.com" />
-        <meta property="og:image" content="https://yourdomain.com/icons/apple-touch-icon.png" />
+        <meta property="og:title" content="Mirai 探索者" />
+        <meta property="og:description" content="探索新世界" />
+        <meta property="og:site_name" content="Mirai 探索者" />
+        <meta property="og:url" content="https://unicorn.js.org" />
+        <meta property="og:image" content="https://unicorn.js.org/icons/apple-touch-icon.png" />
       </head>
-      <body className={inter.className}>{children}</body>
+      <body>{children}</body>
     </html>
   )
 }

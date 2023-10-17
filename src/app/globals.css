@@ -2,26 +2,57 @@
 @tailwind components;
 @tailwind utilities;
 
+*, *::before, *::after {
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  outline: none;
+}
+
 :root {
   --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
     --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
   }
 }
 
-body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
+@font-face {
+  font-family:'SF Pro SC';
+  font-style:normal;
+  font-weight:600;
+  src:url("../assets/fonts/PingFangSC-Semibold.woff2") format("woff2");
 }
+
+@font-face {
+  font-family:'SF Pro SC';
+  font-style:normal;
+  font-weight:400;
+  src:url("../assets/fonts/PingFangSC-Regular.woff2") format("woff2");
+}
+
+@font-face {
+  font-family:'SF Pro Text';
+  font-style:normal;
+  font-weight:600;
+  src:url("../assets/fonts/sf-pro-display_semibold.woff2") format("woff2");
+}
+
+@font-face {
+  font-family:'SF Pro Text';
+  font-style:normal;
+  font-weight:400;
+  src:url("../assets/fonts/sf-pro-display_regular.woff2") format("woff2");
+}
+
+
+
+body {
+  /*color: rgb(var(--foreground-rgb));*/
+  font-family: -apple-system,BlinkMacSystemFont,"SF Pro Text",PingFang SC,Helvetica Neue,Microsoft YaHei,Source Han Sans SC,Noto Sans CJK SC,WenQuanYi Micro Hei,sans-serif;
+  line-height: 1.15;
+}
+

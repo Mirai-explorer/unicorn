@@ -5,7 +5,18 @@ const withPWA = require('next-pwa')({
 
 
 const nextConfig = {
-    output: 'export'
+    output: 'export',
+    images: {
+        unoptimized: true,
+        remotePatterns: [
+            {
+                protocol: 'https',
+                hostname: 'imge.kugou.com',
+                port: '',
+                pathname: '/stdmusic/**',
+            },
+        ],
+    },
 }
 
 module.exports = withPWA(nextConfig)

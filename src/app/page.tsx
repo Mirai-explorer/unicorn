@@ -1,114 +1,531 @@
 "use client"
-import Image from 'next/image'
+import HomeHeader from "@/components/Home/Header";
+import HomeAside from "@/components/Home/Aside";
+import HomeMain from "@/components/Home/Main";
+import HomeFooter from "@/components/Home/Footer";
+import { store } from './store';
+import { Provider } from 'react-redux';
+import Card from '@/components/Common/Card';
+import Tag from '@/components/Common/Tag'
 
-export default function Home() {
+const App = () => {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <div className="z-10 max-w-5xl w-full items-center justify-between font-mono text-sm lg:flex">
-        <p className="fixed left-0 top-0 flex w-full justify-center border-b border-gray-300 bg-gradient-to-b from-zinc-200 pb-6 pt-8 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:static lg:w-auto  lg:rounded-xl lg:border lg:bg-gray-200 lg:p-4 lg:dark:bg-zinc-800/30">
-          Get started by editing&nbsp;
-          <code className="font-mono font-bold">src/app/page.tsx</code>
-        </p>
-        <div className="fixed bottom-0 left-0 flex h-48 w-full items-end justify-center bg-gradient-to-t from-white via-white dark:from-black dark:via-black lg:static lg:h-auto lg:w-auto lg:bg-none">
-          <a
-            className="pointer-events-none flex place-items-center gap-2 p-8 lg:pointer-events-auto lg:p-0"
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{' '}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className="dark:invert"
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
+      <Provider store={store}>
+        <div className="app text-[#171717]">
+          <HomeHeader></HomeHeader>
+          <HomeAside></HomeAside>
+          <HomeMain>
+            <div className="main_layout flex flex-col gap-4 tracking-wide">
+              <section className="flex gap-3">
+                <Card title="常住地" collapsed>
+                  <span className="text-[16px]">上海·杨浦</span>
+                </Card>
+                <Card title="生日" collapsed>
+                  <span className="text-sm">2-26</span>
+                </Card>
+              </section>
+              <section className="flex flex-col gap-4">
+                <div className="text-[20px] font-semibold">
+                  <i className="ps-2 pe-2">icon</i>
+                  <span className="">兴趣爱好•技能特长</span>
+                </div>
+                <Card title="语言 / Language" collapsed={false}>
+                  <div className="card_slot_node flex flex-col gap-4">
+                    <div className="card_section flex flex-col gap-4">
+                      <div className="card_section_title inline-flex text-[20px]">语言水平 | 学习目标</div>
+                      <div className="card_section_content flex flex-col gap-2">
+                        <div className="card_item inline-flex gap-2">
+                          <span className="card_item_name text-[#C2A896]">英语</span>
+                          <span className="card_item_value text-[#FEBA8C]">@（CET-4 &gt; IELTS/7.0） </span>
+                        </div>
+                        <div className="card_item inline-flex gap-2">
+                          <span className="card_item_name text-[#C2A896]">法语</span>
+                          <span className="card_item_value text-[#FEBA8C]">@（初级 &gt; 中级） </span>
+                        </div>
+                        <div className="card_item inline-flex gap-2">
+                          <span className="card_item_name text-[#C2A896]">日语</span>
+                          <span className="card_item_value text-[#FEBA8C]">@（N3 &gt; N1） </span>
+                        </div>
+                        <div className="card_item inline-flex gap-2">
+                          <span className="card_item_name text-[#C2A896]">粤语</span>
+                          <span className="card_item_value text-[#FEBA8C]">@（中级 &gt; 高级） </span>
+                        </div>
+                        <div className="card_item inline-flex gap-2">
+                          <span className="card_item_name text-[#C2A896]">上海话</span>
+                          <span className="card_item_value text-[#FEBA8C]">@（初级 &gt; 中级） </span>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="card_part flex flex-wrap gap-2">
+                      <Tag name="English"></Tag>
+                      <Tag name="Français"></Tag>
+                      <Tag name="日本語"></Tag>
+                      <Tag name="粤语·广州话"></Tag>
+                      <Tag name="吴语·上海话"></Tag>
+                    </div>
+                  </div>
+                </Card>
+                <Card title="音乐 / Music" collapsed={false}>
+                  <div className="card_slot_node flex flex-col gap-4">
+                    <div className="card_section flex flex-col gap-4">
+                      <div className="card_section_title inline-flex text-[20px]">喜欢的音乐类型</div>
+                      <div className="card_section_content flex flex-col gap-2">
+                        <div className="card_item inline-flex gap-2">
+                          <span className="card_item_name text-[#C2A896]">古典</span>
+                          <span className="card_item_value text-[#FEBA8C]"></span>
+                        </div>
+                        <div className="card_item inline-flex gap-2">
+                          <span className="card_item_name text-[#C2A896]">交响</span>
+                          <span className="card_item_value text-[#FEBA8C]"></span>
+                        </div>
+                        <div className="card_item inline-flex gap-2">
+                          <span className="card_item_name text-[#C2A896]">流行</span>
+                          <span className="card_item_value text-[#FEBA8C]"></span>
+                        </div>
+                        <div className="card_item inline-flex gap-2">
+                          <span className="card_item_name text-[#C2A896]">电子</span>
+                          <span className="card_item_value text-[#FEBA8C]"></span>
+                        </div>
+                        <div className="card_item inline-flex gap-2">
+                          <span className="card_item_name text-[#C2A896]">OST</span>
+                          <span className="card_item_value text-[#FEBA8C]">{`{ 游戏OST， 动漫OST， 电影OST }`}</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="card_part flex flex-wrap gap-2">
+                      <Tag name="古典"></Tag>
+                      <Tag name="交响"></Tag>
+                      <Tag name="流行"></Tag>
+                      <Tag name="电子"></Tag>
+                      <Tag name="OST"></Tag>
+                    </div>
+                    <div className="card_part flex flex-wrap gap-2">
+                      <Tag name="酷狗音乐"></Tag>
+                      <Tag name="网易云音乐"></Tag>
+                      <Tag name="QQ音乐"></Tag>
+                      <Tag name="Spotify"></Tag>
+                      <Tag name="Apple Music"></Tag>
+                      <Tag name="Sony Select"></Tag>
+                    </div>
+                    <div className="card_part">
+                      -歌单<br />
+                      -尝试：音乐创作<br />
+                    </div>
+                  </div>
+                </Card>
+                <Card title="电影 / Film" collapsed={false}>
+                  <div className="card_slot_node flex flex-col gap-4">
+                    <div className="card_section flex flex-col gap-4">
+                      <div className="card_section_title inline-flex text-[20px]">喜欢的电影类型</div>
+                      <div className="card_section_content flex flex-col gap-2">
+                        <div className="card_item inline-flex gap-2">
+                          <span className="card_item_name text-[#C2A896]">动画</span>
+                          <span className="card_item_value text-[#FEBA8C]"></span>
+                        </div>
+                        <div className="card_item inline-flex gap-2">
+                          <span className="card_item_name text-[#C2A896]">剧情</span>
+                          <span className="card_item_value text-[#FEBA8C]"></span>
+                        </div>
+                        <div className="card_item inline-flex gap-2">
+                          <span className="card_item_name text-[#C2A896]">音乐</span>
+                          <span className="card_item_value text-[#FEBA8C]"></span>
+                        </div>
+                        <div className="card_item inline-flex gap-2">
+                          <span className="card_item_name text-[#C2A896]">悬疑</span>
+                          <span className="card_item_value text-[#FEBA8C]"></span>
+                        </div>
+                        <div className="card_item inline-flex gap-2">
+                          <span className="card_item_name text-[#C2A896]">科幻</span>
+                          <span className="card_item_value text-[#FEBA8C]"></span>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="card_part flex flex-wrap gap-2">
+                      <Tag name="动画"></Tag>
+                      <Tag name="剧情"></Tag>
+                      <Tag name="音乐"></Tag>
+                      <Tag name="悬疑"></Tag>
+                      <Tag name="科幻"></Tag>
+                    </div>
+                    <div className="card_part flex flex-wrap gap-2">
+                      <Tag name="豆瓣"></Tag>
+                    </div>
+                    <div className="card_part">
+                      -片单<br />
+                      -力荐<br />
+                      -电影/观影场所挑选手册<br />
+                      -我和电影的故事<br />
+                      -尝试：电影剪辑<br />
+                    </div>
+                  </div>
+                </Card>
+                <Card title="ACG / Anime·Comic·Game" collapsed={false}>
+                  <div className="card_slot_node flex flex-col gap-4">
+                    <div className="card_section flex flex-col gap-4">
+                      <div className="card_section_title inline-flex text-[20px]">喜欢的ACG内容</div>
+                      <div className="card_section_content flex flex-col gap-2">
+                        <div className="card_item inline-flex gap-2">
+                          <span className="card_item_name text-[#C2A896]">EVA</span>
+                          <span className="card_item_value text-[#FEBA8C]"></span>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="card_part flex flex-wrap gap-2">
+                      <Tag name="BilibiliWorld"></Tag>
+                      <Tag name="ChinaJoy"></Tag>
+                      <Tag name="ComicUP"></Tag>
+                      <Tag name="初音未来"></Tag>
+                      <Tag name="迪士尼"></Tag>
+                      <Tag name="日漫"></Tag>
+                      <Tag name="国创"></Tag>
+                    </div>
+                    <div className="card_part flex flex-wrap gap-2">
+                      <Tag name="哔哩哔哩"></Tag>
+                      <Tag name="漫音社"></Tag>
+                      <Tag name="天使动漫"></Tag>
+                    </div>
+                    <div className="card_part">
+                      -漫展/相关展会活动<br />
+                    </div>
+                  </div>
+                </Card>
+                <Card title="ACG / Anime·Comic·Game" collapsed={false}>
+                  <div className="card_slot_node flex flex-col gap-4">
+                    <div className="card_section flex flex-col gap-4">
+                      <div className="card_section_title inline-flex text-[20px]">喜欢的ACG内容</div>
+                      <div className="card_section_content flex flex-col gap-2">
+                        <div className="card_item inline-flex gap-2">
+                          <span className="card_item_name text-[#C2A896]">EVA</span>
+                          <span className="card_item_value text-[#FEBA8C]"></span>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="card_part flex flex-wrap gap-2">
+                      <Tag name="BilibiliWorld"></Tag>
+                      <Tag name="ChinaJoy"></Tag>
+                      <Tag name="ComicUP"></Tag>
+                      <Tag name="初音未来"></Tag>
+                      <Tag name="迪士尼"></Tag>
+                      <Tag name="日漫"></Tag>
+                      <Tag name="国创"></Tag>
+                    </div>
+                    <div className="card_part flex flex-wrap gap-2">
+                      <Tag name="哔哩哔哩"></Tag>
+                      <Tag name="漫音社"></Tag>
+                      <Tag name="天使动漫"></Tag>
+                    </div>
+                    <div className="card_part">
+                      -漫展/相关展会活动<br />
+                      -喜欢的游戏类型？<br />
+                      -在玩/玩过哪些游戏？<br />
+                      -期望的游戏内容/模式/美术表现/音乐<br />
+                      -尝试：游戏制作<br />
+                      miHoYo&nbsp;IP系列<br />
+                      崩坏：星穹铁道&nbsp;原神&nbsp;崩坏3&nbsp;绝区零＊<br />
+                      GTA系列<br />
+                      生化危机系列<br />
+                      刺客信条系列<br />
+                      プリンセスコネクト Re:Dive ｜ 公主连结<br />
+                      ウマ娘<br />
+                      プロジェクト セカイ ｜ BanG Dream<br />
+                      碧蓝航线<br />
+                      ブルーアーカイブ<br />
+                      ——<br />
+                      FGO<br />
+                      明日方舟<br />
+                      王者荣耀<br />
+                      蛋仔派对<br />
+                      阴阳师
+                    </div>
+                  </div>
+                </Card>
+                <Card title="旅行 / Trip" collapsed={false}>
+                  <div className="card_slot_node flex flex-col gap-4">
+                    <div className="card_section flex flex-col gap-4">
+                      <div className="card_section_title inline-flex text-[20px]">去过哪些地方</div>
+                      <div className="card_section_content flex flex-col gap-2">
+                        <div className="card_item inline-flex gap-2">
+                          <span className="card_item_name text-[#C2A896]">上海</span>
+                          <span className="card_item_value text-[#FEBA8C]"></span>
+                        </div>
+                        <div className="card_item inline-flex gap-2">
+                          <span className="card_item_name text-[#C2A896]">北京</span>
+                          <span className="card_item_value text-[#FEBA8C]"></span>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="card_part flex flex-wrap gap-2">
+                      <Tag name="自然景观"></Tag>
+                    </div>
+                    <div className="card_part flex flex-wrap gap-2">
+                      <Tag name="Google地图"></Tag>
+                      <Tag name="百度地图"></Tag>
+                      <Tag name="旅行雷达"></Tag>
+                    </div>
+                    <div className="card_part">
+                      -想去哪些地方<br />
+                      -喜欢怎样的景色/景观/景物<br />
+                      -酒店挑选指南<br />
+                      -出行指南<br />
+                    </div>
+                  </div>
+                </Card>
+                <Card title="阅读 / Reading" collapsed={false}>
+                  <div className="card_slot_node flex flex-col gap-4">
+                    <div className="card_section flex flex-col gap-4">
+                      <div className="card_section_title inline-flex text-[20px]">读过哪些好书</div>
+                      <div className="card_section_content flex flex-col gap-2">
+                        <div className="card_item inline-flex gap-2">
+                          <span className="card_item_name text-[#C2A896]"></span>
+                          <span className="card_item_value text-[#FEBA8C]"></span>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="card_part flex flex-wrap gap-2">
+                      <Tag name="经典文学"></Tag>
+                    </div>
+                    <div className="card_part flex flex-wrap gap-2">
+                      <Tag name="豆瓣"></Tag>
+                    </div>
+                    <div className="card_part">
+                      -我的书单<br />
+                    </div>
+                  </div>
+                </Card>
+                <Card title="摄影•视频创作 / Creation" collapsed={false}>
+                  <div className="card_slot_node flex flex-col gap-4">
+                    <div className="card_section flex flex-col gap-4">
+                      <div className="card_section_title inline-flex text-[20px]">喜欢的摄影/视频作品</div>
+                      <div className="card_section_content flex flex-col gap-2">
+                        <div className="card_item inline-flex gap-2">
+                          <span className="card_item_name text-[#C2A896]"></span>
+                          <span className="card_item_value text-[#FEBA8C]"></span>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="card_part flex flex-wrap gap-2">
+                      <Tag name="风光"></Tag>
+                    </div>
+                    <div className="card_part flex flex-wrap gap-2">
+                      <Tag name="Adobe Lightroom"></Tag>
+                      <Tag name="Google相机"></Tag>
+                    </div>
+                    <div className="card_part">
+                      -摄影入门教程<br />
+                    </div>
+                  </div>
+                </Card>
+                <Card title="数码科技 / Digital & Tech." collapsed={false}>
+                  <div className="card_slot_node flex flex-col gap-4">
+                    <div className="card_section flex flex-col gap-4">
+                      <div className="card_section_title inline-flex text-[20px]">喜欢的数码产品</div>
+                      <div className="card_section_content flex flex-col gap-2">
+                        <div className="card_item inline-flex gap-2">
+                          <span className="card_item_name text-[#C2A896]">耳机</span>
+                          <span className="card_item_value text-[#FEBA8C]">Sony WH-1000XM系列（头戴式无线降噪耳机）</span>
+                        </div>
+                        <div className="card_item inline-flex gap-2">
+                          <span className="card_item_name text-[#C2A896]">便携式笔记本电脑</span>
+                          <span className="card_item_value text-[#FEBA8C]">HP OMEN 影精灵系列（高性能游戏本）</span>
+                        </div>
+                        <div className="card_item inline-flex gap-2">
+                          <span className="card_item_name text-[#C2A896]">智能移动终端</span>
+                          <span className="card_item_value text-[#FEBA8C]">Samsung Galaxy S系列（ULTRA）</span>
+                        </div>
+                        <div className="card_item inline-flex gap-2">
+                          <span className="card_item_name text-[#C2A896]">平板电脑</span>
+                          <span className="card_item_value text-[#FEBA8C]">Apple iPad Pro系列</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="card_part flex flex-wrap gap-2">
+                      <Tag name="极致"></Tag>
+                    </div>
+                    <div className="card_part flex flex-wrap gap-2">
+                      <Tag name="IT之家"></Tag>
+                      <Tag name="酷安"></Tag>
+                    </div>
+                    <div className="card_part">
+                      -数码产品怎么选<br />
+                      -关注的数码品牌<br />
+                      -喜欢的科技产品<br />
+                      -关注的科技公司<br />
+                    </div>
+                  </div>
+                </Card>
+                <Card title="美食 / Delicious Food" collapsed={false}>
+                  <div className="card_slot_node flex flex-col gap-4">
+                    <div className="card_section flex flex-col gap-4">
+                      <div className="card_section_title inline-flex text-[20px]">喜欢的美食</div>
+                      <div className="card_section_content flex flex-col gap-2">
+                        <div className="card_item inline-flex gap-2">
+                          <span className="card_item_name text-[#C2A896]">麦当劳系列</span>
+                          <span className="card_item_value text-[#FEBA8C]">巨无霸 麦麦脆汁鸡 麦旋风 菠萝派</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="card_part flex flex-wrap gap-2">
+                      <Tag name="麦当劳"></Tag>
+                    </div>
+                    <div className="card_part flex flex-wrap gap-2">
+                      <Tag name="美团"></Tag>
+                    </div>
+                    <div className="card_part">
+                      -自制酸奶<br />
+                    </div>
+                  </div>
+                </Card>
+                <Card title="薅羊毛 / Coupon Clipping" collapsed={false}>
+                  <div className="card_slot_node flex flex-col gap-4">
+                    <div className="card_section flex flex-col gap-4">
+                      <div className="card_section_title inline-flex text-[20px]">薅羊毛的魔力</div>
+                      <div className="card_section_content flex flex-col gap-2">
+                        <div className="card_item inline-flex gap-2">
+                          <span className="card_item_name text-[#C2A896]">乐趣</span>
+                          <span className="card_item_value text-[#FEBA8C]">越薅越快乐</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="card_part flex flex-wrap gap-2">
+                      <Tag name="立减金"></Tag>
+                    </div>
+                    <div className="card_part flex flex-wrap gap-2">
+                      <Tag name="什么值得买"></Tag>
+                      <Tag name="羊毛撸啊撸（公众号）"></Tag>
+                    </div>
+                    <div className="card_part">
+                      -羊毛小贴士<br />
+                    </div>
+                  </div>
+                </Card>
+                <Card title="编程 / Programing" collapsed={false}>
+                  <div className="card_slot_node flex flex-col gap-4">
+                    <div className="card_section flex flex-col gap-4">
+                      <div className="card_section_title inline-flex text-[20px]">薅羊毛的魔力</div>
+                      <div className="card_section_content flex flex-col gap-2">
+                        <div className="card_item inline-flex gap-2">
+                          <span className="card_item_name text-[#C2A896]">乐趣</span>
+                          <span className="card_item_value text-[#FEBA8C]">越薅越快乐</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="card_part flex flex-wrap gap-2">
+                      <Tag name="立减金"></Tag>
+                    </div>
+                    <div className="card_part flex flex-wrap gap-2">
+                      <Tag name="Github"></Tag>
+                      <Tag name="StackFlow"></Tag>
+                    </div>
+                    <div className="card_part">
+                      <p>
+                        •&nbsp;技术探索<br />
+                        •&nbsp;信息加工<br />
+                        •&nbsp;平面设计<br />
+                      </p>
+                      <p>
+                        •&nbsp;公交/地铁/火车/航空迷<br />
+                        •&nbsp;天文<br />
+                        •&nbsp;历史<br />
+                      </p>
+
+                      <p>•&nbsp;编程<br />
+                        Web开发方向&nbsp;[<br />
+                        Next.js&nbsp;on&nbsp;React(Priority)<br />
+                        Nuxt.js&nbsp;on&nbsp;Vue.js<br />
+                        Vanilla&nbsp;JavaScript[ES2021]<br />
+                        ]<br />
+                        原生/桌面/服务器开发方向&nbsp;[<br />
+                        Kotlin<br />
+                        Swift<br />
+                        C<br />
+                        C#<br />
+                        C++<br />
+                        Java<br />
+                        Python<br />
+                        Golang<br />
+                        Lua<br />
+                        ]<br />
+                        跨平台开发方向&nbsp;[<br />
+                        Flutter<br />
+                        React&nbsp;Native<br />
+                        Electron<br />
+                        ]<br />
+                        常用IDE&nbsp;[<br />
+                        WebStorm<br />
+                        IDEA<br />
+                        Visual&nbsp;Studio<br />
+                        Android&nbsp;Studio<br />
+                        VS&nbsp;Code<br />
+                        ]</p>
+                    </div>
+                  </div>
+                </Card>
+                <Card title="找到我 / Finding me" collapsed={false}>
+                  <div className="card_slot_node flex flex-col gap-4">
+                    <div className="card_section flex flex-col gap-4">
+                      <div className="card_section_title inline-flex text-[20px]">薅羊毛的魔力</div>
+                      <div className="card_section_content flex flex-col gap-2">
+                        <div className="card_item inline-flex gap-2">
+                          <span className="card_item_name text-[#C2A896]">乐趣</span>
+                          <span className="card_item_value text-[#FEBA8C]">越薅越快乐</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="card_part flex flex-wrap gap-2">
+                      <Tag name="立减金"></Tag>
+                    </div>
+                    <div className="card_part flex flex-wrap gap-2">
+                      <Tag name="Github"></Tag>
+                      <Tag name="StackFlow"></Tag>
+                    </div>
+                    <div className="card_part">
+                      <p>Contact&nbsp;with&nbsp;me<br />
+                        社交平台<br />
+                        QQ/微信&nbsp;1150963042<br />
+                        Facebook<br />
+                        X（Twitter）<br />
+                        Instagram<br />
+                        Telegram<br />
+                        Discord<br />
+                        Skype<br />
+                        微博</p>
+
+                      <p>内容社区/创作平台<br />
+                        微信公众号<br />
+                        豆瓣<br />
+                        知乎<br />
+                        酷安<br />
+                        百度贴吧<br />
+                        哔哩哔哩<br />
+                        YouTube<br />
+                        GitHub<br />
+                        Gitee<br />
+                        电子邮箱<br />
+                        QQ邮箱<br />
+                        网易163邮箱<br />
+                        Outlook<br />
+                        Gmail</p>
+
+                      <p>游戏社区<br />
+                        米游社<br />
+                        Steam<br />
+                        Ubi</p>
+
+                      <p>欢迎赞助<br />
+                        支付宝<br />
+                        云闪付<br />
+                        微信支付<br />
+                        PayPal</p>
+                    </div>
+                  </div>
+                </Card>
+              </section>
+            </div>
+          </HomeMain>
+          <HomeFooter></HomeFooter>
         </div>
-      </div>
-
-      <div className="relative flex place-items-center before:absolute before:h-[300px] before:w-[480px] before:-translate-x-1/2 before:rounded-full before:bg-gradient-radial before:from-white before:to-transparent before:blur-2xl before:content-[''] after:absolute after:-z-20 after:h-[180px] after:w-[240px] after:translate-x-1/3 after:bg-gradient-conic after:from-sky-200 after:via-blue-200 after:blur-2xl after:content-[''] before:dark:bg-gradient-to-br before:dark:from-transparent before:dark:to-blue-700 before:dark:opacity-10 after:dark:from-sky-900 after:dark:via-[#0141ff] after:dark:opacity-40 before:lg:h-[360px] z-[-1]">
-        <Image
-          className="relative dark:drop-shadow-[0_0_0.3rem_#ffffff70] dark:invert"
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
-
-      <div className="mb-32 grid text-center lg:max-w-5xl lg:w-full lg:mb-0 lg:grid-cols-4 lg:text-left">
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Docs{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Find in-depth information about Next.js features and API.
-          </p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Learn{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Learn about Next.js in an interactive course with&nbsp;quizzes!
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Templates{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Explore the Next.js 13 playground.
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Deploy{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
+      </Provider>
   )
 }
+
+export default App;
