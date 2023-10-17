@@ -194,8 +194,7 @@ const Search = ({isShowing, setIsShowing, setTracks, tracks, updates, setUpdate,
             params: {
                 ...params,
                 signature: sign(Object.entries(params))
-            }
-        })
+            }})
             .then(res => {
                 setLoading(false)
                 if (!res.data.err_code) {

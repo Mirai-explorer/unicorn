@@ -30,14 +30,15 @@ const sign = (params: [string, number | string][]) => {
 }
 
 const fetchMusicSource = async(data: Track | sTrack) => {
-    return axios.get('https://bird.ioliu.cn/v1?url=https://wwwapi.kugou.com/yy/index.php', {
+    return axios.get('/getsong1', {
         params: {
             r: 'play/getdata',
-            hash: data.code,
-            album_id: data.album_id,
-            dfid: cookie.load('kg_dfid'),
-            mid: cookie.load('kg_mid'),
-            platid: 4
+            dfid: cookie.load('kg_dfid') || '3x7DYT4HlRDu3PzEsJ09LEqh',
+            mid: cookie.load('kg_mid') || '25c7d487da516f05cea717f9deef0fb3',
+            appid: 1014,
+            encode_album_audio_id: data.encode_audio_id,
+            platid: 4,
+            _: new Date().getTime()
         }
     })
 } //[INVOLVE]获取歌曲源
