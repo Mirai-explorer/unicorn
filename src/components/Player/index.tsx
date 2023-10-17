@@ -11,10 +11,6 @@ import styled from 'styled-components';
 import {DBConfig} from "@/app/IDBConfig";
 import {initDB, useIndexedDB} from "react-indexed-db-hook";
 import tracks0 from "@/assets/data/tracks";
-import cookie from "react-cookies";
-import axios from "axios";
-import Md5 from 'crypto-js/md5';
-import { v4 as uuidv4 } from 'uuid';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import {Track, fetchMusicSource, getTime} from "./utils";
@@ -141,7 +137,7 @@ const Player = () => {
 
     // Refs
     const audioRef = useRef<HTMLAudioElement | undefined>(
-        typeof Audio !== "undefined" ? new Audio(src) : undefined
+        typeof Audio !== "undefined" ? new Audio() : undefined
     );
 
     const isReady = useRef(false);
@@ -211,7 +207,7 @@ const Player = () => {
 
     const handleAllUpdates = (tracks: Track[]) => {
         const time = new Date().getTime();
-        let uniques = [];
+        let uniques: number[] = [];
         // a jsonp mode
         Promise.all(
             tracks.map((item: Track, id: number) => {
@@ -235,7 +231,7 @@ const Player = () => {
                         let item: itemType = data.data;
                         let regex = /^(http|https):\/\/[a-zA-Z0-9\-.]+\.[a-zA-Z]{2,}(\/\S*)?$/;
                         if (typeof item.play_url === 'string' && regex.test(item.play_url)) {
-                            update({
+                            return update({
                                 title: item.song_name,
                                 subtitle: item.album_name,
                                 artist: item.author_name,
@@ -248,8 +244,6 @@ const Player = () => {
                                 timestamp: new Date().getTime() + 86400000,
                                 unique_index: i + 1,
                                 time_length: !item.is_free_part ? item.timelength : item.trans_param.hash_offset.end_ms
-                            }).then(() => {
-                                console.log(i,'saved')
                             })
                         } else {
                             throw new Error("Can't fetch the source")
@@ -257,6 +251,8 @@ const Player = () => {
                     }
                 })
             })
+        }).then(res => {
+            console.log(uniques,'saved')
             setUpdatedTracks()
         })
         /*
@@ -325,8 +321,8 @@ const Player = () => {
 
     useEffect(() => {
         getAll().then((tracks: Track[]) => {
-            console.log('tracks check:',tracks)
-            // 若从数据库获取的音轨数等于0则启用预存数据并更新，否则检查获取音轨是否过期
+            console.log('1 >> get tracks and check whether it has expired:',tracks)
+            // 若从数据库获取的音轨数等于 0 则启用预存数据并更新，否则检查获取音轨是否过期
             tracks.length > 0 ? handleAllUpdates(tracks) : handleAllUpdates(tracks0);
         })
     }, []);
@@ -334,7 +330,7 @@ const Player = () => {
     useEffect(() => {
         if (updates != 0) {
             tracks.map((data) => {
-                update(data).then(() => console.log('a piece of data changed',updates > 0 ? '+' : '-'))
+                update(data).then(() => console.log('DATA UPDATED: a piece of data changed',updates > 0 ? '+' : '-'))
             })
             updates < 0 && deleteRecord(tracks.length + 1).then(() => console.log('arrangement completed'))
         }
