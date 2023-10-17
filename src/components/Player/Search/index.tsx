@@ -171,7 +171,6 @@ const Search = ({isShowing, setIsShowing, setTracks, tracks, updates, setUpdate,
         const params = {
             appid: 1014,
             bitrate: 0,
-            callback: 'callback123',
             clienttime: new Date().getTime(),
             clientver: 1000,
             dfid: cookie.load('kg_dfid') || '3x7DYT4HlRDu3PzEsJ09LEqh',
@@ -190,7 +189,7 @@ const Search = ({isShowing, setIsShowing, setTracks, tracks, updates, setUpdate,
             userid: 0,
             uuid: cookie.load('kg_mid') || '25c7d487da516f05cea717f9deef0fb3'
         }
-        axios.get('/query1',{
+        axios.get('/query',{
             params: {
                 ...params,
                 signature: sign(Object.entries(params))

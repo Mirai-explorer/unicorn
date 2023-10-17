@@ -5,7 +5,6 @@ const withPWA = require('next-pwa')({
 
 
 const nextConfig = {
-    output: 'export',
     images: {
         unoptimized: true,
         remotePatterns: [
@@ -16,6 +15,18 @@ const nextConfig = {
                 pathname: '/stdmusic/**',
             },
         ],
+    },
+    async rewrites() {
+        return [
+            {
+                source: '/query:path*',
+                destination: 'https://complexsearch.kugou.com/v2/search/song:path*' // Proxy to Backend
+            },
+            {
+                source: '/get_song:path*',
+                destination: 'https://wwwapi.kugou.com/yy/index.php:path*' // Proxy to Backend
+            },
+        ]
     },
 }
 

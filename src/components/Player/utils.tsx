@@ -30,7 +30,7 @@ const sign = (params: [string, number | string][]) => {
 }
 
 const fetchMusicSource = async(data: Track | sTrack) => {
-    return axios.get('/getsong1', {
+    return axios.get('/get_song', {
         params: {
             r: 'play/getdata',
             dfid: cookie.load('kg_dfid') || '3x7DYT4HlRDu3PzEsJ09LEqh',
