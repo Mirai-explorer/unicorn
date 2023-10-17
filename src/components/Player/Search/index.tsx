@@ -1,9 +1,10 @@
 import { styled } from "styled-components";
 import React, { SetStateAction } from "react";
 import axios from "axios";
-import { Track, fetchMusicSource } from "@/components/Player/utils"
+import { Track, fetchMusicSource, sign } from "@/components/Player/utils"
 import Kugou from "@/assets/common/Kugou";
 import SearchIcon from "@/assets/common/Search";
+import cookie from "react-cookies";
 
 type resultType = {
     FileName: string,
@@ -167,19 +168,34 @@ const Search = ({isShowing, setIsShowing, setTracks, tracks, updates, setUpdate,
 
     const doSearch = (keyword: string) => {
         setLoading(true)
-        axios.get('https://bird.ioliu.cn/v1?url=https://songsearch.kugou.com/song_search_v2',{
+        const params = {
+            appid: 1014,
+            bitrate: 0,
+            callback: 'callback123',
+            clienttime: new Date().getTime(),
+            clientver: 1000,
+            dfid: cookie.load('kg_dfid') || '3x7DYT4HlRDu3PzEsJ09LEqh',
+            filter: 10,
+            inputtype: 0,
+            iscorrection: 1,
+            isfuzzy: 0,
+            keyword: keyword,
+            mid: cookie.load('kg_mid') || '25c7d487da516f05cea717f9deef0fb3',
+            page: 1,
+            pagesize: 30,
+            platform: 'WebFilter',
+            privilege_filter: 0,
+            srcappid: 2919,
+            token: '',
+            userid: 0,
+            uuid: cookie.load('kg_mid') || '25c7d487da516f05cea717f9deef0fb3'
+        }
+        axios.get('/query1',{
             params: {
-                keyword:keyword,
-                page:1,
-                pagesize:30,
-                userid:-1,
-                clientver:'',
-                platform:'WebFilter',
-                tag:'',
-                filter:2,
-                iscorrection:1,
-                privilege_filter:0
-            }})
+                ...params,
+                signature: sign(Object.entries(params))
+            }
+        })
             .then(res => {
                 setLoading(false)
                 if (!res.data.err_code) {

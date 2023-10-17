@@ -1,5 +1,6 @@
 import axios from "axios";
 import cookie from "react-cookies";
+import md5 from "crypto-js/md5"
 
 type Track = {
     title: string,
@@ -22,13 +23,19 @@ type sTrack = {
     encode_audio_id: string | undefined
 }
 
+const sign = (params: [string, number | string][]) => {
+    let source: string[] = [];
+    params.forEach((v,i)=>{source[i]=v.join('=')});
+    return md5('NVPh5oo715z5DIWAeQlhMDsWXXQV4hwt'+source.join('')+'NVPh5oo715z5DIWAeQlhMDsWXXQV4hwt').toString()
+}
+
 const fetchMusicSource = async(data: Track | sTrack) => {
     return axios.get('https://bird.ioliu.cn/v1?url=https://wwwapi.kugou.com/yy/index.php', {
         params: {
             r: 'play/getdata',
             hash: data.code,
             album_id: data.album_id,
-            dfid: '3x7DYT4HlRDu3PzEsJ09LEqh',
+            dfid: cookie.load('kg_dfid'),
             mid: cookie.load('kg_mid'),
             platid: 4
         }
@@ -54,5 +61,5 @@ const getTime = (type: number) => {
     return mins + ":" + secs;
 };
 
-export { fetchMusicSource, getTime };
+export { fetchMusicSource, getTime, sign };
 export type { Track };

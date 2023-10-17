@@ -276,7 +276,6 @@ const Player = () => {
     useEffect(() => {
         getAll().then((tracks: Track[]) => {
             console.log('tracks check:',tracks)
-            cookie.save('kg_mid', Md5(uuidv4()), { maxAge: 86400 });
             // 若从数据库获取的音轨数等于0则启用预存数据并更新，否则检查获取音轨是否过期
             tracks.length > 0 ? handleAllUpdates(tracks) : handleAllUpdates(tracks0);
         })
