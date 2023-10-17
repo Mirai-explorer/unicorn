@@ -5,6 +5,7 @@ import { Track, fetchMusicSource, sign } from "@/components/Player/utils"
 import Kugou from "@/assets/common/Kugou";
 import SearchIcon from "@/assets/common/Search";
 import cookie from "react-cookies";
+import JSONP from "fetch-jsonp";
 
 type resultType = {
     FileName: string,
@@ -171,6 +172,7 @@ const Search = ({isShowing, setIsShowing, setTracks, tracks, updates, setUpdate,
         const params = {
             appid: 1014,
             bitrate: 0,
+            callback: 'callback123',
             clienttime: new Date().getTime(),
             clientver: 1000,
             dfid: cookie.load('kg_dfid') || '3x7DYT4HlRDu3PzEsJ09LEqh',
@@ -189,6 +191,40 @@ const Search = ({isShowing, setIsShowing, setTracks, tracks, updates, setUpdate,
             userid: 0,
             uuid: cookie.load('kg_mid') || '25c7d487da516f05cea717f9deef0fb3'
         }
+        // a jsonp mode
+        JSONP(`https://complexsearch.kugou.com/v2/search/song?appid=1014&bitrate=0&clienttime=${params.clienttime}&clientver=1000&dfid=${cookie.load('kg_dfid') || '3x7DYT4HlRDu3PzEsJ09LEqh'}&filter=10&inputtype=0&iscorrection=1&isfuzzy=0&keyword=${keyword}&mid=${cookie.load('kg_mid') || '25c7d487da516f05cea717f9deef0fb3'}&page=1&pagesize=30&platform=WebFilter&privilege_filter=0&srcappid=2919&token=&userid=0&uuid=${cookie.load('kg_mid') || '25c7d487da516f05cea717f9deef0fb3'}&signature=${sign(Object.entries(params))}`, {jsonpCallbackFunction: 'callback123'})
+            .then(res => res.json())
+            .then(data => {
+                setLoading(false)
+                if (!data.err_code) {
+                    let list: resultType[] = [];
+                    data.data.lists.length > 0 && data.data.lists.map((item: resultType)=>{
+                        list.push({
+                            FileName: item.FileName,
+                            FileHash: item.FileHash,
+                            AlbumID: item.AlbumID,
+                            AlbumName: item.AlbumName,
+                            EMixSongID: item.EMixSongID,
+                            Duration: item.Duration,
+                            OriSongName: item.OriSongName,
+                            Auxiliary: item.Auxiliary
+                        })
+                    })
+                    list.length !== 0 ? setResult(list) : setResult([])
+                } else {
+                    throw new Error('an unexpected behavior occurred.')
+                }
+            })
+            .catch(err => {
+                setLoading(false)
+                setToastMessage({
+                    value: '发生不可预知的行为，错误信息：'+err.message,
+                    timestamp: new Date().getTime()
+                })
+                console.error('Please try again later:',err.message)
+            })
+        /*
+        // a proxy mode
         axios.get('/query',{
             params: {
                 ...params,
@@ -223,6 +259,7 @@ const Search = ({isShowing, setIsShowing, setTracks, tracks, updates, setUpdate,
                 })
                 console.error('Please try again later:',err.message)
             })
+            */
     }
 
     const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -249,6 +286,40 @@ const Search = ({isShowing, setIsShowing, setTracks, tracks, updates, setUpdate,
             }
         })
         !flag && fetchMusicSource(track).then(res => {
+            // a jsonp mode
+            let promise = res.json()
+            promise.then(data => {
+                console.log(data)
+                if (!data.err_code) {
+                    let item = data.data;
+                    let track_new: Track = {
+                        title: item.song_name,
+                        subtitle: item.album_name,
+                        artist: item.author_name,
+                        src: item.play_url,
+                        cover: item.img,
+                        lyric: item.lyrics,
+                        album_id: item.album_id,
+                        encode_audio_id: item.encode_album_audio_id,
+                        code: item.hash,
+                        timestamp: new Date().getTime() + 86400000,
+                        unique_index: tracks.length + 1,
+                        time_length: !item.is_free_part ? item.timelength : item.trans_param.hash_offset.end_ms
+                    };
+                    console.log([...tracks, track_new])
+                    setIsShowing(false)
+                    setTracks([...tracks, track_new])
+                    setUpdate(updates > 0 ? ++updates : 1)
+                    setToastMessage({
+                        value: item.song_name+' 已加入歌单，可在歌单选取播放',
+                        timestamp: new Date().getTime()
+                    })
+                } else {
+                    throw new Error('an unexpected behavior occurred.')
+                }
+            })
+            /*
+            // a proxy mode
             console.log(res)
             if (!res.data.err_code) {
                 let item = res.data.data;
@@ -277,6 +348,7 @@ const Search = ({isShowing, setIsShowing, setTracks, tracks, updates, setUpdate,
             } else {
                 throw new Error('an unexpected behavior occurred.')
             }
+            */
         }).catch(err => {
             setToastMessage({
                 value: '发生不可预知的行为，错误信息：'+err.message,

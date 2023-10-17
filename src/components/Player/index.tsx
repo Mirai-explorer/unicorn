@@ -212,6 +212,55 @@ const Player = () => {
     const handleAllUpdates = (tracks: Track[]) => {
         const time = new Date().getTime();
         let uniques = [];
+        // a jsonp mode
+        Promise.all(
+            tracks.map((item: Track, id: number) => {
+                if (item.timestamp > time) {
+                    console.log('skipped',id)
+                } else {
+                    console.log('ready to update',id)
+                    uniques.push(item.unique_index)
+                    return fetchMusicSource(item)
+                }
+            })
+        ).then(tasks => {
+            uniques.length > 0 && setToastMessage({
+                value: '数据更新中，请稍候...',
+                timestamp: new Date().getTime()
+            })
+            tasks.map((res, i) => {
+                let promise = res?.json()
+                promise && promise.then(data => {
+                    if (!data.err_code) {
+                        let item: itemType = data.data;
+                        let regex = /^(http|https):\/\/[a-zA-Z0-9\-.]+\.[a-zA-Z]{2,}(\/\S*)?$/;
+                        if (typeof item.play_url === 'string' && regex.test(item.play_url)) {
+                            update({
+                                title: item.song_name,
+                                subtitle: item.album_name,
+                                artist: item.author_name,
+                                src: item.play_url,
+                                cover: item.img,
+                                lyric: item.lyrics,
+                                album_id: item.album_id,
+                                encode_audio_id: item.encode_album_audio_id,
+                                code: item.hash,
+                                timestamp: new Date().getTime() + 86400000,
+                                unique_index: i + 1,
+                                time_length: !item.is_free_part ? item.timelength : item.trans_param.hash_offset.end_ms
+                            }).then(() => {
+                                console.log(i,'saved')
+                            })
+                        } else {
+                            throw new Error("Can't fetch the source")
+                        }
+                    }
+                })
+            })
+            setUpdatedTracks()
+        })
+        /*
+        //a proxy mode
         axios.all(
             tracks.map((item: Track, id: number) => {
                 if (item.timestamp > time) {
@@ -228,7 +277,7 @@ const Player = () => {
                 timestamp: new Date().getTime()
             })
             tasks.map((res, i) => {
-                if (res) {
+                if (!res.data.err_code) {
                     let item: itemType = res.data.data;
                     let regex = /^(http|https):\/\/[a-zA-Z0-9\-.]+\.[a-zA-Z]{2,}(\/\S*)?$/;
                     if (typeof item.play_url === 'string' && regex.test(item.play_url)) {
@@ -255,6 +304,7 @@ const Player = () => {
             })
             setUpdatedTracks()
         }))
+        */
     }
 
     const handlePlayError = (e: Error) => {

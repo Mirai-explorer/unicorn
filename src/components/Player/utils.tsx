@@ -1,6 +1,7 @@
 import axios from "axios";
 import cookie from "react-cookies";
-import md5 from "crypto-js/md5"
+import md5 from "crypto-js/md5";
+import JSONP from "fetch-jsonp";
 
 type Track = {
     title: string,
@@ -30,6 +31,10 @@ const sign = (params: [string, number | string][]) => {
 }
 
 const fetchMusicSource = async(data: Track | sTrack) => {
+    // a jsonp mode
+    return JSONP(`https://wwwapi.kugou.com/yy/index.php?r=play/getdata&dfid=${cookie.load('kg_dfid') || '3x7DYT4HlRDu3PzEsJ09LEqh'}&mid=${cookie.load('kg_dfid') || '3x7DYT4HlRDu3PzEsJ09LEqh'}&appid=1014&encode_album_audio_id=${data.encode_audio_id}&platid=4&_=${new Date().getTime()}`)
+    /*
+    // a proxy mode
     return axios.get('/get_song', {
         params: {
             r: 'play/getdata',
@@ -41,6 +46,7 @@ const fetchMusicSource = async(data: Track | sTrack) => {
             _: new Date().getTime()
         }
     })
+    */
 } //[INVOLVE]获取歌曲源
 
 const getTime = (type: number) => {
