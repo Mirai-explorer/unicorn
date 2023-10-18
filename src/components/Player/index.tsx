@@ -164,7 +164,6 @@ const Player = () => {
         setReduce('')
         if (value < time_length / 1000) {
             audioRef.current!.currentTime = value
-
         } else {
             audioRef.current!.currentTime = audioRef.current!.currentTime
             setToastMessage({
@@ -181,11 +180,15 @@ const Player = () => {
     };
 
     const toPrevTrack = () => {
-        trackIndex - 1 < 0 ? setTrackIndex(tracks.length - 1) : setTrackIndex(trackIndex - 1);
+        let index = trackIndex - 1 < 0 ? tracks.length - 1 : trackIndex - 1;
+        setTrackIndex(index);
+        console.log(trackIndex)
     };
 
     const toNextTrack = () => {
-        trackIndex < tracks.length - 1 ? setTrackIndex(trackIndex + 1) : setTrackIndex(0);
+        let index = trackIndex < tracks.length - 1 ? trackIndex + 1 : 0;
+        setTrackIndex(index);
+        console.log(trackIndex)
     };
 
     const notify = (string: string) => toast(string);
@@ -319,12 +322,33 @@ const Player = () => {
         console.error(e.message)
     }
 
+    const syncMediaSession = (track: Track) => {
+        navigator.mediaSession.metadata = new MediaMetadata({
+            title: track.title,
+            artist: track.artist,
+            album: track.subtitle,
+            artwork: [{ src: track.cover }]
+        })
+    }
+
+    const initActionHandler = () => {
+        navigator.mediaSession.setActionHandler('play', () => {
+            setIsPlaying(true)
+            setIsRotating(true);
+        });
+        navigator.mediaSession.setActionHandler('pause', () => {
+            setIsPlaying(false);
+            setIsRotating(false);
+        });
+    }
+
     useEffect(() => {
         getAll().then((tracks: Track[]) => {
             console.log('1 >> get tracks and check whether it has expired:',tracks)
             // 若从数据库获取的音轨数等于 0 则启用预存数据并更新，否则检查获取音轨是否过期
             tracks.length > 0 ? handleAllUpdates(tracks) : handleAllUpdates(tracks0);
-        })
+        });
+        initActionHandler();
     }, []);
 
     useEffect(() => {
@@ -345,7 +369,6 @@ const Player = () => {
             audioRef.current!.play()
                 .then(() => {
                     setIsRotating(true);
-                    document.title = '正在播放：'+title+' - 云端音乐播放器 - Mirai探索者'
                 })
                 .catch((e) => {
                     handlePlayError(e)
@@ -353,7 +376,6 @@ const Player = () => {
         } else {
             audioRef.current!.pause();
             setIsRotating(false);
-            document.title = '暂停中'+' - 云端音乐播放器 - Mirai探索者'
         }
     }, [isPlaying]);
 
@@ -365,23 +387,22 @@ const Player = () => {
         }
     }, [isRotating]);
 
-    useEffect(() => {
-        if (audioRef.current?.paused) {
-            setIsPlaying(false);
-            setIsRotating(false);
-            document.title = '暂停中'+' - 云端音乐播放器 - Mirai探索者'
-        } else {
-            setIsPlaying(true)
-            setIsRotating(true);
-            document.title = '正在播放：'+title+' - 云端音乐播放器 - Mirai探索者'
-        }
-    }, [audioRef.current?.paused]);
-
     // Handles cleanup and setup when changing tracks
     useEffect(() => {
-        audioRef.current!.pause();
-        audioRef.current = new Audio(src);
-        setTrackProgress(audioRef.current!.currentTime);
+        if (audioRef.current) {
+            audioRef.current.pause();
+            audioRef.current.src = src;
+        } else {
+            audioRef.current = new Audio(src);
+        }
+        setTrackProgress(audioRef.current.currentTime);
+        navigator.mediaSession.setActionHandler('previoustrack', () => {
+            toPrevTrack();
+        });
+        navigator.mediaSession.setActionHandler('nexttrack', () => {
+            toNextTrack();
+        });
+        syncMediaSession(tracks[trackIndex]);
         if (isReady.current) {
             audioRef.current.play()
                 .then(() => {
