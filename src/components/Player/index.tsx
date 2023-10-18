@@ -469,6 +469,11 @@ const Player = () => {
                 <Setting
                     isShowing={settingShowing}
                     setIsShowing={setSettingShowing}
+                    tracks={tracks}
+                    setTracks={setTracks}
+                    trackIndex={trackIndex}
+                    setTrackIndex={setTrackIndex}
+                    setToastMessage={setToastMessage}
                 />
             </Layout>
             <ToastContainer />

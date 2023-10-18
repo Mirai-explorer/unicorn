@@ -1,6 +1,6 @@
 import {styled} from "styled-components";
-import React, {SetStateAction, useEffect, useState} from "react";
-
+import React, {createRef, SetStateAction, useEffect, useRef, useState} from "react";
+import {Track} from "@/components/Player/utils";
 
 const SettingWrap =
     styled.div`
@@ -59,12 +59,67 @@ const SettingCardContent =
       overflow: auto;
       flex: 1;
     `
-
-const Setting = ({isShowing, setIsShowing} : {
+const Setting = ({isShowing, setIsShowing, tracks, setTracks, trackIndex, setTrackIndex, setToastMessage} : {
     isShowing: boolean,
     setIsShowing: React.Dispatch<SetStateAction<boolean>>,
+    tracks: Track[],
+    setTracks: React.Dispatch<SetStateAction<Track[]>>,
+    trackIndex: number,
+    setTrackIndex: React.Dispatch<SetStateAction<number>>,
+    setToastMessage: React.Dispatch<SetStateAction<{
+        value: string,
+        timestamp: number
+    }>>
 }) => {
-
+    const [url, setURL] = useState('空白')
+    const audioReader = (ref: React.ChangeEvent<HTMLInputElement>) => {
+        /*
+        const fs = new FileReader()
+        ref.target.files && fs.readAsArrayBuffer(ref.target.files[0])
+        fs.onload = () => {
+            const arrBuffer = fs.result
+            const audioCtx = new AudioContext()
+            audioCtx.decodeAudioData(arrBuffer as ArrayBuffer, (audioBuffer) => {
+                const source = audioCtx.createBufferSource()
+                source.buffer = audioBuffer
+                source.connect(audioCtx.destination)
+                source.start()
+            })
+        }
+        */
+        if (ref.target.files) {
+            const src = URL.createObjectURL(ref.target.files[0])
+            let duration = 0
+            let media: HTMLAudioElement | null = new Audio(src)
+            media.onloadedmetadata = () => {
+                if (media!.duration != Infinity) {
+                    duration = media!.duration * 1000
+                    media = null
+                    tracks[tracks.length] = {
+                        title: ref.target.files![0].name,
+                        subtitle: '未知专辑',
+                        artist: '未知歌手',
+                        src: src,
+                        cover: 'http://imge.kugou.com/commendpic/20160923/20160923162707215688.png',
+                        lyric: '',
+                        album_id: '',
+                        encode_audio_id: '',
+                        code: '',
+                        timestamp: new Date().getTime() + 86400000,
+                        unique_index: tracks.length + 1,
+                        time_length: duration
+                    }
+                    setIsShowing(false)
+                    setToastMessage({
+                        value: `${ref.target.files![0].name} 已临时添加至歌单，当前页面重载前有效`,
+                        timestamp: new Date().getTime()
+                    })
+                }
+            }
+            setURL(src)
+            console.log(ref.target.files[0])
+        }
+    }
     return(
         <SettingWrap className={`${isShowing?'show':'hidden'}`}>
             <SettingStack>
@@ -74,8 +129,11 @@ const Setting = ({isShowing, setIsShowing} : {
                         <div>实验性选项</div>
                     </SettingCardTitle>
                     <SettingCardContent>
-                        <div>Checkbox1</div>
-                        <div>Checkbox2</div>
+                        <div className="flex flex-col gap-4">
+                            <label htmlFor="file" className="text-sky-400">添加本地音频文件</label>
+                            <input type="file" name="file" accept="audio/*" onChange={ref => audioReader(ref)} />
+                            <div>临时URL：{url}</div>
+                        </div>
                     </SettingCardContent>
                 </SettingCard>
             </SettingStack>
