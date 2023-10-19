@@ -175,8 +175,8 @@ const Player = () => {
                     timestamp: new Date().getTime()
                 })
             }
-            if (!isPlaying) {
-                setIsPlaying(true);
+            if (audioRef.current?.paused) {
+                toPlay(true);
             }
             audioRef.current.ontimeupdate = () => {
                 setTrackProgress(audioRef.current?.currentTime as number);
@@ -318,6 +318,22 @@ const Player = () => {
         */
     }
 
+    const toPlay = (flag: boolean) => {
+        if (flag) {
+            setIsPlaying(true)
+            setIsRotating(true)
+            audioRef.current?.play()
+                .then()
+                .catch(error => {
+                    handlePlayError(error)
+                })
+        } else {
+            setIsPlaying(false)
+            setIsRotating(false)
+            audioRef.current?.pause()
+        }
+    }
+
     const handlePlayError = (e: Error) => {
         let value: string;
         if (e.message.includes('no supported sources')) {
@@ -340,12 +356,10 @@ const Player = () => {
         navigator.mediaSession.setActionHandler('previoustrack', () => null);
         navigator.mediaSession.setActionHandler('nexttrack', () => null);
         navigator.mediaSession.setActionHandler('play', () => {
-            setIsPlaying(true)
-            setIsRotating(true);
+            toPlay(true)
         });
         navigator.mediaSession.setActionHandler('pause', () => {
-            setIsPlaying(false);
-            setIsRotating(false);
+            toPlay(false);
         });
         navigator.mediaSession.setActionHandler('previoustrack', () => {
             toPrevTrack();
@@ -377,21 +391,6 @@ const Player = () => {
     }, [toastMessage]);
 
     useEffect(() => {
-        if (isPlaying) {
-            audioRef.current?.play()
-                .then(() => {
-                    setIsRotating(true);
-                })
-                .catch((e) => {
-                    handlePlayError(e)
-                });
-        } else {
-            audioRef.current?.pause();
-            setIsRotating(false);
-        }
-    }, [isPlaying]);
-
-    useEffect(() => {
         if (isRotating) {
             setRotate("running");
         } else {
@@ -401,13 +400,13 @@ const Player = () => {
 
     useEffect(() => {
         if (alive) {
-            setIsPlaying(false);
+            toPlay(false)
             audioRef.current!.src = src;
             setTrackProgress(0);
             initActionHandler();
             syncMediaSession(tracks[trackIndex]);
             if (isReady.current) {
-                setIsPlaying(true);
+                toPlay(true);
             } else {
                 // Set the isReady ref as true for the next pass
                 isReady.current = true;
@@ -436,6 +435,16 @@ const Player = () => {
             audioRef.current.loop = loopMode === 1
         }
     }, [loopMode]);
+
+    useEffect(() => {
+        if (audioRef.current?.paused && (isPlaying || isRotating)) {
+            setIsPlaying(false);
+            setIsRotating(false);
+        } else if (!audioRef.current?.paused && !(isPlaying || isRotating)) {
+            setIsPlaying(true);
+            setIsRotating(true);
+        }
+    }, [audioRef.current?.paused]);
 
     useEffect(() => {
         if (audioRef.current && audioRef.current.ended) {
@@ -490,7 +499,7 @@ const Player = () => {
                     isPlaying={isPlaying}
                     onPrevClick={toPrevTrack}
                     onNextClick={toNextTrack}
-                    onPlayPauseClick={setIsPlaying}
+                    onPlayPauseClick={toPlay}
                     onPlayListClick={setPlayListShowing}
                     setSettingShowing={setSettingShowing}
                     loopMode={loopMode}

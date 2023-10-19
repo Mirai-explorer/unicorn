@@ -72,7 +72,7 @@ const setFullscreen = () => {
 
 const Controller = ({ isPlaying, onPlayPauseClick, onPrevClick, onNextClick, onPlayListClick, setSettingShowing, loopMode, setLoopMode} : {
     isPlaying : boolean,
-    onPlayPauseClick: React.Dispatch<React.SetStateAction<boolean>>,
+    onPlayPauseClick: Function,
     onPrevClick: React.MouseEventHandler<HTMLButtonElement>,
     onNextClick: React.MouseEventHandler<HTMLButtonElement>,
     onPlayListClick: React.Dispatch<React.SetStateAction<boolean>>,
