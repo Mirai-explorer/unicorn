@@ -127,11 +127,25 @@ const Setting = ({isShowing, setIsShowing, tracks, setTracks, trackIndex, setTra
     }
 
     const readClipboard = () => {
+        if (!navigator.clipboard) {
+            setToastMessage({
+                value: `粘贴失败，您当前的访问环境不支持自动粘贴，请手动复制ID到文本框内`,
+                timestamp: new Date().getTime()
+            })
+            return 0
+        }
         navigator.clipboard
             .readText()
             .then(text => {
                 textRef.current!.value = text
+                setText(text)
             })
+            .catch((error) => {
+                setToastMessage({
+                    value: `粘贴失败，请手动复制ID到文本框内，错误信息：${error}`,
+                    timestamp: new Date().getTime()
+                })
+            });
     }
 
     const syncInfo = () => {

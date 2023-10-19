@@ -366,6 +366,13 @@ const Search = ({isShowing, setIsShowing, setTracks, tracks, updates, setUpdate,
     }
 
     const menuEvent = (id: string) => {
+        if (!navigator.clipboard) {
+            setToastMessage({
+                value: `复制失败，您当前的访问环境不支持自动复制，请记录ID【${id}】`,
+                timestamp: new Date().getTime()
+            })
+            return 0
+        }
         navigator.clipboard
             .writeText(id)
             .then(
@@ -375,7 +382,13 @@ const Search = ({isShowing, setIsShowing, setTracks, tracks, updates, setUpdate,
                         timestamp: new Date().getTime()
                     })
                 },
-            );
+            )
+            .catch((error) => {
+                setToastMessage({
+                    value: `复制失败，请记录ID【${id}】，错误信息：${error}`,
+                    timestamp: new Date().getTime()
+                })
+            });
     }
 
     return(
