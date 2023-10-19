@@ -401,9 +401,9 @@ const Player = () => {
 
     useEffect(() => {
         if (alive) {
-            audioRef.current?.pause();
+            setIsPlaying(false);
             audioRef.current!.src = src;
-            setTrackProgress(audioRef.current!.currentTime);
+            setTrackProgress(0);
             initActionHandler();
             syncMediaSession(tracks[trackIndex]);
             if (isReady.current) {
