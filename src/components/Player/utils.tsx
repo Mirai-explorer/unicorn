@@ -69,11 +69,12 @@ const getTime = (type: number) => {
 };
 
 const syncMediaSession = (track: Track) => {
+    navigator.mediaSession.metadata = null
     navigator.mediaSession.metadata = new MediaMetadata({
         title: track.title,
         artist: track.artist,
         album: track.subtitle,
-        artwork: [{ src: track.cover }]
+        artwork: [{ src: track.cover, type: "image/jpeg", sizes: "480x480" }]
     })
 }
 

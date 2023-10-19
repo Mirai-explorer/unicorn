@@ -335,6 +335,10 @@ const Player = () => {
     }
 
     const initActionHandler = () => {
+        navigator.mediaSession.setActionHandler('play', () => null);
+        navigator.mediaSession.setActionHandler('pause', () => null);
+        navigator.mediaSession.setActionHandler('previoustrack', () => null);
+        navigator.mediaSession.setActionHandler('nexttrack', () => null);
         navigator.mediaSession.setActionHandler('play', () => {
             setIsPlaying(true)
             setIsRotating(true);
@@ -395,28 +399,19 @@ const Player = () => {
         }
     }, [isRotating]);
 
-    // Handles cleanup and setup when changing tracks
     useEffect(() => {
-        if (audioRef.current) {
-            audioRef.current.pause();
-            audioRef.current.src = src;
-        } else {
-            audioRef.current = new Audio(src);
-        }
-        setTrackProgress(audioRef.current.currentTime);
-        initActionHandler();
-        syncMediaSession(tracks[trackIndex]);
-        if (isReady.current) {
-            audioRef.current.play()
-                .then(() => {
-                    setIsPlaying(true)
-                })
-                .catch((e) => {
-                    handlePlayError(e)
-                });
-        } else {
-            // Set the isReady ref as true for the next pass
-            isReady.current = true;
+        if (alive) {
+            audioRef.current?.pause();
+            audioRef.current!.src = src;
+            setTrackProgress(audioRef.current!.currentTime);
+            initActionHandler();
+            syncMediaSession(tracks[trackIndex]);
+            if (isReady.current) {
+                setIsPlaying(true);
+            } else {
+                // Set the isReady ref as true for the next pass
+                isReady.current = true;
+            }
         }
     }, [trackIndex, alive]);
 
@@ -429,11 +424,6 @@ const Player = () => {
 
     useEffect(() => {
         if (audioRef.current) {
-            navigator.mediaSession.setPositionState({
-                duration: !isNaN(audioRef.current!.duration) ? audioRef.current?.duration : 0,
-                playbackRate: audioRef.current?.playbackRate,
-                position: audioRef.current?.currentTime,
-            })
             audioRef.current.ontimeupdate = () => {
                 setTrackProgress(audioRef.current?.currentTime as number);
             }
