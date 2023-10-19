@@ -32,14 +32,14 @@ const sign = (params: [string, number | string][]) => {
 
 const fetchMusicSource = async(data: Track | sTrack) => {
     // a jsonp mode
-    return JSONP(`https://wwwapi.kugou.com/yy/index.php?r=play/getdata&dfid=${cookie.load('kg_dfid') || '3x7DYT4HlRDu3PzEsJ09LEqh'}&mid=${cookie.load('kg_dfid') || '3x7DYT4HlRDu3PzEsJ09LEqh'}&appid=1014&encode_album_audio_id=${data.encode_audio_id}&platid=4&_=${new Date().getTime()}`)
+    return JSONP(`https://wwwapi.kugou.com/yy/index.php?r=play/getdata&dfid=${cookie.load('kg_dfid') || '4FHbnb44LtSM2JrXpX3riltQ'}&mid=${cookie.load('kg_mid') || '50e0be703d34ee6401eedf772101571b'}&appid=1014&encode_album_audio_id=${data.encode_audio_id}&platid=4&_=${new Date().getTime()}`)
     /*
     // a proxy mode
     return axios.get('/get_song', {
         params: {
             r: 'play/getdata',
-            dfid: cookie.load('kg_dfid') || '3x7DYT4HlRDu3PzEsJ09LEqh',
-            mid: cookie.load('kg_mid') || '25c7d487da516f05cea717f9deef0fb3',
+            dfid: cookie.load('kg_dfid') || '4FHbnb44LtSM2JrXpX3riltQ',
+            mid: cookie.load('kg_mid') || '50e0be703d34ee6401eedf772101571b',
             appid: 1014,
             encode_album_audio_id: data.encode_audio_id,
             platid: 4,

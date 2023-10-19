@@ -178,13 +178,13 @@ const Search = ({isShowing, setIsShowing, setTracks, tracks, updates, setUpdate,
             callback: 'callback123',
             clienttime: new Date().getTime(),
             clientver: 1000,
-            dfid: cookie.load('kg_dfid') || '3x7DYT4HlRDu3PzEsJ09LEqh',
+            dfid: cookie.load('kg_dfid') || '4FHbnb44LtSM2JrXpX3riltQ',
             filter: 10,
             inputtype: 0,
             iscorrection: 1,
             isfuzzy: 0,
             keyword: keyword,
-            mid: cookie.load('kg_mid') || '25c7d487da516f05cea717f9deef0fb3',
+            mid: cookie.load('kg_mid') || '50e0be703d34ee6401eedf772101571b',
             page: 1,
             pagesize: 30,
             platform: 'WebFilter',
@@ -192,10 +192,10 @@ const Search = ({isShowing, setIsShowing, setTracks, tracks, updates, setUpdate,
             srcappid: 2919,
             token: '',
             userid: 0,
-            uuid: cookie.load('kg_mid') || '25c7d487da516f05cea717f9deef0fb3'
+            uuid: cookie.load('kg_mid') || '50e0be703d34ee6401eedf772101571b'
         }
         // a jsonp mode
-        JSONP(`https://complexsearch.kugou.com/v2/search/song?appid=1014&bitrate=0&clienttime=${params.clienttime}&clientver=1000&dfid=${cookie.load('kg_dfid') || '3x7DYT4HlRDu3PzEsJ09LEqh'}&filter=10&inputtype=0&iscorrection=1&isfuzzy=0&keyword=${keyword}&mid=${cookie.load('kg_mid') || '25c7d487da516f05cea717f9deef0fb3'}&page=1&pagesize=30&platform=WebFilter&privilege_filter=0&srcappid=2919&token=&userid=0&uuid=${cookie.load('kg_mid') || '25c7d487da516f05cea717f9deef0fb3'}&signature=${sign(Object.entries(params))}`, {jsonpCallbackFunction: 'callback123'})
+        JSONP(`https://complexsearch.kugou.com/v2/search/song?appid=1014&bitrate=0&clienttime=${params.clienttime}&clientver=1000&dfid=${cookie.load('kg_dfid') || '4FHbnb44LtSM2JrXpX3riltQ'}&filter=10&inputtype=0&iscorrection=1&isfuzzy=0&keyword=${keyword}&mid=${cookie.load('kg_mid') || '50e0be703d34ee6401eedf772101571b'}&page=1&pagesize=30&platform=WebFilter&privilege_filter=0&srcappid=2919&token=&userid=0&uuid=${cookie.load('kg_mid') || '50e0be703d34ee6401eedf772101571b'}&signature=${sign(Object.entries(params))}`, {jsonpCallbackFunction: 'callback123'})
             .then(res => res.json())
             .then(data => {
                 setLoading(false)

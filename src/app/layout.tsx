@@ -41,6 +41,8 @@ export default function RootLayout({
         <link rel="shortcut icon" href="/favicon.ico" />
         <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500" />
 
+        <meta name="baidu-site-verification" content="codeva-e9EzDkx3j5" />
+
         <meta name="twitter:card" content="summary" />
         <meta name="twitter:url" content="https://unicorn.js.org" />
         <meta name="twitter:title" content="Mirai 探索者" />
