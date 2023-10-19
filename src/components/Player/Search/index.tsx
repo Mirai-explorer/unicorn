@@ -1,9 +1,7 @@
 import { styled } from "styled-components";
-import React, { SetStateAction } from "react";
-import axios from "axios";
+import React, {SetStateAction, useRef} from "react";
 import { Track, fetchMusicSource, sign } from "@/components/Player/utils"
-import Kugou from "@/assets/common/Kugou";
-import SearchIcon from "@/assets/common/Search";
+import Icon from "../../Icons/player_icon";
 import cookie from "react-cookies";
 import JSONP from "fetch-jsonp";
 
@@ -134,17 +132,13 @@ const SearchItemLabel =
       gap: 8px;
     `
 
-const Search = ({isShowing, setIsShowing, setTracks, tracks, updates, setUpdate, toastMessage, setToastMessage} : {
+const Search = ({isShowing, setIsShowing, setTracks, tracks, updates, setUpdate, setToastMessage} : {
     isShowing: boolean,
     setIsShowing: React.Dispatch<SetStateAction<boolean>>,
     setTracks: React.Dispatch<SetStateAction<Track[]>>,
     tracks: Track[],
     updates: number,
     setUpdate: React.Dispatch<SetStateAction<number>>,
-    toastMessage: {
-        value: string,
-        timestamp: number
-    },
     setToastMessage: React.Dispatch<SetStateAction<{
         value: string,
         timestamp: number
@@ -162,7 +156,7 @@ const Search = ({isShowing, setIsShowing, setTracks, tracks, updates, setUpdate,
         Auxiliary: 'null'
     }])
     const [loading, setLoading] = React.useState(false)
-
+    const searchInputRef = useRef<HTMLInputElement>(null)
     const watchInputValue = (value:string) => {
         setValue(value)
     }
@@ -264,6 +258,7 @@ const Search = ({isShowing, setIsShowing, setTracks, tracks, updates, setUpdate,
 
     const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
         if (e.key === 'Enter') {
+            searchInputRef.current?.blur()
             doSearch(value)
         }
     }
@@ -366,11 +361,17 @@ const Search = ({isShowing, setIsShowing, setTracks, tracks, updates, setUpdate,
                         <div onClick={() => {setIsShowing(false)}}>×</div>
                         <SearchGroup>
                             <SearchCardSwitch>
-                                <Kugou />
+                                <Icon className={`icon-kugou`} name="Kugou" width={18} height={18} fill="#1296DB" />
                             </SearchCardSwitch>
-                            <SearchCardInput type="text" autoFocus onChange={e => watchInputValue(e.target.value)} onKeyDown={e => handleKeyDown(e)} />
+                            <SearchCardInput
+                                type="text"
+                                autoFocus
+                                onChange={e => watchInputValue(e.target.value)}
+                                onKeyDown={e => handleKeyDown(e)}
+                                ref={searchInputRef}
+                            />
                             <SearchCardButton name="search" onClick={() => doSearch(value)}>
-                                <SearchIcon />
+                                <Icon className={`icon-search`} name="Search" width={18} height={18} fill="#BFBFBF" />
                             </SearchCardButton>
                         </SearchGroup>
                     </SearchCardTitle>

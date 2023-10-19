@@ -126,6 +126,7 @@ const Player = () => {
     const [isShowing, setIsShowing] = useState(false);
     const [settingShowing, setSettingShowing] = useState(false);
     const [playListShowing, setPlayListShowing] = useState(false);
+    const [loopMode, setLoopMode] = useState(0);
     const [toastMessage, setToastMessage] = useState({
         value: '',
         timestamp: new Date().getTime()
@@ -154,42 +155,49 @@ const Player = () => {
 
     const onScrub = (value: number) => {
         //audioRef.current.currentTime = value;
-        audioRef.current!.ontimeupdate = () => null
-        setReduce('reduce')
-        setTrackProgress(value)
+        if (audioRef.current) {
+            audioRef.current.ontimeupdate = () => null
+            reduce !== 'reduce' && setReduce('reduce')
+            setTrackProgress(value)
+        }
     };
 
     const onScrubEnd = (value: number) => {
         // If not already playing, start
-        setReduce('')
-        if (value < time_length / 1000) {
-            audioRef.current!.currentTime = value
-        } else {
-            audioRef.current!.currentTime = audioRef.current!.currentTime
-            setToastMessage({
-                value: '超出试听时长',
-                timestamp: new Date().getTime()
-            })
-        }
-        if (!isPlaying) {
-            setIsPlaying(true);
-        }
-        audioRef.current!.ontimeupdate = () => {
-            setTrackProgress(audioRef.current!.currentTime);
+        if (audioRef.current) {
+            setReduce('')
+            if (value < time_length / 1000) {
+                audioRef.current.currentTime = value
+            } else {
+                audioRef.current.currentTime = audioRef.current.currentTime
+                setToastMessage({
+                    value: '超出试听时长',
+                    timestamp: new Date().getTime()
+                })
+            }
+            if (!isPlaying) {
+                setIsPlaying(true);
+            }
+            audioRef.current.ontimeupdate = () => {
+                setTrackProgress(audioRef.current?.currentTime as number);
+            }
         }
     };
 
     const toPrevTrack = () => {
         let index = trackIndex - 1 < 0 ? tracks.length - 1 : trackIndex - 1;
         setTrackIndex(index);
-        console.log(trackIndex)
     };
 
     const toNextTrack = () => {
         let index = trackIndex < tracks.length - 1 ? trackIndex + 1 : 0;
         setTrackIndex(index);
-        console.log(trackIndex)
     };
+
+    const toRandomTrack = () => {
+        let index = Math.round(Math.random() * (tracks.length - 1));
+        setTrackIndex(index);
+    }
 
     const notify = (string: string) => toast(string);
 
@@ -366,7 +374,7 @@ const Player = () => {
 
     useEffect(() => {
         if (isPlaying) {
-            audioRef.current!.play()
+            audioRef.current?.play()
                 .then(() => {
                     setIsRotating(true);
                 })
@@ -374,7 +382,7 @@ const Player = () => {
                     handlePlayError(e)
                 });
         } else {
-            audioRef.current!.pause();
+            audioRef.current?.pause();
             setIsRotating(false);
         }
     }, [isPlaying]);
@@ -420,19 +428,38 @@ const Player = () => {
     useEffect(() => {
         // Pause and clean up on unmount
         return () => {
-            audioRef.current!.pause();
+            audioRef.current?.pause();
         };
     }, []);
 
     useEffect(() => {
-        audioRef.current!.ontimeupdate = () => {
-            setTrackProgress(audioRef.current!.currentTime);
+        if (audioRef.current) {
+            audioRef.current.ontimeupdate = () => {
+                setTrackProgress(audioRef.current?.currentTime as number);
+            }
+            console.log(trackProgress)
         }
-        console.log(trackProgress)
-    }, [audioRef.current!.readyState]);
+    }, [audioRef.current?.readyState]);
 
     useEffect(() => {
-        audioRef.current?.ended && toNextTrack()
+        if (audioRef.current) {
+            audioRef.current.loop = loopMode === 1
+        }
+    }, [loopMode]);
+
+    useEffect(() => {
+        if (audioRef.current && audioRef.current.ended) {
+            switch (loopMode) {
+                case 0:
+                    toNextTrack();
+                    break;
+                case 1:
+                    break;
+                case 2:
+                    toRandomTrack();
+                    break;
+            }
+        }
     }, [audioRef.current?.ended]);
 
     const past = getTime(trackProgress);
@@ -476,6 +503,8 @@ const Player = () => {
                     onPlayPauseClick={setIsPlaying}
                     onPlayListClick={setPlayListShowing}
                     setSettingShowing={setSettingShowing}
+                    loopMode={loopMode}
+                    setLoopMode={setLoopMode}
                 />
                 <Search
                     isShowing={isShowing}
@@ -484,7 +513,6 @@ const Player = () => {
                     setTracks={setTracks}
                     updates={updates}
                     setUpdate={setUpdate}
-                    toastMessage={toastMessage}
                     setToastMessage={setToastMessage}
                 />
                 <Setting

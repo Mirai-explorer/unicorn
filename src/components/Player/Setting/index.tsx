@@ -1,5 +1,5 @@
 import {styled} from "styled-components";
-import React, {createRef, SetStateAction, useEffect, useRef, useState} from "react";
+import React, {SetStateAction, useState} from "react";
 import {Track} from "@/components/Player/utils";
 
 const SettingWrap =
@@ -132,7 +132,9 @@ const Setting = ({isShowing, setIsShowing, tracks, setTracks, trackIndex, setTra
                         <div className="flex flex-col gap-4">
                             <label htmlFor="file" className="text-sky-400">添加本地音频文件</label>
                             <input type="file" name="file" accept="audio/*" onChange={ref => audioReader(ref)} />
-                            <div>临时URL：{url}</div>
+                            <div>
+
+                            </div>
                         </div>
                     </SettingCardContent>
                 </SettingCard>

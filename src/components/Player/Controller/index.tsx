@@ -1,14 +1,6 @@
 import React from "react";
-import Play from "@/assets/common/Play";
-import Pause from "@/assets/common/Pause";
-import Next from "@/assets/common/Next";
-import Prev from "@/assets/common/Prev";
-import SongList from "@/assets/common/SongList";
-import { styled, keyframes } from "styled-components";
-import Loop from "@/assets/common/Loop";
-import Random from "@/assets/common/Random";
-import SingleCycle from "@/assets/common/SingleCycle";
-import Fullscreen from "@/assets/common/Fullscreen";
+import { styled } from "styled-components";
+import Icon from "../../Icons/player_icon"
 
 const ControllerWrap =
     styled.div`
@@ -41,7 +33,7 @@ const Left =
       width: 48px;
       height: 100%;
       align-items: center;
-      gap: 0.25rem;
+      gap: .3rem;
       
       > button {
         width: 24px;
@@ -58,25 +50,7 @@ const Center =
       height: 60px;
       
       button {
-        margin: .75rem;
-        background: #ffffff30;
-        box-shadow: 0 0 3px #00000016;
-        border-radius: 50%;
-      }
-
-      .prev, .next {
-        width: 40px;
-        height: 40px;
-      }
-
-      .play, .pause {
-        width: 60px;
-        height: 60px;
-        border-radius: 50%;
-      }
-
-      .icon-play {
-        transform: translateX(3px);
+        margin: .6rem;
       }
     `
 
@@ -96,43 +70,56 @@ const setFullscreen = () => {
     document.fullscreenElement !== null ? document.exitFullscreen() : document.documentElement.requestFullscreen()
 }
 
-const Controller = ({ isPlaying, onPlayPauseClick, onPrevClick, onNextClick, onPlayListClick, setSettingShowing} : {
+const Controller = ({ isPlaying, onPlayPauseClick, onPrevClick, onNextClick, onPlayListClick, setSettingShowing, loopMode, setLoopMode} : {
     isPlaying : boolean,
     onPlayPauseClick: React.Dispatch<React.SetStateAction<boolean>>,
     onPrevClick: React.MouseEventHandler<HTMLButtonElement>,
     onNextClick: React.MouseEventHandler<HTMLButtonElement>,
     onPlayListClick: React.Dispatch<React.SetStateAction<boolean>>,
-    setSettingShowing: React.Dispatch<React.SetStateAction<boolean>>
+    setSettingShowing: React.Dispatch<React.SetStateAction<boolean>>,
+    loopMode: number,
+    setLoopMode: React.Dispatch<React.SetStateAction<number>>
 }) => (
     <ControllerWrap>
         <ControllerInner>
             <Left>
-                {isPlaying ? (
+                {loopMode === 0 && (
                     <Button
                         type="button"
                         className="loop"
-                        onClick={() => onPlayPauseClick(false)}
+                        onClick={() => setLoopMode(1)}
                         aria-label="Loop"
                     >
-                        <Loop />
+                        <Icon className={`icon-loop`} name="Loop" width={24} height={24} />
                     </Button>
-                ) : (
+                )}
+                {loopMode === 1 && (
                     <Button
                         type="button"
                         className="single_cycle"
-                        onClick={() => onPlayPauseClick(true)}
+                        onClick={() => setLoopMode(2)}
                         aria-label="SingleCycle"
                     >
-                        <SingleCycle />
+                        <Icon className={`icon-single_cycle`} name="SingleCycle" width={24} height={24} />
+                    </Button>
+                )}
+                {loopMode === 2 && (
+                    <Button
+                        type="button"
+                        className="random"
+                        onClick={() => setLoopMode(0)}
+                        aria-label="Random"
+                    >
+                        <Icon className={`icon-random`} name="Random" width={24} height={24} />
                     </Button>
                 )}
                 <Button
                     type="button"
-                    className="random"
+                    className="setting"
                     onClick={() => setSettingShowing(true)}
-                    aria-label="Random"
+                    aria-label="Setting"
                 >
-                    <Random />
+                    <Icon className={`icon-setting`} name="Setting" width={24} height={24} />
                 </Button>
             </Left>
             <Center>
@@ -142,7 +129,7 @@ const Controller = ({ isPlaying, onPlayPauseClick, onPrevClick, onNextClick, onP
                     aria-label="Previous"
                     onClick={onPrevClick}
                 >
-                    <Prev fill="#ffffff" />
+                    <Icon className={`icon-prev`} name="Prev" width={24} height={24} />
                 </Button>
                 {isPlaying ? (
                     <Button
@@ -151,7 +138,7 @@ const Controller = ({ isPlaying, onPlayPauseClick, onPrevClick, onNextClick, onP
                         onClick={() => onPlayPauseClick(false)}
                         aria-label="Pause"
                     >
-                        <Pause />
+                        <Icon className={`icon-pause`} name="Pause" width={60} height={60} />
                     </Button>
                 ) : (
                     <Button
@@ -160,7 +147,7 @@ const Controller = ({ isPlaying, onPlayPauseClick, onPrevClick, onNextClick, onP
                         onClick={() => onPlayPauseClick(true)}
                         aria-label="Play"
                     >
-                        <Play />
+                        <Icon className={`icon-play`} name="Play" width={60} height={60} />
                     </Button>
                 )}
                 <Button
@@ -169,25 +156,25 @@ const Controller = ({ isPlaying, onPlayPauseClick, onPrevClick, onNextClick, onP
                     aria-label="Next"
                     onClick={onNextClick}
                 >
-                    <Next />
+                    <Icon className={`icon-next`} name="Next" width={24} height={24} />
                 </Button>
             </Center>
             <Right>
                 <Button
                     type="button"
-                    className="songlist"
-                    aria-label="SongList"
+                    className="fullscreen"
+                    aria-label="Fullscreen"
                     onClick={() => setFullscreen()}
                 >
-                    <Fullscreen />
+                    <Icon className={`icon-fullscreen`} name="Fullscreen" width={20} height={20} />
                 </Button>
                 <Button
                     type="button"
-                    className="songlist"
-                    aria-label="SongList"
+                    className="playlist"
+                    aria-label="Playlist"
                     onClick={() => onPlayListClick(true)}
                 >
-                    <SongList />
+                    <Icon className={`icon-playlist`} name="Playlist" width={24} height={24} />
                 </Button>
             </Right>
         </ControllerInner>
