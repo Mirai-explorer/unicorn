@@ -1,6 +1,6 @@
 import {styled} from "styled-components";
 import React, {SetStateAction, useRef, useState} from "react";
-import {fetchMusicSource, Track} from "@/components/Player/utils";
+import {fetchMusicSource, syncMediaSession, Track} from "@/components/Player/utils";
 
 const SettingWrap =
     styled.div`
@@ -192,6 +192,7 @@ const Setting = ({isShowing, setIsShowing, tracks, setTracks, trackIndex, setTra
                         unique_index: tracks[trackIndex].unique_index,
                         time_length: tracks[trackIndex].time_length
                     }
+                    syncMediaSession(tracks[trackIndex])
                     setToastMessage({
                         value: item.song_name+' 更新成功',
                         timestamp: new Date().getTime()

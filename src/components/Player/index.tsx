@@ -13,7 +13,7 @@ import {initDB, useIndexedDB} from "react-indexed-db-hook";
 import tracks0 from "@/assets/data/tracks";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import {Track, fetchMusicSource, getTime} from "./utils";
+import {Track, fetchMusicSource, getTime, syncMediaSession} from "./utils";
 import PlayList from "@/components/Player/PlayList";
 import Setting from "@/components/Player/Setting";
 
@@ -332,15 +332,6 @@ const Player = () => {
             timestamp: new Date().getTime()
         });
         console.error(e.message)
-    }
-
-    const syncMediaSession = (track: Track) => {
-        navigator.mediaSession.metadata = new MediaMetadata({
-            title: track.title,
-            artist: track.artist,
-            album: track.subtitle,
-            artwork: [{ src: track.cover }]
-        })
     }
 
     const initActionHandler = () => {

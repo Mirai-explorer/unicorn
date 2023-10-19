@@ -68,5 +68,14 @@ const getTime = (type: number) => {
     return mins + ":" + secs;
 };
 
-export { fetchMusicSource, getTime, sign };
+const syncMediaSession = (track: Track) => {
+    navigator.mediaSession.metadata = new MediaMetadata({
+        title: track.title,
+        artist: track.artist,
+        album: track.subtitle,
+        artwork: [{ src: track.cover }]
+    })
+}
+
+export { fetchMusicSource, syncMediaSession, getTime, sign };
 export type { Track };
