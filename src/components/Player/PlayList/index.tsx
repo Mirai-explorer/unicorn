@@ -155,8 +155,8 @@ const PlayList = ({tracks, setTracks, trackIndex, setTrackIndex, isShowing, setI
     }
     const clrConfirm = async () => {
         if (await simpleConfirm({
-            title: '数据库清除警告',
-            message: '确认要删除数据库吗？（此操作无法撤销，请谨慎操作）',
+            title: '数据库初始化警告',
+            message: '确认要初始化数据库吗？（此操作无法撤销，请谨慎操作）',
             confirmLabel: '确认',
             cancelLabel: '算了'
         })) {

@@ -13,7 +13,9 @@ type resultType = {
     EMixSongID: string,
     Duration: number,
     OriSongName: string,
-    Auxiliary: string
+    Auxiliary: string,
+    Image: string,
+    SingerName: string
 }
 
 const SearchWrap =
@@ -53,7 +55,7 @@ const SearchCard =
       color: black;
       display: flex;
       flex-direction: column;
-      padding: 24px;
+      padding: 2rem 1rem;
       font-size: 16px;
       gap: 16px;
     `
@@ -130,6 +132,11 @@ const SearchItemLabel =
       width: 100%;
       line-height: 24px;
       gap: 8px;
+      transition: background-color .3s ease-out;
+      
+      &:active {
+        background-color: #f0f0f0;
+      }
     `
 
 const Search = ({isShowing, setIsShowing, setTracks, tracks, updates, setUpdate, setToastMessage} : {
@@ -153,7 +160,9 @@ const Search = ({isShowing, setIsShowing, setTracks, tracks, updates, setUpdate,
         EMixSongID: 'null',
         Duration: 0,
         OriSongName: 'null',
-        Auxiliary: 'null'
+        Auxiliary: 'null',
+        Image: 'null',
+        SingerName: 'null'
     }])
     const [loading, setLoading] = React.useState(false)
     const searchInputRef = useRef<HTMLInputElement>(null)
@@ -201,7 +210,9 @@ const Search = ({isShowing, setIsShowing, setTracks, tracks, updates, setUpdate,
                             EMixSongID: item.EMixSongID,
                             Duration: item.Duration,
                             OriSongName: item.OriSongName,
-                            Auxiliary: item.Auxiliary
+                            Auxiliary: item.Auxiliary,
+                            Image: item.Image,
+                            SingerName: item.SingerName
                         })
                     })
                     list.length !== 0 ? setResult(list) : setResult([])
@@ -237,7 +248,9 @@ const Search = ({isShowing, setIsShowing, setTracks, tracks, updates, setUpdate,
                             EMixSongID: item.EMixSongID,
                             Duration: item.Duration,
                             OriSongName: item.OriSongName,
-                            Auxiliary: item.Auxiliary
+                            Auxiliary: item.Auxiliary,
+                            Image: item.Image,
+                            SingerName: item.SingerName
                         })
                     })
                     list.length !== 0 ? setResult(list) : setResult([])
@@ -277,7 +290,6 @@ const Search = ({isShowing, setIsShowing, setTracks, tracks, updates, setUpdate,
                     value: '不可重复添加',
                     timestamp: new Date().getTime()
                 })
-
             }
         })
         !flag && fetchMusicSource(track).then(res => {
@@ -353,6 +365,19 @@ const Search = ({isShowing, setIsShowing, setTracks, tracks, updates, setUpdate,
         })
     }
 
+    const menuEvent = (id: string) => {
+        navigator.clipboard
+            .writeText(id)
+            .then(
+                (res) => {
+                    setToastMessage({
+                        value: 'audio_id已同步到剪贴板',
+                        timestamp: new Date().getTime()
+                    })
+                },
+            );
+    }
+
     return(
         <SearchWrap className={`${isShowing?'show':'hidden'}`}>
             <SearchStack>
@@ -364,7 +389,7 @@ const Search = ({isShowing, setIsShowing, setTracks, tracks, updates, setUpdate,
                                 <Icon className={`icon-kugou`} name="Kugou" width={18} height={18} fill="#1296DB" />
                             </SearchCardSwitch>
                             <SearchCardInput
-                                type="text"
+                                type="search"
                                 autoFocus
                                 onChange={e => watchInputValue(e.target.value)}
                                 onKeyDown={e => handleKeyDown(e)}
@@ -381,10 +406,10 @@ const Search = ({isShowing, setIsShowing, setTracks, tracks, updates, setUpdate,
                                 return(
                                     <SearchItem key={index}>
                                         <SearchItemLabel>
-                                            <span className="inline-flex items-center">
+                                            <div className="inline-flex items-center gap-2 overflow-hidden overflow-ellipsis whitespace-nowrap">
                                                 <input
                                                     type="checkbox"
-                                                    className="p-2 bg-sky-100 checked:bg-sky-300 me-2"
+                                                    className=""
                                                     data-hash={item.FileHash}
                                                     data-album_id={item.AlbumID}
                                                     data-audio_id={item.EMixSongID}
@@ -392,9 +417,15 @@ const Search = ({isShowing, setIsShowing, setTracks, tracks, updates, setUpdate,
                                                         addToTracks((e.target as HTMLElement).dataset)
                                                     }}
                                                 />
-                                                {item.FileName}
-                                            </span>
-                                            <span>{Math.trunc(item.Duration / 60) > 9 ? '' : '0'}{Math.trunc(item.Duration / 60)}:{item.Duration % 60 > 9 ? '' : '0'}{item.Duration % 60}</span>
+                                                <img src={(item.Image).replace('{size}','120')} className="w-12 h-12 rounded-xl" alt={item.OriSongName} loading="lazy" />
+                                                <div className="flex flex-col gap-0.5" >
+                                                    <span className="text-sky-500">{item.OriSongName}</span>
+                                                    <span className="text-sm text-gray-500">{item.SingerName}</span>
+                                                </div>
+                                            </div>
+                                            <button onClick={e => menuEvent(item.EMixSongID)}>
+                                                <Icon className={`icon-more`} name="More" width={18} height={18} fill="#CCCCCC" />
+                                            </button>
                                         </SearchItemLabel>
                                     </SearchItem>
                                 )

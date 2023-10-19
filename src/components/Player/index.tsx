@@ -196,7 +196,11 @@ const Player = () => {
 
     const toRandomTrack = () => {
         let index = Math.round(Math.random() * (tracks.length - 1));
-        setTrackIndex(index);
+        if (index !== trackIndex) {
+            setTrackIndex(index);
+        } else {
+            audioRef.current!.play().then(() => audioRef.current!.currentTime = 0)
+        }
     }
 
     const notify = (string: string) => toast(string);
