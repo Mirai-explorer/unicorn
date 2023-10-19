@@ -1,6 +1,12 @@
 import {styled} from "styled-components";
 import React, {SetStateAction, useRef, useState} from "react";
 import {fetchMusicSource, syncMediaSession, Track} from "@/components/Player/utils";
+import {Noto_Emoji} from "next/dist/compiled/@next/font/dist/google";
+
+type clipBoard = {
+    name: PermissionName,
+    allowWithoutGesture: boolean
+}
 
 const SettingWrap =
     styled.div`
@@ -129,11 +135,25 @@ const Setting = ({isShowing, setIsShowing, tracks, setTracks, trackIndex, setTra
     const readClipboard = () => {
         if (!navigator.clipboard) {
             setToastMessage({
-                value: `粘贴失败，您当前的访问环境不支持自动粘贴，请手动复制ID到文本框内`,
+                value: `粘贴失败，您当前的访问环境不支持自动粘贴，请手动将ID粘贴到文本框内`,
                 timestamp: new Date().getTime()
             })
             return 0
         }
+        navigator.permissions.query({name: "clipboard-read", allowWithoutGesture: false} as unknown as clipBoard)
+            .then(result => {
+                if (result.state === "granted") {
+                    setToastMessage({
+                        value: `已授予权限`,
+                        timestamp: new Date().getTime()
+                    })
+                } else if (result.state === "prompt") {
+                    setToastMessage({
+                        value: `询问权限`,
+                        timestamp: new Date().getTime()
+                    })
+                }
+            })
         navigator.clipboard
             .readText()
             .then(text => {
@@ -142,7 +162,7 @@ const Setting = ({isShowing, setIsShowing, tracks, setTracks, trackIndex, setTra
             })
             .catch((error) => {
                 setToastMessage({
-                    value: `粘贴失败，请手动复制ID到文本框内，错误信息：${error}`,
+                    value: `粘贴失败，请手动将ID粘贴到文本框内，错误信息：${error}`,
                     timestamp: new Date().getTime()
                 })
             });

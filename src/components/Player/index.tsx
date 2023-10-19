@@ -343,6 +343,12 @@ const Player = () => {
             setIsPlaying(false);
             setIsRotating(false);
         });
+        navigator.mediaSession.setActionHandler('previoustrack', () => {
+            toPrevTrack();
+        });
+        navigator.mediaSession.setActionHandler('nexttrack', () => {
+            toNextTrack();
+        });
     }
 
     useEffect(() => {
@@ -351,7 +357,6 @@ const Player = () => {
             // 若从数据库获取的音轨数等于 0 则启用预存数据并更新，否则检查获取音轨是否过期
             tracks.length > 0 ? handleAllUpdates(tracks) : handleAllUpdates(tracks0);
         });
-        initActionHandler();
     }, []);
 
     useEffect(() => {
@@ -399,12 +404,7 @@ const Player = () => {
             audioRef.current = new Audio(src);
         }
         setTrackProgress(audioRef.current.currentTime);
-        navigator.mediaSession.setActionHandler('previoustrack', () => {
-            toPrevTrack();
-        });
-        navigator.mediaSession.setActionHandler('nexttrack', () => {
-            toNextTrack();
-        });
+        initActionHandler();
         syncMediaSession(tracks[trackIndex]);
         if (isReady.current) {
             audioRef.current.play()
@@ -429,6 +429,11 @@ const Player = () => {
 
     useEffect(() => {
         if (audioRef.current) {
+            navigator.mediaSession.setPositionState({
+                duration: !isNaN(audioRef.current!.duration) ? audioRef.current?.duration : 0,
+                playbackRate: audioRef.current?.playbackRate,
+                position: audioRef.current?.currentTime,
+            })
             audioRef.current.ontimeupdate = () => {
                 setTrackProgress(audioRef.current?.currentTime as number);
             }
