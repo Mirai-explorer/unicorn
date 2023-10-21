@@ -79,106 +79,112 @@ const Controller = ({ isPlaying, onPlayPauseClick, onPrevClick, onNextClick, onP
     setSettingShowing: React.Dispatch<React.SetStateAction<boolean>>,
     loopMode: number,
     setLoopMode: React.Dispatch<React.SetStateAction<number>>
-}) => (
-    <ControllerWrap>
-        <ControllerInner>
-            <Left>
-                {loopMode === 0 && (
+}) => {
+    const openPlaylist = () => {
+        onPlayListClick(true)
+
+    }
+    return(
+        <ControllerWrap>
+            <ControllerInner>
+                <Left>
+                    {loopMode === 0 && (
+                        <Button
+                            type="button"
+                            className="loop"
+                            onClick={() => setLoopMode(1)}
+                            aria-label="Loop"
+                        >
+                            <Icon className={`icon-loop`} name="Loop" width={24} height={24} />
+                        </Button>
+                    )}
+                    {loopMode === 1 && (
+                        <Button
+                            type="button"
+                            className="single_cycle"
+                            onClick={() => setLoopMode(2)}
+                            aria-label="SingleCycle"
+                        >
+                            <Icon className={`icon-single_cycle`} name="SingleCycle" width={24} height={24} />
+                        </Button>
+                    )}
+                    {loopMode === 2 && (
+                        <Button
+                            type="button"
+                            className="random"
+                            onClick={() => setLoopMode(0)}
+                            aria-label="Random"
+                        >
+                            <Icon className={`icon-random`} name="Random" width={24} height={24} />
+                        </Button>
+                    )}
                     <Button
                         type="button"
-                        className="loop"
-                        onClick={() => setLoopMode(1)}
-                        aria-label="Loop"
+                        className="setting"
+                        onClick={() => setSettingShowing(true)}
+                        aria-label="Setting"
                     >
-                        <Icon className={`icon-loop`} name="Loop" width={24} height={24} />
+                        <Icon className={`icon-setting`} name="Setting" width={24} height={24} />
                     </Button>
-                )}
-                {loopMode === 1 && (
+                </Left>
+                <Center>
                     <Button
                         type="button"
-                        className="single_cycle"
-                        onClick={() => setLoopMode(2)}
-                        aria-label="SingleCycle"
+                        className="prev"
+                        aria-label="Previous"
+                        onClick={onPrevClick}
                     >
-                        <Icon className={`icon-single_cycle`} name="SingleCycle" width={24} height={24} />
+                        <Icon className={`icon-prev`} name="Prev" width={24} height={24} />
                     </Button>
-                )}
-                {loopMode === 2 && (
+                    {isPlaying ? (
+                        <Button
+                            type="button"
+                            className="pause"
+                            onClick={() => onPlayPauseClick(false)}
+                            aria-label="Pause"
+                        >
+                            <Icon className={`icon-pause`} name="Pause" width={60} height={60} />
+                        </Button>
+                    ) : (
+                        <Button
+                            type="button"
+                            className="play"
+                            onClick={() => onPlayPauseClick(true)}
+                            aria-label="Play"
+                        >
+                            <Icon className={`icon-play`} name="Play" width={60} height={60} />
+                        </Button>
+                    )}
                     <Button
                         type="button"
-                        className="random"
-                        onClick={() => setLoopMode(0)}
-                        aria-label="Random"
+                        className="next"
+                        aria-label="Next"
+                        onClick={onNextClick}
                     >
-                        <Icon className={`icon-random`} name="Random" width={24} height={24} />
+                        <Icon className={`icon-next`} name="Next" width={24} height={24} />
                     </Button>
-                )}
-                <Button
-                    type="button"
-                    className="setting"
-                    onClick={() => setSettingShowing(true)}
-                    aria-label="Setting"
-                >
-                    <Icon className={`icon-setting`} name="Setting" width={24} height={24} />
-                </Button>
-            </Left>
-            <Center>
-                <Button
-                    type="button"
-                    className="prev"
-                    aria-label="Previous"
-                    onClick={onPrevClick}
-                >
-                    <Icon className={`icon-prev`} name="Prev" width={24} height={24} />
-                </Button>
-                {isPlaying ? (
+                </Center>
+                <Right>
                     <Button
                         type="button"
-                        className="pause"
-                        onClick={() => onPlayPauseClick(false)}
-                        aria-label="Pause"
+                        className="fullscreen"
+                        aria-label="Fullscreen"
+                        onClick={() => setFullscreen()}
                     >
-                        <Icon className={`icon-pause`} name="Pause" width={60} height={60} />
+                        <Icon className={`icon-fullscreen`} name="Fullscreen" width={20} height={20} />
                     </Button>
-                ) : (
                     <Button
                         type="button"
-                        className="play"
-                        onClick={() => onPlayPauseClick(true)}
-                        aria-label="Play"
+                        className="playlist"
+                        aria-label="Playlist"
+                        onClick={() => openPlaylist()}
                     >
-                        <Icon className={`icon-play`} name="Play" width={60} height={60} />
+                        <Icon className={`icon-playlist`} name="Playlist" width={24} height={24} />
                     </Button>
-                )}
-                <Button
-                    type="button"
-                    className="next"
-                    aria-label="Next"
-                    onClick={onNextClick}
-                >
-                    <Icon className={`icon-next`} name="Next" width={24} height={24} />
-                </Button>
-            </Center>
-            <Right>
-                <Button
-                    type="button"
-                    className="fullscreen"
-                    aria-label="Fullscreen"
-                    onClick={() => setFullscreen()}
-                >
-                    <Icon className={`icon-fullscreen`} name="Fullscreen" width={20} height={20} />
-                </Button>
-                <Button
-                    type="button"
-                    className="playlist"
-                    aria-label="Playlist"
-                    onClick={() => onPlayListClick(true)}
-                >
-                    <Icon className={`icon-playlist`} name="Playlist" width={24} height={24} />
-                </Button>
-            </Right>
-        </ControllerInner>
-    </ControllerWrap>
-);
+                </Right>
+            </ControllerInner>
+        </ControllerWrap>
+    )
+}
 
 export default Controller;

@@ -93,7 +93,13 @@ const Line =
       }
     `
 
-const Lyric = ({ tracks, trackIndex, trackProgress, reduce }:{ tracks: Track[], trackIndex: number, trackProgress: number, reduce: string }) => {
+const Lyric = ({ tracks, trackIndex, trackProgress, reduce, offset } : {
+    tracks: Track[],
+    trackIndex: number,
+    trackProgress: number,
+    reduce: string,
+    offset: number
+}) => {
     const [number, setNumber] = useState(0);
     const target: React.RefObject<HTMLDivElement> = React.createRef<HTMLDivElement>();
     const parseLrc = (str: string) => {
@@ -125,7 +131,7 @@ const Lyric = ({ tracks, trackIndex, trackProgress, reduce }:{ tracks: Track[], 
         const scores : number[] = [];
         lyrics.map((lyric : lyricType) => {
             const score = time - lyric.offset;
-            if (score >= -0.6) {
+            if (score >= offset) {
                 scores.push(score);
             }
         });

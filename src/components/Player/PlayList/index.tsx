@@ -2,6 +2,7 @@ import {styled} from "styled-components";
 import React, {SetStateAction, useEffect, useState} from "react";
 import {Track, getTime} from "@/components/Player/utils";
 import { simpleConfirm, SimpleDialogContainer } from 'react-simple-dialogs'
+import Icon from "@/components/Icons/player_icon";
 
 const PlayListWrap =
     styled.div`
@@ -41,19 +42,20 @@ const PlayListCard =
       display: flex;
       flex-direction: column;
       font-size: 16px;
-      border-radius: 2rem 2rem 0 0;
+      border-radius: 1rem 1rem 0 0;
       background: #FFFFFF;
-      height: 75vh;
+      height: 70vh;
       max-height: 600px;
       width: 100%;
-      transition: bottom .2s ease;
+      padding: 1rem;
+      transition: bottom .3s ease;
       
       .show & {
         bottom: 0;
       }
       
       .hidden & {
-        bottom: -75vh;
+        bottom: -70vh;
       }
     `
 const PlayListCardTitle =
@@ -61,8 +63,8 @@ const PlayListCardTitle =
       display: flex;
       align-items: center;
       width: 100%;
-      padding: 24px;
-      gap: 16px;
+      padding: 1rem;
+      gap: 1rem;
     `
 
 const Control =
@@ -80,10 +82,11 @@ const PlayListGroup =
 
 const PlayListCardContent =
     styled.div`
-      display: block;
+      display: flex;
+      flex-direction: column;
       overflow: auto;
       flex: 1;
-      padding: 0 12px;
+      gap: .25rem;
     `
 
 const PlayItem =
@@ -92,11 +95,11 @@ const PlayItem =
       align-items: center;
       width: 100%;
       min-height: 48px;
-      padding: 12px;
-      border-radius: .75rem;
-      transition: transform 200ms ease-out;
+      padding: .5rem 1rem;
+      flex-shrink: 0;
+      transition: transform 200ms ease-out, background-color 200ms ease-out;
 
-      &.highlight {
+      &:active {
         background-color: #eceff1;
       }
       
@@ -153,7 +156,7 @@ const PlayList = ({tracks, setTracks, trackIndex, setTrackIndex, isShowing, setI
             console.log('nothing to do')
         }
     }
-    const clrConfirm = async () => {
+    const resetConfirm = async () => {
         if (await simpleConfirm({
             title: '数据库初始化警告',
             message: '确认要初始化数据库吗？（此操作无法撤销，请谨慎操作）',
@@ -217,11 +220,15 @@ const PlayList = ({tracks, setTracks, trackIndex, setTrackIndex, isShowing, setI
             <PlayListStack>
                 <PlayListCard>
                     <PlayListCardTitle>
-                        <Control onClick={() => setIsShowing(false)}>×</Control>
+                        <Control name="button-back" onClick={() => setIsShowing(false)} aria-label="关闭按钮">
+                            <Icon className={`icon-close`} name="Close" width={12} height={12} fill="#000000" />
+                        </Control>
                         <PlayListGroup>
-                            <div className="text-[20px]">播放列表（{tracks.length}）</div>
+                            <div className="text-[20px]">播放列表</div>
                         </PlayListGroup>
-                        <Control onClick={() => clrConfirm()}>-</Control>
+                        <Control name="button-database" onClick={() => resetConfirm()} aria-label="数据库初始化按钮">
+                            <Icon className={`icon-database`} name="Database" width={18} height={18} fill="#000000" />
+                        </Control>
                     </PlayListCardTitle>
                     <PlayListCardContent>
                         {tracks && (
@@ -242,9 +249,9 @@ const PlayList = ({tracks, setTracks, trackIndex, setTrackIndex, isShowing, setI
                                     >
                                         <PlayItemLabel>
                                             <img src={item.cover} className="w-12 h-12 rounded-xl" alt={item.title} />
-                                            <div className="flex flex-col flex-grow overflow-hidden gap-0.5">
-                                                <span className="play-item_title text-ellipsis whitespace-nowrap overflow-hidden text-[18px]">{item.title}</span>
-                                                <span className="text-[14px]">{item.artist}</span>
+                                            <div className="flex flex-col flex-grow overflow-hidden gap-0.25">
+                                                <span className="play-item_title text-ellipsis whitespace-nowrap overflow-hidden text-[16px]">{item.title}</span>
+                                                <span className="play-item_subtitle text-ellipsis whitespace-nowrap overflow-hidden text-[#888888] text-[14px]">{item.artist}</span>
                                             </div>
                                             <span>{getTime(item.time_length/1000)}</span>
                                         </PlayItemLabel>

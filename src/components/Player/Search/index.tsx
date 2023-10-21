@@ -396,7 +396,9 @@ const Search = ({isShowing, setIsShowing, setTracks, tracks, updates, setUpdate,
             <SearchStack>
                 <SearchCard>
                     <SearchCardTitle>
-                        <div onClick={() => {setIsShowing(false)}}>×</div>
+                        <button name="button-back" onClick={() => setIsShowing(false)} aria-label="返回按钮">
+                            <Icon className={`icon-back`} name="Back" width={18} height={18} fill="#BFBFBF" />
+                        </button>
                         <SearchGroup>
                             <SearchCardSwitch>
                                 <Icon className={`icon-kugou`} name="Kugou" width={18} height={18} fill="#1296DB" />
@@ -408,7 +410,7 @@ const Search = ({isShowing, setIsShowing, setTracks, tracks, updates, setUpdate,
                                 onKeyDown={e => handleKeyDown(e)}
                                 ref={searchInputRef}
                             />
-                            <SearchCardButton name="search" onClick={() => doSearch(value)}>
+                            <SearchCardButton name="button-search" onClick={() => doSearch(value)}>
                                 <Icon className={`icon-search`} name="Search" width={18} height={18} fill="#BFBFBF" />
                             </SearchCardButton>
                         </SearchGroup>

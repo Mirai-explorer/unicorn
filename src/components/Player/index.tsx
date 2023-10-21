@@ -99,7 +99,7 @@ const Layout =
       color: white;
       -webkit-backdrop-filter: blur(32px) brightness(0.8);
       backdrop-filter: blur(32px) brightness(0.8);
-      transition: scale .2s cubic-bezier(.42,.19,.62,1);
+      transition: scale .25s cubic-bezier(.42,.19,.62,1);
       
       &.full {
         scale: 1.0;
@@ -127,6 +127,7 @@ const Player = () => {
     const [settingShowing, setSettingShowing] = useState(false);
     const [playListShowing, setPlayListShowing] = useState(false);
     const [loopMode, setLoopMode] = useState(0);
+    const [offset, setOffset] = useState(-0.6);
     const [toastMessage, setToastMessage] = useState({
         value: '',
         timestamp: new Date().getTime()
@@ -403,8 +404,8 @@ const Player = () => {
             toPlay(false)
             audioRef.current!.src = src;
             setTrackProgress(0);
-            initActionHandler();
             syncMediaSession(tracks[trackIndex]);
+            initActionHandler();
             if (isReady.current) {
                 toPlay(true);
             } else {
@@ -479,10 +480,11 @@ const Player = () => {
                     trackIndex={trackIndex}
                     trackProgress={trackProgress}
                     reduce={reduce}
+                    offset={offset}
                 />
                 <Title
                     title={title || "音乐感动生活"}
-                    subtitle={subtitle || "Mirai云端播放器"}
+                    subtitle={subtitle || "Mirai 云端播放器"}
                     singer={artist || "未知歌手"}
                     trackIndex={trackIndex}
                 />
@@ -522,6 +524,8 @@ const Player = () => {
                     trackIndex={trackIndex}
                     setTrackIndex={setTrackIndex}
                     setToastMessage={setToastMessage}
+                    offset={offset}
+                    setOffset={setOffset}
                 />
             </Layout>
             <ToastContainer />
