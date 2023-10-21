@@ -138,9 +138,13 @@ const Player = () => {
     const {title, subtitle, artist, cover, src, time_length} = tracks[trackIndex];
 
     // Refs
-    const audioRef = useRef<HTMLAudioElement | undefined>(
-        typeof Audio !== "undefined" ? new Audio() : undefined
+    const audioRef = useRef<HTMLAudioElement | null>(
+        typeof Audio !== "undefined" ? new Audio() : null
     );
+    const progress = useRef({
+        trackHash: '',
+        trackProgress: '0'
+    })
 
     const isReady = useRef(false);
 
@@ -211,8 +215,18 @@ const Player = () => {
             console.log('tracks check once again:',_tracks)
             if (_tracks.length > 0) {
                 setTracks(_tracks);
-                setTrackIndex(trackIndex);
-                setAlive(true);
+                let hash = localStorage.getItem('trackHash');
+                if (hash) {
+                    let index = _tracks.findIndex(track => track.code === hash)
+                    setTrackIndex(index)
+                    setAlive(true)
+                    setTimeout(() => {
+                        audioRef.current!.currentTime = Number(localStorage.getItem('trackProgress') || 0)
+                    }, 1000)
+                } else {
+                    setTrackIndex(0)
+                    setAlive(true)
+                }
             }
         });
     }
@@ -371,11 +385,26 @@ const Player = () => {
     }
 
     useEffect(() => {
+        window.addEventListener('beforeunload', e => {
+            e.preventDefault();
+            localStorage.setItem('trackHash', progress.current.trackHash);
+            localStorage.setItem('trackProgress', progress.current.trackProgress);
+            e.returnValue = "";
+        })
         getAll().then((tracks: Track[]) => {
             console.log('1 >> get tracks and check whether it has expired:',tracks)
             // 若从数据库获取的音轨数等于 0 则启用预存数据并更新，否则检查获取音轨是否过期
-            tracks.length > 0 ? handleAllUpdates(tracks) : handleAllUpdates(tracks0);
+            tracks.length > 0 ? handleAllUpdates(tracks.filter(track => track.code)) : handleAllUpdates(tracks0);
         });
+        return(() => {
+            audioRef.current?.pause()
+            window.removeEventListener('beforeunload', e => {
+                e.preventDefault();
+                localStorage.setItem('trackHash', progress.current.trackHash);
+                localStorage.setItem('trackProgress', progress.current.trackProgress);
+                e.returnValue = "";
+            })
+        })
     }, []);
 
     useEffect(() => {
@@ -400,10 +429,11 @@ const Player = () => {
     }, [isRotating]);
 
     useEffect(() => {
-        if (alive) {
-            toPlay(false)
-            audioRef.current!.src = src;
+        if (audioRef.current && alive) {
+            toPlay(false);
+            audioRef.current.src = src;
             setTrackProgress(0);
+            progress.current.trackHash = tracks[trackIndex].code;
             syncMediaSession(tracks[trackIndex]);
             initActionHandler();
             if (isReady.current) {
@@ -416,18 +446,11 @@ const Player = () => {
     }, [trackIndex, alive]);
 
     useEffect(() => {
-        // Pause and clean up on unmount
-        return () => {
-            audioRef.current?.pause();
-        };
-    }, []);
-
-    useEffect(() => {
         if (audioRef.current) {
             audioRef.current.ontimeupdate = () => {
                 setTrackProgress(audioRef.current?.currentTime as number);
+                progress.current.trackProgress = String(audioRef.current?.currentTime);
             }
-            console.log(trackProgress)
         }
     }, [audioRef.current?.readyState]);
 
