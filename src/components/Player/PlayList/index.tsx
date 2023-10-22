@@ -106,6 +106,14 @@ const PlayItem =
       &.highlight span.play-item_title {
         color: #9b1442;
       }
+      
+      &.invalid img {
+        filter: grayscale(100)!important;
+      }
+      
+      &.invalid div, &.invalid span {
+        color: #cccccc!important;
+      }
     `
 
 const PlayItemLabel =
@@ -236,7 +244,7 @@ const PlayList = ({tracks, setTracks, trackIndex, setTrackIndex, isShowing, setI
                                 return(
                                     <PlayItem
                                         key={index}
-                                        className={index === trackIndex ? 'highlight' : 'normal'}
+                                        className={`${index === trackIndex ? 'highlight' : 'normal'} ${item.timestamp < new Date().getTime() && 'invalid'}`}
                                         onClick={() => handleClick(index)}
                                         onDragStart={e => dragStart(e, index)}
                                         onDragOver={e => onDrag(e, index)}

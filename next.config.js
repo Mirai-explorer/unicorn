@@ -15,7 +15,11 @@ const nextConfig = {
                 pathname: '/stdmusic/**',
             },
         ],
-    }
+    },
+    compiler: {
+        reactStrictMode: true
+    },
+    styledComponents: true
 }
 
 module.exports = withPWA(nextConfig)

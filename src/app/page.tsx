@@ -1,12 +1,16 @@
 "use client"
 import HomeHeader from "@/components/Home/Header";
-import HomeAside from "@/components/Home/Aside";
 import HomeMain from "@/components/Home/Main";
 import HomeFooter from "@/components/Home/Footer";
 import { store } from './store';
 import { Provider } from 'react-redux';
 import Card from '@/components/Common/Card';
 import Tag from '@/components/Common/Tag'
+import dynamic from "next/dynamic";
+
+const HomeAside = dynamic(() => import("@/components/Home/Aside"), {
+  ssr: false
+});
 
 const App = () => {
   return (

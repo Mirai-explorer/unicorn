@@ -116,7 +116,7 @@ const Setting = ({isShowing, setIsShowing, tracks, setTracks, trackIndex, setTra
                         album_id: '',
                         encode_audio_id: '',
                         code: '',
-                        timestamp: new Date().getTime() + 86400000,
+                        timestamp: new Date().getTime() + 3600000,
                         unique_index: tracks.length + 1,
                         time_length: duration
                     }

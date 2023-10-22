@@ -1,6 +1,6 @@
 {
   "name": "unicorn",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -37,7 +37,7 @@
     "@types/react": "^18",
     "@types/react-cookies": "^0.1.0",
     "@types/react-dom": "^18",
-    "@types/styled-components": "^5.1.26",
+    "@types/styled-components": "^5.1.29",
     "@types/uuid": "^9.0.4",
     "ahooks": "^3.7.8",
     "autoprefixer": "^10",
@@ -46,7 +46,7 @@
     "eslint-config-next": "13.5.5",
     "postcss": "^8",
     "react-cookies": "^0.1.1",
-    "styled-components": "^6.0.7",
+    "styled-components": "^6.1.0",
     "tailwindcss": "^3",
     "typescript": "^5"
   }

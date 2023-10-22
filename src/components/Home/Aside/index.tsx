@@ -5,6 +5,102 @@ import {ModalOverlay} from "@/components/Modal/Overlay";
 import { useDispatch } from 'react-redux';
 import { close } from '@/components/Home/Header/toggleSlice';
 import Link from 'next/link';
+import Image from "next/image";
+import { styled } from "styled-components";
+import logo from '@/assets/images/logo-full.png'
+import { CIcons as Icon } from "@/components/Icons/index";
+
+const Drawer =
+    styled.div`
+      display: flex;
+      width: 100%;
+      height: 100%;
+    `
+
+const Aside =
+    styled.aside`
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 5;
+      width: 320px;
+      height: 100%;
+      border-radius: 0 1rem 1rem 0;
+      background: #ffffff;
+      transition-property: transform, box-shadow;
+      transition-duration: 300ms;
+      transition-timing-function: cubic-bezier(0.2, 0, 0, 1);
+      will-change: transform;
+      
+
+      &.aside {
+        box-shadow: none;
+        transform: translateX(-320px);
+      }
+      
+      &.open {
+        box-shadow: none;
+        transform: translateX(0);
+      }
+    `
+
+const Content =
+    styled.div`
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      height: 100%;
+      padding: 1rem;
+      gap: 1rem;
+    `
+
+const List =
+    styled.div`
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1;
+      overflow-y: auto;
+      
+      & a {
+        padding: 1rem;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+    `
+
+const Section =
+    styled.section`
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      
+      &.footer {
+        flex-direction: column;
+        gap: 2rem;
+      }
+    `
+
+const Contacts =
+    styled.span`
+      display: inline-flex;
+      justify-content: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+
+      & a {
+        transition: color;
+      }
+      
+      & a:hover {
+        
+      }
+    `
 
 const HomeAside = () => {
     const toggle = useSelector((state: RootState) => state.toggle.action)
@@ -20,16 +116,53 @@ const HomeAside = () => {
         }
     ]
     return(
-        <aside>
-            <div className={`aside fixed top-0 ${toggle?'left-0':'left-[-300px]'} transition-all bg-white shadow h-full w-[300px] flex justify-center items-center z-[1000]`}>
-                <div className={`w-full h-full p-4 flex flex-col gap-4`}>
-                    {navLinks.map((item, id) => (
-                        <Link href={item.href} key={id}>{item.name}</Link>
-                    ) )}
-                </div>
-            </div>
-            <ModalOverlay show={toggle} onClick={() => dispatch(close())}></ModalOverlay>
-        </aside>
+        <Drawer>
+            <Aside className={`aside ${toggle ? 'open' : ''}`}>
+                <Content>
+                    <Section>
+                        <button>
+
+                        </button>
+                        <Image src={logo} alt="logo" width={170} height={40}></Image>
+                    </Section>
+                    <List>
+                        {navLinks.map((item, id) => (
+                            <Link href={item.href} key={id}>{item.name}</Link>
+                        ))}
+                    </List>
+                    <Section className={`footer`}>
+                        <Contacts>
+                            <a href="https://wpa.qq.com/msgrd?v=3&uin=1150963042&site=qq&menu=yes&jumpflag=1" aria-label="1150963042">
+                                <Icon className={`icon-qq`} name="QQ" width={26} height={26} />
+                            </a>
+                            <a href="https://space.bilibili.com/198506128">
+                                <Icon className={`icon-bilibili`} name="Blibili" width={24} height={24} />
+                            </a>
+                            <a href="https://activity.kugou.com/share/v-c7b4da67/index.html?id=635cf9b017476c2bbda98869376f1f91">
+                                <Icon className={`icon-kugou`} name="Kugou" width={24} height={24} />
+                            </a>
+                            <a href="https://www.miyoushe.com/ys/accountCenter/postList?id=170593161">
+                                <Icon className={`icon-miyoushe`} name="miHoYo" width={24} height={24} />
+                            </a>
+                            <a href="https://x.com/tokai_nahida">
+                                <Icon className={`icon-twitter`} name="Twitter" width={26} height={26} />
+                            </a>
+                            <a href="https://github.com/Mirai-explorer">
+                                <Icon className={`icon-github`} name="GitHub" width={24} height={24} />
+                            </a>
+                            <a href="mailto:tangjw0226@gmail.com" aria-label="tangjw0226@gmail.com">
+                                <Icon className={`icon-gmail`} name="GMail" width={24} height={24} />
+                            </a>
+                        </Contacts>
+                        <span>by Aubrey</span>
+                    </Section>
+                </Content>
+            </Aside>
+            <ModalOverlay
+                show={toggle}
+                onClick={() => dispatch(close())}
+            ></ModalOverlay>
+        </Drawer>
     )
 }
 
