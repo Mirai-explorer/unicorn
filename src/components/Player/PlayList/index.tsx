@@ -126,7 +126,7 @@ const PlayItemLabel =
       gap: 8px;
     `
 
-const PlayList = ({tracks, setTracks, trackIndex, setTrackIndex, isShowing, setIsShowing, updates, setUpdate} : {
+const PlayList = ({tracks, setTracks, trackIndex, setTrackIndex, isShowing, setIsShowing, updates, setUpdate, setReload} : {
     tracks: Track[],
     setTracks: React.Dispatch<SetStateAction<Track[]>>,
     trackIndex: number,
@@ -134,28 +134,38 @@ const PlayList = ({tracks, setTracks, trackIndex, setTrackIndex, isShowing, setI
     isShowing: boolean,
     setIsShowing: React.Dispatch<SetStateAction<boolean>>,
     updates: number,
-    setUpdate: React.Dispatch<SetStateAction<number>>
+    setUpdate: React.Dispatch<SetStateAction<number>>,
+    setReload: React.Dispatch<SetStateAction<boolean>>
 }) => {
     const [X, setX] = useState(0)
     const target = React.useRef<Array<HTMLDivElement | null >>([])
     const delConfirm = async (text: string, index: number) => {
-        if (await simpleConfirm({
+        const isConfirmed = await simpleConfirm({
             title: '删除警告',
             message: text,
             confirmLabel: '确认',
             cancelLabel: '算了'
-        })) {
+        })
+        if (isConfirmed) {
             if (tracks.length > 1) {
                 console.log(index+' deleted')
-                const _tracks = tracks.filter((item, num) => {
-                    return num !== index
-                })
-                _tracks.map((item, num) => {
+                const _tracks = tracks.filter((item, num) => num !== index)
+                _tracks.forEach((item, num) => {
                     item.unique_index = num + 1
                 })
                 console.log(_tracks)
-                setTrackIndex(index >= trackIndex ? (trackIndex < _tracks.length ? trackIndex : 0) : --trackIndex)
                 setTracks(_tracks)
+                if (trackIndex <= index) {
+                    if (trackIndex < _tracks.length) {
+                        setTrackIndex(trackIndex)
+                        setReload(true)
+                    } else {
+                        setTrackIndex(0)
+                        setReload(true)
+                    }
+                } else {
+                    setTrackIndex(trackIndex - 1)
+                }
                 setUpdate(updates < 0 ? --updates : -1)
             } else {
                 console.log('禁止删除')
@@ -165,12 +175,13 @@ const PlayList = ({tracks, setTracks, trackIndex, setTrackIndex, isShowing, setI
         }
     }
     const resetConfirm = async () => {
-        if (await simpleConfirm({
+        const isConfirmed = await simpleConfirm({
             title: '数据库初始化警告',
             message: '确认要初始化数据库吗？（此操作无法撤销，请谨慎操作）',
             confirmLabel: '确认',
             cancelLabel: '算了'
-        })) {
+        })
+        if (isConfirmed) {
             window.indexedDB.deleteDatabase("MiraiDB").onsuccess = () => {
                 window.location.reload()
             }
@@ -184,6 +195,7 @@ const PlayList = ({tracks, setTracks, trackIndex, setTrackIndex, isShowing, setI
     }, [tracks]);
 
     const handleClick = (i: number) => {
+        setReload(true)
         setTrackIndex(i)
         setIsShowing(false)
     }

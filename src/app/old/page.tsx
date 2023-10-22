@@ -1,9 +1,15 @@
 import React from 'react';
 
+const openGenshin = async () => {
+
+}
+
 const Old = () => {
     return(
         <>
-            1
+            <button onClick={() => openGenshin}>
+                检测
+            </button>
         </>
     )
 }

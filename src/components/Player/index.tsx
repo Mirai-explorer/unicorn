@@ -121,7 +121,7 @@ const Player = () => {
     const [isRotating, setIsRotating] = useState(false);
     const [rotate, setRotate] = useState("paused");
     const [size, setSize] = useState("mini");
-    const [alive, setAlive] = useState(false);
+    const [reload, setReload] = useState(false);
     const [updates, setUpdate] = useState(0);
     const [isShowing, setIsShowing] = useState(false);
     const [settingShowing, setSettingShowing] = useState(false);
@@ -192,20 +192,19 @@ const Player = () => {
     const toPrevTrack = () => {
         let index = trackIndex - 1 < 0 ? tracks.length - 1 : trackIndex - 1;
         setTrackIndex(index);
+        setReload(true);
     };
 
     const toNextTrack = () => {
         let index = trackIndex < tracks.length - 1 ? trackIndex + 1 : 0;
         setTrackIndex(index);
+        setReload(true);
     };
 
     const toRandomTrack = () => {
         let index = Math.round(Math.random() * (tracks.length - 1));
-        if (index !== trackIndex) {
-            setTrackIndex(index);
-        } else {
-            audioRef.current!.play().then(() => audioRef.current!.currentTime = 0)
-        }
+        setTrackIndex(index);
+        setReload(true);
     }
 
     const notify = (string: string) => toast(string);
@@ -218,14 +217,14 @@ const Player = () => {
                 let hash = localStorage.getItem('trackHash');
                 if (hash) {
                     let index = _tracks.findIndex(track => track.code === hash)
-                    setTrackIndex(index)
-                    setAlive(true)
+                    setTrackIndex(index);
+                    setReload(true);
                     setTimeout(() => {
                         audioRef.current!.currentTime = Number(localStorage.getItem('trackProgress') || 0)
                     }, 1000)
                 } else {
-                    setTrackIndex(0)
-                    setAlive(true)
+                    setTrackIndex(0);
+                    setReload(true);
                 }
             }
         });
@@ -429,7 +428,8 @@ const Player = () => {
     }, [isRotating]);
 
     useEffect(() => {
-        if (audioRef.current && alive) {
+        console.log('involved')
+        if (audioRef.current && reload) {
             toPlay(false);
             audioRef.current.src = src;
             setTrackProgress(0);
@@ -442,8 +442,9 @@ const Player = () => {
                 // Set the isReady ref as true for the next pass
                 isReady.current = true;
             }
+            setReload(false);
         }
-    }, [trackIndex, alive]);
+    }, [reload]);
 
     useEffect(() => {
         if (audioRef.current) {
@@ -561,6 +562,7 @@ const Player = () => {
                 setIsShowing={setPlayListShowing}
                 updates={updates}
                 setUpdate={setUpdate}
+                setReload={setReload}
             />
         </MiraiPlayer>
     )
