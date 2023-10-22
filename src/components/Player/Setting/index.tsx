@@ -309,12 +309,12 @@ const Setting = ({isShowing, setIsShowing, tracks, setTracks, trackIndex, setTra
                         <div className="flex flex-col gap-4">
                             <label htmlFor="text" className="text-sky-400">歌词同步</label>
                             <div className="flex gap-2">
-                                <button onClick={() => handleInput(String(Number(inputs)-0.1))}>-</button>
+                                <button onClick={() => handleInput(String((Number(inputs)*10-1)/10))}>-</button>
                                 <span>
                                     <input type="number" className="w-12 text-center" step={0.1} min={-5} max={5} value={inputs} onChange={e => watchInput(e.target.value)} onBlur={e => handleInput(e.target.value)} ref={inputRef}/>
                                     s
                                 </span>
-                                <button onClick={() => handleInput(String(Number(inputs)+0.1))}>+</button>
+                                <button onClick={() => handleInput(String((Number(inputs)*10+1)/10))}>+</button>
                                 <button onClick={() => {setOffset(-0.6); setInputs("0")}}>复原</button>
                             </div>
                         </div>

@@ -3,7 +3,6 @@ import React, {SetStateAction, useEffect, useState} from "react";
 import {Track, getTime} from "@/components/Player/utils";
 import { simpleConfirm, SimpleDialogContainer } from 'react-simple-dialogs'
 import Icon from "@/components/Icons/player_icon";
-import Image from "next/image";
 
 const PlayListWrap =
     styled.div`
@@ -127,7 +126,7 @@ const PlayItemLabel =
       gap: 8px;
     `
 
-const PlayList = ({tracks, setTracks, trackIndex, setTrackIndex, isShowing, setIsShowing, updates, setUpdate, setReload} : {
+const PlayList = ({tracks, setTracks, trackIndex, setTrackIndex, isShowing, setIsShowing, updates, setUpdate, setReload, toPlay, playState} : {
     tracks: Track[],
     setTracks: React.Dispatch<SetStateAction<Track[]>>,
     trackIndex: number,
@@ -136,7 +135,9 @@ const PlayList = ({tracks, setTracks, trackIndex, setTrackIndex, isShowing, setI
     setIsShowing: React.Dispatch<SetStateAction<boolean>>,
     updates: number,
     setUpdate: React.Dispatch<SetStateAction<number>>,
-    setReload: React.Dispatch<SetStateAction<boolean>>
+    setReload: React.Dispatch<SetStateAction<boolean>>,
+    toPlay: Function,
+    playState: boolean
 }) => {
     const [X, setX] = useState(0)
     const target = React.useRef<Array<HTMLDivElement | null >>([])
@@ -197,8 +198,8 @@ const PlayList = ({tracks, setTracks, trackIndex, setTrackIndex, isShowing, setI
     }, [tracks]);
 
     const handleClick = (i: number) => {
-        setReload(true)
         setTrackIndex(i)
+        trackIndex !== i ? setReload(true) : toPlay(!playState)
         setIsShowing(false)
     }
 
@@ -270,9 +271,7 @@ const PlayList = ({tracks, setTracks, trackIndex, setTrackIndex, isShowing, setI
                                         draggable
                                     >
                                         <PlayItemLabel>
-                                            <div className="w-12 h-12">
-                                                <Image src={item.cover} className={`rounded-xl`} width={48} height={48} alt={item.title} />
-                                            </div>
+                                            <img src={item.cover} className={`w-12 h-12 rounded-xl`} alt={item.title} loading="lazy" />
                                             <div className="flex flex-col flex-grow overflow-hidden gap-0.25">
                                                 <span className="play-item_title text-ellipsis whitespace-nowrap overflow-hidden text-[16px]">{item.title}</span>
                                                 <span className="play-item_subtitle text-ellipsis whitespace-nowrap overflow-hidden text-[#888888] text-[14px]">{item.artist}</span>

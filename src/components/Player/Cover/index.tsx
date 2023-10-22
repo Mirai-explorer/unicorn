@@ -1,4 +1,3 @@
-import Image from "next/image";
 import { styled, keyframes } from "styled-components";
 import React from "react";
 
@@ -58,14 +57,13 @@ const Cover = (props: propsType) => {
     return (
         <CoverWrap>
             <CoverShell style={{ animationPlayState: `${props.rotate}`}} onDoubleClick={props.onDoubleClick}>
-                <Image
+                <img
                     className="source"
                     src={props.url}
                     data-size={props["data-size"]}
                     alt={props.desc}
-                    width="320"
-                    height="320"
-                    quality={100}
+                    width="320px"
+                    height="320px"
                 />
             </CoverShell>
         </CoverWrap>

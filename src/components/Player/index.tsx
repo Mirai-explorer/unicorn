@@ -174,7 +174,6 @@ const Player = () => {
             if (value < time_length / 1000) {
                 audioRef.current.currentTime = value
             } else {
-                audioRef.current.currentTime = audioRef.current.currentTime
                 setToastMessage({
                     value: '超出试听时长',
                     timestamp: new Date().getTime()
@@ -221,7 +220,7 @@ const Player = () => {
                     setReload(true);
                     setTimeout(() => {
                         audioRef.current!.currentTime = Number(localStorage.getItem('trackProgress') || 0)
-                    }, 1000)
+                    }, 100)
                 } else {
                     setTrackIndex(0);
                     setReload(true);
@@ -339,6 +338,7 @@ const Player = () => {
             audioRef.current?.play()
                 .then()
                 .catch(error => {
+                    toPlay(false)
                     handlePlayError(error)
                 })
         } else {
@@ -563,6 +563,8 @@ const Player = () => {
                 updates={updates}
                 setUpdate={setUpdate}
                 setReload={setReload}
+                toPlay={toPlay}
+                playState={isPlaying}
             />
         </MiraiPlayer>
     )
