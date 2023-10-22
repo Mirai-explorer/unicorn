@@ -3,6 +3,7 @@ import React, {SetStateAction, useEffect, useState} from "react";
 import {Track, getTime} from "@/components/Player/utils";
 import { simpleConfirm, SimpleDialogContainer } from 'react-simple-dialogs'
 import Icon from "@/components/Icons/player_icon";
+import Image from "next/image";
 
 const PlayListWrap =
     styled.div`
@@ -165,6 +166,7 @@ const PlayList = ({tracks, setTracks, trackIndex, setTrackIndex, isShowing, setI
                     }
                 } else {
                     setTrackIndex(trackIndex - 1)
+                    console.log('no need to reload')
                 }
                 setUpdate(updates < 0 ? --updates : -1)
             } else {
@@ -268,7 +270,7 @@ const PlayList = ({tracks, setTracks, trackIndex, setTrackIndex, isShowing, setI
                                         draggable
                                     >
                                         <PlayItemLabel>
-                                            <img src={item.cover} className="w-12 h-12 rounded-xl" alt={item.title} />
+                                            <Image src={item.cover} className="w-12 h-12 rounded-xl" alt={item.title} />
                                             <div className="flex flex-col flex-grow overflow-hidden gap-0.25">
                                                 <span className="play-item_title text-ellipsis whitespace-nowrap overflow-hidden text-[16px]">{item.title}</span>
                                                 <span className="play-item_subtitle text-ellipsis whitespace-nowrap overflow-hidden text-[#888888] text-[14px]">{item.artist}</span>
