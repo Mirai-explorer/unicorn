@@ -270,7 +270,9 @@ const PlayList = ({tracks, setTracks, trackIndex, setTrackIndex, isShowing, setI
                                         draggable
                                     >
                                         <PlayItemLabel>
-                                            <Image src={item.cover} className="w-12 h-12 rounded-xl" alt={item.title} />
+                                            <div className="w-12 h-12">
+                                                <Image src={item.cover} className={`rounded-xl`} width={48} height={48} alt={item.title} />
+                                            </div>
                                             <div className="flex flex-col flex-grow overflow-hidden gap-0.25">
                                                 <span className="play-item_title text-ellipsis whitespace-nowrap overflow-hidden text-[16px]">{item.title}</span>
                                                 <span className="play-item_subtitle text-ellipsis whitespace-nowrap overflow-hidden text-[#888888] text-[14px]">{item.artist}</span>

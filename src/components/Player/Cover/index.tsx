@@ -7,7 +7,7 @@ interface propsType extends React.InputHTMLAttributes<HTMLInputElement> {
     url: string,
     ['data-size']: string,
     desc: string
-};
+}
 
 const rotate = keyframes`
       from { transform: rotate(0deg) }
@@ -65,6 +65,7 @@ const Cover = (props: propsType) => {
                     alt={props.desc}
                     width="320"
                     height="320"
+                    quality={100}
                 />
             </CoverShell>
         </CoverWrap>
