@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import styled from "styled-components";
+import styled, {keyframes} from "styled-components";
 import {Track} from "@/components/Player/utils";
 
 type lyricType = {
@@ -11,7 +11,7 @@ const LyricWrap =
     styled.div`
       display: flex;
       justify-content: center;
-      align-items: center;
+      align-items: flex-end;
       width: 100%;
       flex: 1;
 
@@ -34,7 +34,7 @@ const LyricWrap =
 const Scroll =
     styled.div`
       width: 90%;
-      height: 64px;
+      height: 128px;
       overflow-y: hidden;
       overflow-x: hidden;
     `
@@ -47,7 +47,7 @@ const Waterfall =
       overflow: hidden;
       position: relative;
       display: grid;
-      grid-auto-rows: 32px;
+      grid-auto-rows: max-content;
       transition: transform 200ms linear;
       transform: translateY(0px);
       will-change: transform;
@@ -64,18 +64,21 @@ const Line =
       align-items: center;
       opacity: .01;
       font-size: 16px;
-      scale: 1;
       font-weight: 500;
+      line-height: 1;
       width: 100%;
       white-space: nowrap;
       overflow: hidden;
       letter-spacing: 2px;
-      will-change: opacity, scale, font-weight;
+      min-height: 32px;
+      will-change: opacity, font-size, font-weight, line-height;
       
       &.bubble {
         font-weight: 700;
         opacity: 1;
-        scale: 1.25;
+        font-size: 20px;
+        line-height: 1.5;
+        white-space: pre-wrap;
       }
       
       &.await {
@@ -162,7 +165,6 @@ const Lyric = ({ tracks, trackIndex, trackProgress, reduce, offset } : {
                                                 : ""
                                     }
                                     data-time={item.offset}
-                                    style={number === index ? {} : {}}
                                 >
                                     {item.text}
                                 </Line>

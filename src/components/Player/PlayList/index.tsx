@@ -3,6 +3,7 @@ import React, {SetStateAction, useEffect, useState} from "react";
 import {Track, getTime} from "@/components/Player/utils";
 import { simpleConfirm, SimpleDialogContainer } from 'react-simple-dialogs'
 import Icon from "@/components/Icons/player_icon";
+import scrollIntoView from "scroll-into-view-if-needed";
 
 const PlayListWrap =
     styled.div`
@@ -157,17 +158,11 @@ const PlayList = ({tracks, setTracks, trackIndex, setTrackIndex, isShowing, setI
                 })
                 console.log(_tracks)
                 setTracks(_tracks)
-                if (trackIndex <= index) {
-                    if (trackIndex < _tracks.length) {
-                        setTrackIndex(trackIndex)
-                        setReload(true)
-                    } else {
-                        setTrackIndex(0)
-                        setReload(true)
-                    }
+                if (trackIndex === index) {
+                    setTrackIndex(trackIndex < _tracks.length ? trackIndex : 0)
+                    setReload(true)
                 } else {
-                    setTrackIndex(trackIndex - 1)
-                    console.log('no need to reload')
+                    setTrackIndex(trackIndex < index ? trackIndex : --trackIndex)
                 }
                 setUpdate(updates < 0 ? --updates : -1)
             } else {
@@ -247,7 +242,7 @@ const PlayList = ({tracks, setTracks, trackIndex, setTrackIndex, isShowing, setI
                             <Icon className={`icon-close`} name="Close" width={12} height={12} fill="#000000" />
                         </Control>
                         <PlayListGroup>
-                            <div className="text-[20px]">播放列表</div>
+                            <div className="text-[20px]" onClick={() => target.current[trackIndex]?.scrollIntoView({ behavior: "smooth", block: "center" })}>播放列表</div>
                         </PlayListGroup>
                         <Control name="button-database" onClick={() => resetConfirm()} aria-label="数据库初始化按钮">
                             <Icon className={`icon-database`} name="Database" width={18} height={18} fill="#000000" />

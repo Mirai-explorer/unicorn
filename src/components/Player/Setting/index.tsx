@@ -1,5 +1,5 @@
 import {styled} from "styled-components";
-import React, {SetStateAction, useEffect, useRef, useState} from "react";
+import React, {SetStateAction, useRef, useState} from "react";
 import {fetchMusicSource, syncMediaSession, Track} from "@/components/Player/utils";
 import Icon from "@/components/Icons/player_icon";
 
@@ -76,7 +76,6 @@ const Setting = ({isShowing, setIsShowing, tracks, setTracks, trackIndex, setTra
     offset: number,
     setOffset: React.Dispatch<SetStateAction<number>>
 }) => {
-    const [url, setURL] = useState('空白')
     const [text, setText] = useState('')
     const textRef = useRef<HTMLInputElement>(null)
     const [disable, setDisable] = useState(false)
@@ -111,7 +110,7 @@ const Setting = ({isShowing, setIsShowing, tracks, setTracks, trackIndex, setTra
                         subtitle: '未知专辑',
                         artist: '未知歌手',
                         src: src,
-                        cover: 'http://imge.kugou.com/commendpic/20160923/20160923162707215688.png',
+                        cover: 'https://imge.kugou.com/commendpic/20160923/20160923162707215688.png',
                         lyric: '',
                         album_id: '',
                         encode_audio_id: '',
@@ -127,8 +126,6 @@ const Setting = ({isShowing, setIsShowing, tracks, setTracks, trackIndex, setTra
                     })
                 }
             }
-            setURL(src)
-            console.log(ref.target.files[0])
         }
     }
 
@@ -209,7 +206,7 @@ const Setting = ({isShowing, setIsShowing, tracks, setTracks, trackIndex, setTra
                     throw new Error(`empty data returned, perhaps due to empty or incorrect code being inputted.`)
                 } else {
                     setInfo('更新失败，出现未知异常')
-                    throw new Error(`an unknown [error:${data.error_code}] occurred.`)
+                    throw new Error(`an unknown [error:${data.err_code}] occurred.`)
                 }
             }).catch(error => {
                 console.error(`Failed to fetch the music info related to [id:${text}] from Kugou.\n${error}`)
@@ -272,14 +269,6 @@ const Setting = ({isShowing, setIsShowing, tracks, setTracks, trackIndex, setTra
         }
         setInputs(String(matches))
         setOffset((-matches * 10 - 6) / 10)
-    }
-
-    const handleSteps = (way: number) => {
-        if (way === 0) {
-            inputRef.current?.stepDown();
-        } else {
-            inputRef.current?.stepUp();
-        }
     }
 
     return(
