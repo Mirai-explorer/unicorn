@@ -9,6 +9,6 @@ export default function OldLayout({children,}: {
     children: React.ReactNode
 }) {
     return (
-        <div className="old relative">{children}</div>
+        <>{children}</>
     )
 }

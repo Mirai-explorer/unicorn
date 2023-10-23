@@ -166,6 +166,11 @@ const Search = ({isShowing, setIsShowing, setTracks, tracks, updates, setUpdate,
     }])
     const [loading, setLoading] = React.useState(false)
     const searchInputRef = useRef<HTMLInputElement>(null)
+
+    const dropMenu = () => {
+        console.log('clicked')
+    }
+
     const watchInputValue = (value:string) => {
         setValue(value)
     }
@@ -400,7 +405,7 @@ const Search = ({isShowing, setIsShowing, setTracks, tracks, updates, setUpdate,
                             <Icon className={`icon-back`} name="Back" width={18} height={18} fill="#BFBFBF" />
                         </button>
                         <SearchGroup>
-                            <SearchCardSwitch>
+                            <SearchCardSwitch onClick={dropMenu}>
                                 <Icon className={`icon-kugou`} name="Kugou" width={18} height={18} fill="#1296DB" />
                             </SearchCardSwitch>
                             <SearchCardInput
