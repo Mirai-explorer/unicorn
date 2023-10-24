@@ -32,7 +32,15 @@ const HomeHeader = () => {
                 <div className="flex justify-center items-center grow-[2] overflow-auto">
                     <HomeHeaderNav navLinks={navLinks}></HomeHeaderNav>
                 </div>
-                <div className="flex justify-end items-center flex-1">RIGHT</div>
+                <div className="flex justify-end items-center flex-1">
+                    <button
+                        className="block w-5 rounded-xl"
+                        aria-label="搜索"
+                        onClick={() => dispatch(open())}
+                    >
+                        <Icon className="icon-search" name="Search" height={20} width={20} fill="#333333"/>
+                    </button>
+                </div>
             </nav>
         </header>
     )

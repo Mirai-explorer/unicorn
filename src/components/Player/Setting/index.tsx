@@ -284,27 +284,27 @@ const Setting = ({isShowing, setIsShowing, tracks, setTracks, trackIndex, setTra
                     <SettingCardContent>
                         <div className="flex flex-col gap-4">
                             <label htmlFor="file" className="text-sky-400">添加本地音频文件</label>
-                            <input type="file" name="file" accept="audio/*" onChange={ref => audioReader(ref)} />
+                            <input type="file" name="file" id="file" accept="audio/*" onChange={ref => audioReader(ref)} />
                         </div>
                         <div className="flex flex-col gap-4">
                             <label htmlFor="text" className="text-sky-400">同步信息</label>
                             <div className="flex gap-4">
                                 <input type="text" name="audio" className="text-[14px] placeholder:text-[14px]" minLength={6} maxLength={10} placeholder="请输入audio_id" onChange={e => inputOnChange(e.target.value)} ref={textRef} />
-                                <button onClick={() => readClipboard()}>粘贴</button>
-                                <button onClick={() => syncInfo()} disabled={disable}>同步</button>
+                                <button title="paste" onClick={() => readClipboard()}>粘贴</button>
+                                <button title="sync" onClick={() => syncInfo()} disabled={disable}>同步</button>
                             </div>
                             <div>{info}</div>
                         </div>
                         <div className="flex flex-col gap-4">
                             <label htmlFor="text" className="text-sky-400">歌词同步</label>
                             <div className="flex gap-2">
-                                <button onClick={() => handleInput(String((Number(inputs)*10-1)/10))}>-</button>
+                                <button title="decrease" onClick={() => handleInput(String((Number(inputs)*10-1)/10))}>-</button>
                                 <span>
                                     <input type="number" className="w-12 text-center" step={0.1} min={-5} max={5} value={inputs} onChange={e => watchInput(e.target.value)} onBlur={e => handleInput(e.target.value)} ref={inputRef}/>
                                     s
                                 </span>
-                                <button onClick={() => handleInput(String((Number(inputs)*10+1)/10))}>+</button>
-                                <button onClick={() => {setOffset(-0.6); setInputs("0")}}>复原</button>
+                                <button title="increase" onClick={() => handleInput(String((Number(inputs)*10+1)/10))}>+</button>
+                                <button title="reset" onClick={() => {setOffset(-0.6); setInputs("0")}}>复原</button>
                             </div>
                         </div>
                     </SettingCardContent>

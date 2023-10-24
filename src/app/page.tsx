@@ -5,7 +5,8 @@ import HomeFooter from "@/components/Home/Footer";
 import { store } from './store';
 import { Provider } from 'react-redux';
 import Card from '@/components/Common/Card';
-import Tag from '@/components/Common/Tag'
+import Tag from '@/components/Common/Tag';
+import { Icons as Icon } from "@/components/Icons/index";
 import dynamic from "next/dynamic";
 
 const HomeAside = dynamic(() => import("@/components/Home/Aside"), {
@@ -21,19 +22,21 @@ const App = () => {
           <HomeMain>
             <div className="main_layout flex flex-col gap-4 tracking-wide">
               <section className="flex gap-3">
-                <Card title="常住地" collapsed>
+                <Card title="常住地" icon="Location" color="#cccccc" collapsed>
                   <span className="text-[16px]">上海·杨浦</span>
                 </Card>
-                <Card title="生日" collapsed>
+                <Card title="生日" icon="Birthday" color="#cccccc" collapsed>
                   <span className="text-sm">2-26</span>
                 </Card>
               </section>
               <section className="flex flex-col gap-4">
-                <div className="text-[20px] font-semibold">
-                  <i className="ps-2 pe-2">icon</i>
+                <div className="inline-flex items-center text-[20px] font-semibold">
+                  <i className="ps-2 pe-2">
+                    <Icon className="icon-interest" name="Interest" width={24} height={24} fill="#977A5C" />
+                  </i>
                   <span className="">兴趣爱好•技能特长</span>
                 </div>
-                <Card title="语言 / Language" collapsed={false}>
+                <Card title="语言 / Language" icon="Language" color="#cccccc" collapsed={false}>
                   <div className="card_slot_node flex flex-col gap-4">
                     <div className="card_section flex flex-col gap-4">
                       <div className="card_section_title inline-flex text-[20px]">语言水平 | 学习目标</div>
@@ -69,7 +72,7 @@ const App = () => {
                     </div>
                   </div>
                 </Card>
-                <Card title="音乐 / Music" collapsed={false}>
+                <Card title="音乐 / Music" icon="Music" color="#cccccc" collapsed={false}>
                   <div className="card_slot_node flex flex-col gap-4">
                     <div className="card_section flex flex-col gap-4">
                       <div className="card_section_title inline-flex text-[20px]">喜欢的音乐类型</div>
@@ -117,7 +120,7 @@ const App = () => {
                     </div>
                   </div>
                 </Card>
-                <Card title="电影 / Film" collapsed={false}>
+                <Card title="电影 / Film" icon="Film" color="#cccccc" collapsed={false}>
                   <div className="card_slot_node flex flex-col gap-4">
                     <div className="card_section flex flex-col gap-4">
                       <div className="card_section_title inline-flex text-[20px]">喜欢的电影类型</div>
@@ -163,10 +166,10 @@ const App = () => {
                     </div>
                   </div>
                 </Card>
-                <Card title="ACG / Anime·Comic·Game" collapsed={false}>
+                <Card title="ACG / Anime·Comic·Game" icon="Anime" color="#cccccc" collapsed={false}>
                   <div className="card_slot_node flex flex-col gap-4">
                     <div className="card_section flex flex-col gap-4">
-                      <div className="card_section_title inline-flex text-[20px]">喜欢的ACG内容</div>
+                      <div className="card_section_title inline-flex text-[20px]">喜欢的ACG·动漫画</div>
                       <div className="card_section_content flex flex-col gap-2">
                         <div className="card_item inline-flex gap-2">
                           <span className="card_item_name text-[#C2A896]">EVA</span>
@@ -193,30 +196,28 @@ const App = () => {
                     </div>
                   </div>
                 </Card>
-                <Card title="ACG / Anime·Comic·Game" collapsed={false}>
+                <Card title="ACG / Anime·Comic·Game" icon="Game" color="#cccccc" collapsed={false}>
                   <div className="card_slot_node flex flex-col gap-4">
                     <div className="card_section flex flex-col gap-4">
-                      <div className="card_section_title inline-flex text-[20px]">喜欢的ACG内容</div>
+                      <div className="card_section_title inline-flex text-[20px]">喜欢的ACG·游戏</div>
                       <div className="card_section_content flex flex-col gap-2">
                         <div className="card_item inline-flex gap-2">
-                          <span className="card_item_name text-[#C2A896]">EVA</span>
-                          <span className="card_item_value text-[#FEBA8C]"></span>
+
                         </div>
                       </div>
                     </div>
                     <div className="card_part flex flex-wrap gap-2">
-                      <Tag name="BilibiliWorld"></Tag>
-                      <Tag name="ChinaJoy"></Tag>
-                      <Tag name="ComicUP"></Tag>
-                      <Tag name="初音未来"></Tag>
-                      <Tag name="迪士尼"></Tag>
-                      <Tag name="日漫"></Tag>
-                      <Tag name="国创"></Tag>
+                      <Tag name="RPG"></Tag>
+                      <Tag name="ARPG"></Tag>
+                      <Tag name="ACT"></Tag>
+                      <Tag name="MSC"></Tag>
+                      <Tag name="PUZ"></Tag>
+                      <Tag name="TD"></Tag>
+                      <Tag name="TAB"></Tag>
+                      <Tag name="GAL"></Tag>
                     </div>
                     <div className="card_part flex flex-wrap gap-2">
-                      <Tag name="哔哩哔哩"></Tag>
-                      <Tag name="漫音社"></Tag>
-                      <Tag name="天使动漫"></Tag>
+                      <Tag name="TECH OTAKU SAVE THE WORLD"></Tag>
                     </div>
                     <div className="card_part">
                       -漫展/相关展会活动<br />
@@ -243,7 +244,7 @@ const App = () => {
                     </div>
                   </div>
                 </Card>
-                <Card title="旅行 / Trip" collapsed={false}>
+                <Card title="旅行 / Trip" icon="Trip" color="#cccccc" collapsed={false}>
                   <div className="card_slot_node flex flex-col gap-4">
                     <div className="card_section flex flex-col gap-4">
                       <div className="card_section_title inline-flex text-[20px]">去过哪些地方</div>
@@ -274,7 +275,7 @@ const App = () => {
                     </div>
                   </div>
                 </Card>
-                <Card title="阅读 / Reading" collapsed={false}>
+                <Card title="阅读 / Reading" icon="Reading" color="#cccccc" collapsed={false}>
                   <div className="card_slot_node flex flex-col gap-4">
                     <div className="card_section flex flex-col gap-4">
                       <div className="card_section_title inline-flex text-[20px]">读过哪些好书</div>
@@ -296,7 +297,7 @@ const App = () => {
                     </div>
                   </div>
                 </Card>
-                <Card title="摄影•视频创作 / Creation" collapsed={false}>
+                <Card title="摄影•视频创作 / Creation" icon="Creation" color="#cccccc" collapsed={false}>
                   <div className="card_slot_node flex flex-col gap-4">
                     <div className="card_section flex flex-col gap-4">
                       <div className="card_section_title inline-flex text-[20px]">喜欢的摄影/视频作品</div>
@@ -319,7 +320,7 @@ const App = () => {
                     </div>
                   </div>
                 </Card>
-                <Card title="数码科技 / Digital & Tech." collapsed={false}>
+                <Card title="数码科技 / Digital & Tech." icon="Tech" color="#cccccc" collapsed={false}>
                   <div className="card_slot_node flex flex-col gap-4">
                     <div className="card_section flex flex-col gap-4">
                       <div className="card_section_title inline-flex text-[20px]">喜欢的数码产品</div>
@@ -357,7 +358,7 @@ const App = () => {
                     </div>
                   </div>
                 </Card>
-                <Card title="美食 / Delicious Food" collapsed={false}>
+                <Card title="美食 / Delicious Food" icon="Delicious" color="#cccccc" collapsed={false}>
                   <div className="card_slot_node flex flex-col gap-4">
                     <div className="card_section flex flex-col gap-4">
                       <div className="card_section_title inline-flex text-[20px]">喜欢的美食</div>
@@ -379,7 +380,7 @@ const App = () => {
                     </div>
                   </div>
                 </Card>
-                <Card title="薅羊毛 / Coupon Clipping" collapsed={false}>
+                <Card title="薅羊毛 / Coupon Clipping" icon="Coupon" color="#cccccc" collapsed={false}>
                   <div className="card_slot_node flex flex-col gap-4">
                     <div className="card_section flex flex-col gap-4">
                       <div className="card_section_title inline-flex text-[20px]">薅羊毛的魔力</div>
@@ -402,22 +403,19 @@ const App = () => {
                     </div>
                   </div>
                 </Card>
-                <Card title="编程 / Programing" collapsed={false}>
+                <Card title="编程 / Programing" icon="Programing" color="#cccccc" collapsed={false}>
                   <div className="card_slot_node flex flex-col gap-4">
                     <div className="card_section flex flex-col gap-4">
-                      <div className="card_section_title inline-flex text-[20px]">薅羊毛的魔力</div>
+                      <div className="card_section_title inline-flex text-[20px]">薅走一根头发</div>
                       <div className="card_section_content flex flex-col gap-2">
                         <div className="card_item inline-flex gap-2">
-                          <span className="card_item_name text-[#C2A896]">乐趣</span>
-                          <span className="card_item_value text-[#FEBA8C]">越薅越快乐</span>
+                          <span className="card_item_name text-[#C2A896]">上手</span>
+                          <span className="card_item_value text-[#FEBA8C]">Next.js | React</span>
                         </div>
                       </div>
                     </div>
                     <div className="card_part flex flex-wrap gap-2">
-                      <Tag name="立减金"></Tag>
-                    </div>
-                    <div className="card_part flex flex-wrap gap-2">
-                      <Tag name="Github"></Tag>
+                      <Tag name="GitHub"></Tag>
                       <Tag name="StackFlow"></Tag>
                     </div>
                     <div className="card_part">
@@ -464,19 +462,20 @@ const App = () => {
                     </div>
                   </div>
                 </Card>
-                <Card title="找到我 / Finding me" collapsed={false}>
+                <Card title="找到我 / Finding me" icon="Wave" color="#cccccc" collapsed={false}>
                   <div className="card_slot_node flex flex-col gap-4">
                     <div className="card_section flex flex-col gap-4">
-                      <div className="card_section_title inline-flex text-[20px]">薅羊毛的魔力</div>
+                      <div className="card_section_title inline-flex text-[20px]">欢迎一起探讨...</div>
                       <div className="card_section_content flex flex-col gap-2">
                         <div className="card_item inline-flex gap-2">
-                          <span className="card_item_name text-[#C2A896]">乐趣</span>
-                          <span className="card_item_value text-[#FEBA8C]">越薅越快乐</span>
+                          <span className="card_item_name text-[#C2A896]">技术</span>
+                          <span className="card_item_value text-[#FEBA8C]">前端技术</span>
+                        </div>
+                        <div className="card_item inline-flex gap-2">
+                          <span className="card_item_name text-[#C2A896]">更多话题</span>
+                          <span className="card_item_value text-[#FEBA8C]">兴趣 爱好...</span>
                         </div>
                       </div>
-                    </div>
-                    <div className="card_part flex flex-wrap gap-2">
-                      <Tag name="立减金"></Tag>
                     </div>
                     <div className="card_part flex flex-wrap gap-2">
                       <Tag name="Github"></Tag>
@@ -485,9 +484,7 @@ const App = () => {
                     <div className="card_part">
                       <p>Contact&nbsp;with&nbsp;me<br />
                         社交平台<br />
-                        QQ/微信&nbsp;1150963042<br />
                         Facebook<br />
-                        X（Twitter）<br />
                         Instagram<br />
                         Telegram<br />
                         Discord<br />
@@ -500,7 +497,6 @@ const App = () => {
                         知乎<br />
                         酷安<br />
                         百度贴吧<br />
-                        哔哩哔哩<br />
                         YouTube<br />
                         GitHub<br />
                         Gitee<br />
@@ -508,10 +504,9 @@ const App = () => {
                         QQ邮箱<br />
                         网易163邮箱<br />
                         Outlook<br />
-                        Gmail</p>
+                        </p>
 
                       <p>游戏社区<br />
-                        米游社<br />
                         Steam<br />
                         Ubi</p>
 
