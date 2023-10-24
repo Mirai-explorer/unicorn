@@ -113,6 +113,18 @@ const HomeAside = () => {
         {
             href: '/music',
             name: '云播放器'
+        },
+        {
+            href: '/blog',
+            name: '博客'
+        },
+        {
+            href: '/kit',
+            name: '工具箱'
+        },
+        {
+            href: '/new',
+            name: '新特性测试'
         }
     ]
     return(
