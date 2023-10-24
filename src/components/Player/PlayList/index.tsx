@@ -3,7 +3,6 @@ import React, {SetStateAction, useEffect, useState} from "react";
 import {Track, getTime} from "@/components/Player/utils";
 import { simpleConfirm, SimpleDialogContainer } from 'react-simple-dialogs'
 import Icon from "@/components/Icons/player_icon";
-import scrollIntoView from "scroll-into-view-if-needed";
 
 const PlayListWrap =
     styled.div`
@@ -278,8 +277,8 @@ const PlayList = ({tracks, setTracks, trackIndex, setTrackIndex, isShowing, setI
                             })
                         )}
                         {!tracks && (
-                            <div>
-                                歌单空空的，先去找找吧
+                            <div className="flex justify-center">
+                                歌单空空的，先去找找吧~
                             </div>
                         )}
                     </PlayListCardContent>
