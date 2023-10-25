@@ -1,5 +1,5 @@
 import {styled} from "styled-components";
-import React, {SetStateAction, useEffect, useState} from "react";
+import React, {SetStateAction, useEffect, useRef, useState} from "react";
 import {Track, getTime} from "@/components/Player/utils";
 import { simpleConfirm, SimpleDialogContainer } from 'react-simple-dialogs'
 import Icon from "@/components/Icons/player_icon";
@@ -140,7 +140,7 @@ const PlayList = ({tracks, setTracks, trackIndex, setTrackIndex, isShowing, setI
     playState: boolean
 }) => {
     const [X, setX] = useState(0)
-    const target = React.useRef<Array<HTMLDivElement | null >>([])
+    const target = useRef<Array<HTMLDivElement | null >>([])
     const delConfirm = async (text: string, index: number) => {
         const isConfirmed = await simpleConfirm({
             title: '删除警告',
