@@ -1,5 +1,4 @@
 "use client"
-import HomeHeader from "@/components/Home/Header";
 import HomeMain from "@/components/Home/Main";
 import HomeFooter from "@/components/Home/Footer";
 import { store } from './store';
@@ -8,6 +7,10 @@ import Card from '@/components/Common/Card';
 import Tag from '@/components/Common/Tag';
 import { Icons as Icon } from "@/components/Icons/index";
 import dynamic from "next/dynamic";
+
+const HomeHeader = dynamic(() => import("@/components/Home/Header"), {
+  ssr: false
+});
 
 const HomeAside = dynamic(() => import("@/components/Home/Aside"), {
   ssr: false

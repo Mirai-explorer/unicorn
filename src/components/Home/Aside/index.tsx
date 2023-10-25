@@ -10,6 +10,29 @@ import { styled } from "styled-components";
 import logo from '@/assets/images/logo-full.png'
 import { CIcons as Icon } from "@/components/Icons/index";
 
+const navLinks = [
+    {
+        href: '/',
+        name: '首页'
+    },
+    {
+        href: '/music',
+        name: '云播放器'
+    },
+    {
+        href: '/blog',
+        name: '博客'
+    },
+    {
+        href: '/kit',
+        name: '工具箱'
+    },
+    {
+        href: '/new',
+        name: '新特性测试'
+    }
+]
+
 const Drawer =
     styled.div`
       display: flex;
@@ -60,17 +83,30 @@ const Content =
     `
 
 const List =
-    styled.div`
+    styled.ul`
       display: flex;
       flex-direction: column;
       flex-grow: 1;
       overflow-y: auto;
+    `
+
+const ListItem =
+    styled.li`
+      display: list-item;
+      flex-shrink: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      transition: color .1s linear;
+      
+      &:hover {
+        color: #6CA37A;
+      }
       
       & a {
+        display: flex;
         padding: 1rem;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
+        width: 100%;
       }
     `
 
@@ -79,6 +115,10 @@ const Section =
       display: flex;
       justify-content: center;
       align-items: center;
+      
+      .header {
+        
+      }
       
       &.footer {
         flex-direction: column;
@@ -105,33 +145,11 @@ const Contacts =
 const HomeAside = () => {
     const toggle = useSelector((state: RootState) => state.toggle.action)
     const dispatch = useDispatch()
-    const navLinks = [
-        {
-            href: '/',
-            name: '首页'
-        },
-        {
-            href: '/music',
-            name: '云播放器'
-        },
-        {
-            href: '/blog',
-            name: '博客'
-        },
-        {
-            href: '/kit',
-            name: '工具箱'
-        },
-        {
-            href: '/new',
-            name: '新特性测试'
-        }
-    ]
     return(
         <Drawer>
             <Aside className={`aside ${toggle ? 'open' : ''}`}>
                 <Content>
-                    <Section>
+                    <Section className={`header`}>
                         <button>
 
                         </button>
@@ -139,7 +157,9 @@ const HomeAside = () => {
                     </Section>
                     <List>
                         {navLinks.map((item, id) => (
-                            <Link href={item.href} key={id}>{item.name}</Link>
+                            <ListItem key={id}>
+                                <Link href={item.href}>{item.name}</Link>
+                            </ListItem>
                         ))}
                     </List>
                     <Section className={`footer`}>

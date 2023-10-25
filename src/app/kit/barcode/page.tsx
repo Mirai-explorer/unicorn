@@ -1,13 +1,13 @@
 "use client"
 import dynamic from "next/dynamic";
 
-const New = dynamic(() => import('@/components/New'), {
+const Barcode = dynamic(() => import("@/components/Kit/Barcode"), {
     ssr: false
 });
 
 const Page = () => {
     return(
-        <New></New>
+        <Barcode></Barcode>
     )
 }
 
