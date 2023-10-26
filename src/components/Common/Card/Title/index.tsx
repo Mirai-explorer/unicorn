@@ -1,6 +1,6 @@
 import React from 'react';
 
-const Barcode = () => {
+const Title = () => {
     return(
         <div>
 
@@ -8,4 +8,4 @@ const Barcode = () => {
     )
 }
 
-export default Barcode;
+export default Title;
