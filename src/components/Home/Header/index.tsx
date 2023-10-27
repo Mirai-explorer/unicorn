@@ -31,7 +31,7 @@ const navLinks = [
 const NavLeft =
     styled.div`
       display: flex;
-      justify-content: center;
+      justify-content: flex-start;
       align-items: center;
       flex: 1;
 
@@ -43,7 +43,7 @@ const NavLeft =
 const NavRight =
     styled.div`
       display: flex;
-      justify-content: center;
+      justify-content: flex-end;
       align-items: center;
       flex: 1;
     `
@@ -52,7 +52,7 @@ const HomeHeader = () => {
     const dispatch = useDispatch()
     return(
         <header className="header sticky top-0 bg-[#ffffffdd] shadow flex items-center justify-center backdrop-saturate-[1.8] backdrop-blur-[5px]">
-            <nav className="navbar flex justify-evenly h-[70px] w-full px-5 py-1 gap-4">
+            <nav className="navbar flex justify-evenly h-[70px] w-full px-5 py-1 gap-4 max-w-[992px] min-[992px]:justify-between">
                 <NavLeft>
                     <button
                         className="block w-5 rounded-xl"
@@ -62,7 +62,7 @@ const HomeHeader = () => {
                         <Icon className="icon-menu" name="Menu" height={20} width={20} fill="#333333"/>
                     </button>
                 </NavLeft>
-                <div className="flex justify-center items-center grow-[2] overflow-auto">
+                <div className="flex justify-center min-[992px]:justify-start items-center grow-[2] overflow-auto">
                     <HomeHeaderNav navLinks={navLinks}></HomeHeaderNav>
                 </div>
                 <NavRight>

@@ -51,8 +51,8 @@ const Typo =
       grid-row-gap: 1rem;
 
       opacity: 0;
-      transition: opacity .3s ease-in-out, transform .3s ease-in;
-      transform: translateX(-50px);
+      transition: opacity .5s ease-in-out, transform .5s ease-in;
+      transform: translateX(-1rem);
       visibility: hidden;
       &.show {
         opacity: 1;

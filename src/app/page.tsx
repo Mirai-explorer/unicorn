@@ -50,7 +50,7 @@ const App = () => {
           <HomeHeader></HomeHeader>
           <HomeAside></HomeAside>
           <HomeMain>
-            <div className="main_layout flex flex-col gap-3 tracking-wide">
+            <div className="main_layout flex flex-col gap-4 tracking-wide">
               <Card direction="col">
                 <CardProfile title="阿伟" subtitle="Aubrey" avatar="/images/profile/avatar0001.jpg" status="技术宅一枚，多多关照~" direction="col" />
                 <CardColumn>
@@ -58,14 +58,14 @@ const App = () => {
                   <CardItem keyname="生日" value="2-26" icon={true} name="Birthday"></CardItem>
                 </CardColumn>
               </Card>
-              <section className="flex flex-col gap-3">
+              <section className="flex flex-col gap-4">
                 <div className="inline-flex items-center text-[1rem] font-semibold text-[#977A5C] tracking-wide">
                   <i className="ps-2 pe-2">
                     <Icon className="icon-interest" name="Interest" width={24} height={24} fill="#977A5C" />
                   </i>
                   <span className="primary">兴趣爱好•技能特长</span>
                 </div>
-                <div className={`waterfall flex flex-col gap-4`}>
+                <div className={`waterfall flex flex-row gap-5 flex-wrap max-w-[992px]`}>
                   <Card title="语言" icon="Language" color="#977A5C" direction="row" index={lang} action={setLang} data={language}>
                     <div className="card_slot_node flex flex-col gap-3 pt-6 pb-6">
                       <div className="card_section flex flex-col gap-y-4 pl-2 border-l-[#f3f3f3] border-l-[1px]">
@@ -73,11 +73,15 @@ const App = () => {
                         <div className="card_section_content flex flex-col gap-y-4">
                           <div className={`flex flex-col gap-y-2`}>
                             <div>当前水平</div>
-                            <div className={`text-[18px] text-[#977A5C]`}>{language[lang].level}</div>
+                            <div className={`text-[18px] text-[#977A5C] transition-all`}>{language[lang].level}</div>
                           </div>
                           <div className={`flex flex-col gap-y-2`}>
                             <div>学习目标</div>
-                            <div className={`text-[18px] text-[#977A5C]`}>{language[lang].aim}</div>
+                            <div className={`text-[18px] text-[#977A5C] transition-all`}>{language[lang].aim}</div>
+                          </div>
+                          <div className={`flex flex-col gap-y-2`}>
+                            <div>学习笔记</div>
+                            <div className={`text-[18px] text-[#977A5C]`}>暂缺</div>
                           </div>
                         </div>
                       </div>
@@ -230,10 +234,12 @@ const App = () => {
                           <Tag name="鄂州"></Tag>
                           <Tag name="咸宁"></Tag>
                           <Tag name="长沙"></Tag>
+                          <Tag name="岳阳"></Tag>
                           <Tag name="广州"></Tag>
                           <Tag name="深圳"></Tag>
                           <Tag name="东莞"></Tag>
                           <Tag name="佛山"></Tag>
+                          <Tag name="珠海"></Tag>
                           <Tag name="湛江"></Tag>
                           <Tag name="香港"></Tag>
                           <Tag name="海口"></Tag>

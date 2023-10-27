@@ -10,7 +10,7 @@ import { Icons as Icon } from "@/components/Icons/index";
         action?: React.Dispatch<SetStateAction<number>>,
         data?: any[]}) => {
         return(
-            <div className="common-card_framework grid flex-1 bg-white">
+            <div className="common-card_framework grid flex-1 bg-white min-w-[320px]">
                 <div className={`common-card_wrap flex flex-${direction} shadow rounded p-5 gap-3`}>
                     {title && (
                         <div className={`common-card_part flex flex-${direction === 'col'?'row':'col'} justify-between min-w-[4rem]`}>
