@@ -11,7 +11,7 @@ const LyricWrap =
     styled.div`
       display: flex;
       justify-content: center;
-      align-items: flex-end;
+      align-items: center;
       width: 100%;
       flex: 1;
 
@@ -34,7 +34,7 @@ const LyricWrap =
 const Scroll =
     styled.div`
       width: 90%;
-      height: 128px;
+      height: 96px;
       overflow-y: hidden;
       overflow-x: hidden;
     `
@@ -49,7 +49,7 @@ const Waterfall =
       display: grid;
       grid-auto-rows: max-content;
       transition: transform 200ms linear;
-      transform: translateY(0px);
+      transform: translateY(32px);
       will-change: transform;
       
       &.reduce {
@@ -62,7 +62,7 @@ const Line =
       display: inline-grid;
       text-align: center;
       align-items: center;
-      opacity: .01;
+      opacity: .1;
       font-size: 16px;
       font-weight: 500;
       line-height: 1;
@@ -72,6 +72,7 @@ const Line =
       letter-spacing: 2px;
       min-height: 32px;
       will-change: opacity, font-size, font-weight, line-height;
+      transition: all 200ms ease-out;
       
       &.bubble {
         font-weight: 700;
@@ -82,16 +83,16 @@ const Line =
       }
       
       &.await {
-        opacity: .6;
+        opacity: .5;
       }
 
       &.bubble, &.await {
-        transition: all 250ms ease-out;
+        transition: all 300ms ease-out;
       }
 
       .reduce {
         &.bubble, &.await {
-          transition: all 120ms ease-out;
+          transition: all 100ms linear;
         }
       }
     `
@@ -145,7 +146,7 @@ const Lyric = ({ tracks, trackIndex, trackProgress, reduce, offset } : {
 
     useEffect(() => {
         setNumber(syncLyric(lyric, trackProgress) as number);
-        target.current !== null ? target.current.style.transform = `translateY(${-(32 * number)}px)` : null;
+        target.current !== null ? target.current.style.transform = `translateY(${-(32 * number)+32}px)` : null;
     }, [trackProgress]);
 
     return (
