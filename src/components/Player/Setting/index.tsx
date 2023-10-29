@@ -1,6 +1,6 @@
 import {styled} from "styled-components";
 import React, {SetStateAction, useRef, useState} from "react";
-import {fetchMusicSource, syncMediaSession, Track} from "@/components/Player/utils";
+import { fetchMusicSource, syncMediaSession, Track, itemType } from "@/components/Player/utils";
 import Icon from "@/components/Icons/player_icon";
 
 const SettingWrap =
@@ -165,10 +165,10 @@ const Setting = ({isShowing, setIsShowing, tracks, setTracks, trackIndex, setTra
             album_id: '',
             encode_audio_id: text
         }
-        fetchMusicSource(track).then(res => {
+        fetchMusicSource(0, track).then(res => {
             // a jsonp mode
             let promise = res.json()
-            promise.then(data => {
+            promise.then((data: { err_code: number; data: itemType; }) => {
                 console.log(data)
                 setDisable(false)
                 if (!data.err_code) {
@@ -210,7 +210,7 @@ const Setting = ({isShowing, setIsShowing, tracks, setTracks, trackIndex, setTra
                     setInfo('更新失败，出现未知异常')
                     throw new Error(`an unknown [error:${data.err_code}] occurred.`)
                 }
-            }).catch(error => {
+            }).catch((error: Error) => {
                 console.error(`Failed to fetch the music info related to [id:${text}] from Kugou.\n${error}`)
             })
             /*

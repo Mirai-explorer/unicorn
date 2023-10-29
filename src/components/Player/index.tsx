@@ -26,7 +26,7 @@ initDB(DBConfig);
 
 // Define the type of item to fetch on update
 type itemType = {
-    play_url: string | undefined,
+    play_url: string,
     song_name: string,
     album_name: string,
     author_name: string,
@@ -284,7 +284,7 @@ const Player = () => {
                     if (res.err_code === 0) {
                         let item: itemType = res.data;
                         let regex = /^(http|https):\/\/[a-zA-Z0-9\-.]+\.[a-zA-Z]{2,}(\/\S*)?$/;
-                        if (typeof item.play_url === 'string' && regex.test(item.play_url)) {
+                        if (regex.test(item.play_url)) {
                             return update({
                                 title: item.song_name,
                                 subtitle: item.album_name,
@@ -307,7 +307,7 @@ const Player = () => {
                         let regex = /^(http|https):\/\/[a-zA-Z0-9\-.]+\.[a-zA-Z]{2,}(\/\S*)?$/;
                         let tempar: string[] = [];
                         item.ar.map((item: any) => tempar.push(item.name));
-                        if (typeof item.mp3.url === 'string' && regex.test(item.mp3.url)) {
+                        if (regex.test(item.mp3.url)) {
                             return update({
                                 title: item.name,
                                 subtitle: item.al.name,

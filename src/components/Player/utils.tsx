@@ -24,6 +24,46 @@ type sTrack = {
     encode_audio_id: string | undefined
 }
 
+type itemType = {
+    play_url: string,
+    song_name: string,
+    album_name: string,
+    author_name: string,
+    img: string,
+    lyrics: string,
+    album_id: string,
+    encode_album_audio_id: string,
+    hash: string,
+    is_free_part: boolean,
+    timelength: number,
+    trans_param: {
+        hash_offset: {
+            end_ms: number
+        }
+    }
+}
+
+type itemType2 = {
+    al: {
+        id: number,
+        name: string,
+        picUrl: number
+    },
+    alia: string[],
+    ar: {
+        id: number,
+        name: string,
+    }[],
+    dt: number,
+    mp3: {
+        id: number,
+        md5: string,
+        time: number,
+        url: string
+    },
+    name: string
+}
+
 const sign = (params: [string, number | string][]) => {
     let source: string[] = [];
     params.forEach((v,i)=>{source[i]=v.join('=')});
@@ -94,4 +134,4 @@ const syncMediaSession = (track: Track | null) => {
 }
 
 export { fetchMusicSource, fetchLyric, syncMediaSession, getTime, sign };
-export type { Track };
+export type { Track, itemType, itemType2 };

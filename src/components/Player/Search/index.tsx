@@ -7,7 +7,7 @@ import JSONP from "fetch-jsonp";
 import axios from "axios";
 import crypto from "crypto-js";
 
-type kugouResultType = {
+type resultType = {
     FileName: string,
     FileHash: string,
     AlbumID: string,
@@ -20,7 +20,7 @@ type kugouResultType = {
     SingerName: string
 }
 
-type neteaseResultType = {
+type resultType2 = {
     al: {
         id: number,
         name: string,
@@ -240,8 +240,8 @@ const Search = ({isShowing, setIsShowing, setTracks, tracks, updates, setUpdate,
                     .then(data => {
                         setLoading(false)
                         if (data.error_code === 0) {
-                            let list: kugouResultType[] = [];
-                            data.data.lists.length > 0 && data.data.lists.map((item: kugouResultType)=>{
+                            let list: resultType[] = [];
+                            data.data.lists.length > 0 && data.data.lists.map((item: resultType)=>{
                                 list.push({
                                     FileName: item.FileName,
                                     FileHash: item.FileHash,
@@ -291,9 +291,9 @@ const Search = ({isShowing, setIsShowing, setTracks, tracks, updates, setUpdate,
                 }).then(res => {
                     setLoading(false)
                     if (res.data.code === 200) {
-                        let list: kugouResultType[] = [];
+                        let list: resultType[] = [];
                         let tempar: string[] = [];
-                        res.data.result.songs.length > 0 && res.data.result.songs.map((item: neteaseResultType)=>{
+                        res.data.result.songs.length > 0 && res.data.result.songs.map((item: resultType2)=>{
                             item.ar.map(item => tempar.push(item.name))
                             list.push({
                                 FileName: item.name,
@@ -567,7 +567,7 @@ const Search = ({isShowing, setIsShowing, setTracks, tracks, updates, setUpdate,
                     </SearchCardTitle>
                     <SearchCardContent>
                         {!loading && result.length > 0 && result[0].AlbumID !== 'null' && (
-                            result.map((item: kugouResultType, index) => {
+                            result.map((item: resultType, index) => {
                                 return(
                                     <SearchItem key={index}>
                                         <SearchItemLabel>
