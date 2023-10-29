@@ -386,7 +386,7 @@ const Search = ({isShowing, setIsShowing, setTracks, tracks, updates, setUpdate,
                 })
             }
         })
-        if (track.encode_audio_id!.length < 8) {
+        if (isNaN(Number(track.encode_audio_id))) {
             !flag && fetchMusicSource(0, track).then(data => {
                 // a jsonp mode
                 console.log(data)

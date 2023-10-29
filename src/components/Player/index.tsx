@@ -270,7 +270,7 @@ const Player = () => {
                 } else {
                     console.log('ready to update',id)
                     uniques.push(item.unique_index)
-                    return item.encode_audio_id.length < 8 ? fetchMusicSource(0, item) : fetchMusicSource(1, item)
+                    return isNaN(Number(item.encode_audio_id)) ? fetchMusicSource(0, item) : fetchMusicSource(1, item)
                 }
             })
         ).then(tasks => {
