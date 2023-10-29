@@ -307,6 +307,7 @@ const Search = ({isShowing, setIsShowing, setTracks, tracks, updates, setUpdate,
                                 Image: String(item.al.picUrl),
                                 SingerName: tempar.join('、')
                             })
+                            tempar = []
                         })
                         list.length !== 0 ? setResult(list) : setResult([])
                     } else {
@@ -461,11 +462,12 @@ const Search = ({isShowing, setIsShowing, setTracks, tracks, updates, setUpdate,
             }
             */
         } else {
-            fetchMusicSource(1, track).then(async res => {
+            !flag && fetchMusicSource(1, track).then(async res => {
                 console.log(res.data)
-                if (res.data.status.code) {
+                if (res.data.status.code === 200) {
                     let item = res.data.data;
-                    if (res.data.status.code === 200) {
+                    let regex = /^(http|https):\/\/[a-zA-Z0-9\-.]+\.[a-zA-Z]{2,}(\/\S*)?$/;
+                    if (typeof item.play_url === 'string' && regex.test(item.play_url)) {
                         let tempar: string[] = [];
                         item.ar.map((item: any) => tempar.push(item.name));
                         let track_new: Track = {
