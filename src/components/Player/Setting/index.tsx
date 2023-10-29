@@ -62,7 +62,7 @@ const SettingCardContent =
       overflow: auto;
       flex: 1;
     `
-const Setting = ({isShowing, setIsShowing, tracks, setTracks, trackIndex, setTrackIndex, setToastMessage, offset, setOffset} : {
+const Setting = ({isShowing, setIsShowing, tracks, setTracks, trackIndex, setTrackIndex, setToastMessage, offset, setOffset, size, setSize} : {
     isShowing: boolean,
     setIsShowing: React.Dispatch<SetStateAction<boolean>>,
     tracks: Track[],
@@ -74,7 +74,9 @@ const Setting = ({isShowing, setIsShowing, tracks, setTracks, trackIndex, setTra
         timestamp: number
     }>>,
     offset: number,
-    setOffset: React.Dispatch<SetStateAction<number>>
+    setOffset: React.Dispatch<SetStateAction<number>>,
+    size: string,
+    setSize: React.Dispatch<SetStateAction<string>>
 }) => {
     const [text, setText] = useState('')
     const textRef = useRef<HTMLInputElement>(null)

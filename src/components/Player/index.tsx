@@ -1,24 +1,30 @@
 "use client";
+// import dependencies/usages
 import React, {useEffect, useRef, useState} from "react";
-import Title from "./Title";
-import Cover from "./Cover";
-import Lyric from "./Lyric";
-import Progress from "./Progress";
-import Controller from "./Controller";
-import Search from "./Search";
-import "../bundle.css";
-import styled from 'styled-components';
-import {DBConfig} from "@/app/IDBConfig";
 import {initDB, useIndexedDB} from "react-indexed-db-hook";
-import tracks0 from "@/assets/data/tracks";
+import {Track, fetchMusicSource, getTime, syncMediaSession, fetchLyric} from "./utils";
+import styled from 'styled-components';
 import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import {Track, fetchMusicSource, getTime, syncMediaSession} from "./utils";
+// import components
+import Title from "@/components/Player/Title";
+import Cover from "@/components/Player/Cover";
+import Lyric from "@/components/Player/Lyric";
+import Progress from "@/components/Player/Progress";
+import Controller from "@/components/Player/Controller";
+import Search from "@/components/Player/Search";
 import PlayList from "@/components/Player/PlayList";
 import Setting from "@/components/Player/Setting";
+// import styles
+import "../bundle.css";
+import 'react-toastify/dist/ReactToastify.css';
+// import extra data/config
+import tracks0 from "@/assets/data/tracks";
+import {DBConfig} from "@/app/IDBConfig";
 
+// Initialize indexDB database
 initDB(DBConfig);
 
+// Define the type of item to fetch on update
 type itemType = {
     play_url: string | undefined,
     song_name: string,
@@ -38,7 +44,28 @@ type itemType = {
     }
 }
 
-// 样式
+type itemType2 = {
+    al: {
+        id: number,
+        name: string,
+        picUrl: number
+    },
+    alia: string[],
+    ar: {
+        id: number,
+        name: string,
+    }[],
+    dt: number,
+    mp3: {
+        id: number,
+        md5: string,
+        time: number,
+        url: string
+    },
+    name: string
+}
+
+// Define the styles by 'styled-components'
 const MiraiPlayer =
     styled.div.attrs((/* props */) => ({ tabIndex: 0 }))`
       position: absolute;
@@ -108,9 +135,9 @@ const Layout =
       &.scale {
         scale: 0.9;
       }
-      
     `
 
+// Player
 const Player = () => {
     const { deleteRecord, update, getAll } = useIndexedDB("playlist");
     // State
@@ -143,7 +170,7 @@ const Player = () => {
     );
     const progress = useRef({
         trackHash: '',
-        trackProgress: '0'
+        trackProgress: ''
     })
 
     const isReady = useRef(false);
@@ -159,11 +186,10 @@ const Player = () => {
   `;
 
     const onScrub = (value: number) => {
-        //audioRef.current.currentTime = value;
         if (audioRef.current) {
-            audioRef.current.ontimeupdate = () => null
-            reduce !== 'reduce' && setReduce('reduce')
-            setTrackProgress(value)
+            audioRef.current.ontimeupdate = () => null;
+            reduce !== 'reduce' && setReduce('reduce');
+            setTrackProgress(value);
         }
     };
 
@@ -244,7 +270,7 @@ const Player = () => {
                 } else {
                     console.log('ready to update',id)
                     uniques.push(item.unique_index)
-                    return fetchMusicSource(item)
+                    return item.encode_audio_id.length < 8 ? fetchMusicSource(0, item) : fetchMusicSource(1, item)
                 }
             })
         ).then(tasks => {
@@ -252,11 +278,11 @@ const Player = () => {
                 value: '数据更新中，请稍候...',
                 timestamp: new Date().getTime()
             })
-            tasks.map((res, i) => {
-                let promise = res?.json()
-                promise && promise.then(data => {
-                    if (!data.err_code) {
-                        let item: itemType = data.data;
+            console.log(tasks)
+            tasks.map(async (res, i) => {
+                if (res) {
+                    if (res.err_code === 0) {
+                        let item: itemType = res.data;
                         let regex = /^(http|https):\/\/[a-zA-Z0-9\-.]+\.[a-zA-Z]{2,}(\/\S*)?$/;
                         if (typeof item.play_url === 'string' && regex.test(item.play_url)) {
                             return update({
@@ -276,10 +302,33 @@ const Player = () => {
                         } else {
                             throw new Error("Can't fetch the source")
                         }
+                    } else if (res.data.status.code) {
+                        let item: itemType2 = res.data.data;
+                        let regex = /^(http|https):\/\/[a-zA-Z0-9\-.]+\.[a-zA-Z]{2,}(\/\S*)?$/;
+                        let tempar: string[] = [];
+                        item.ar.map((item: any) => tempar.push(item.name));
+                        if (typeof item.mp3.url === 'string' && regex.test(item.mp3.url)) {
+                            return update({
+                                title: item.name,
+                                subtitle: item.al.name,
+                                artist: tempar.join('、'),
+                                src: item.mp3.url,
+                                cover: item.al.picUrl,
+                                lyric: await fetchLyric(item.mp3.id),
+                                album_id: item.al.id,
+                                encode_audio_id: String(item.mp3.id),
+                                code: item.mp3.md5,
+                                timestamp: new Date().getTime() + 86400000,
+                                unique_index: i + 1,
+                                time_length: item.mp3.time
+                            })
+                        } else {
+                            throw new Error("Can't fetch the source")
+                        }
                     }
-                })
+                }
             })
-        }).then(res => {
+        }).then(() => {
             console.log(uniques,'saved')
             setUpdatedTracks()
         })
@@ -385,6 +434,7 @@ const Player = () => {
 
     useEffect(() => {
         window.addEventListener('beforeunload', e => {
+            audioRef.current?.pause();
             e.preventDefault();
             localStorage.setItem('trackHash', progress.current.trackHash);
             localStorage.setItem('trackProgress', progress.current.trackProgress);
@@ -396,7 +446,6 @@ const Player = () => {
             tracks.length > 0 ? handleAllUpdates(tracks.filter(track => track.code)) : handleAllUpdates(tracks0);
         });
         return(() => {
-            audioRef.current?.pause()
             window.removeEventListener('beforeunload', e => {
                 e.preventDefault();
                 localStorage.setItem('trackHash', progress.current.trackHash);
@@ -430,6 +479,7 @@ const Player = () => {
     useEffect(() => {
         console.log('involved')
         if (audioRef.current && reload) {
+            setReload(false);
             toPlay(false);
             audioRef.current.src = src;
             setTrackProgress(0);
@@ -442,7 +492,6 @@ const Player = () => {
                 // Set the isReady ref as true for the next pass
                 isReady.current = true;
             }
-            setReload(false);
         }
     }, [reload]);
 
@@ -550,6 +599,8 @@ const Player = () => {
                     setToastMessage={setToastMessage}
                     offset={offset}
                     setOffset={setOffset}
+                    size={size}
+                    setSize={setSize}
                 />
             </Layout>
             <ToastContainer />

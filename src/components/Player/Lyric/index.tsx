@@ -107,7 +107,7 @@ const Lyric = ({ tracks, trackIndex, trackProgress, reduce, offset } : {
     const [number, setNumber] = useState(0);
     const target: React.RefObject<HTMLDivElement> = React.createRef<HTMLDivElement>();
     const parseLrc = (str: string) => {
-        const regex: RegExp = /^\[(?<time>\d{2}:\d{2}(.\d{2})?)\](?<text>.*)/;
+        const regex: RegExp = /^\[(?<time>\d{2}:\d{2}(.\d{2,})?)\](?<text>.*)/;
         const lines: string[] | null = str.split("\n");
         const output: lyricType[] = [];
         const parseTime = (time: string) => {
@@ -179,5 +179,7 @@ const Lyric = ({ tracks, trackIndex, trackProgress, reduce, offset } : {
         </LyricWrap>
     );
 }
+
+
 
 export default Lyric;

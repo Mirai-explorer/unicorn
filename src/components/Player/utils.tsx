@@ -30,9 +30,17 @@ const sign = (params: [string, number | string][]) => {
     return md5('NVPh5oo715z5DIWAeQlhMDsWXXQV4hwt'+source.join('')+'NVPh5oo715z5DIWAeQlhMDsWXXQV4hwt').toString()
 }
 
-const fetchMusicSource = async(data: Track | sTrack) => {
+const fetchMusicSource = async(type: number, data: Track | sTrack) => {
     // a jsonp mode
-    return JSONP(`https://wwwapi.kugou.com/yy/index.php?r=play/getdata&dfid=${cookie.load('kg_dfid') || '4FHbnb44LtSM2JrXpX3riltQ'}&mid=${cookie.load('kg_mid') || '50e0be703d34ee6401eedf772101571b'}&appid=1014&encode_album_audio_id=${data.encode_audio_id}&platid=4&_=${new Date().getTime()}`)
+    if (type === 0) {
+        return JSONP(`https://wwwapi.kugou.com/yy/index.php?r=play/getdata&dfid=${cookie.load('kg_dfid') || '4FHbnb44LtSM2JrXpX3riltQ'}&mid=${cookie.load('kg_mid') || '50e0be703d34ee6401eedf772101571b'}&appid=1014&encode_album_audio_id=${data.encode_audio_id}&platid=4&_=${new Date().getTime()}`).then(res => res.json())
+    } else {
+        return axios.get(`https://bird.ioliu.cn/netease/song`, {
+            params: {
+                id: data.encode_audio_id
+            }
+        })
+    }
     /*
     // a proxy mode
     return axios.get('/get_song', {
@@ -48,6 +56,10 @@ const fetchMusicSource = async(data: Track | sTrack) => {
     })
     */
 } //[INVOLVE]获取歌曲源
+
+const fetchLyric = async(id: number) => {
+    return axios.get(`https://bird.ioliu.cn/v1/?url=https://music.163.com/api/song/lyric?os=pc&id=${id}&lv=-1&kv=-1&tv=-1`).then(res => res.data.code && res.data.lrc.lyric)
+}
 
 const getTime = (type: number) => {
     let timeDisplay = Math.floor(type);
@@ -68,15 +80,18 @@ const getTime = (type: number) => {
     return mins + ":" + secs;
 };
 
-const syncMediaSession = (track: Track) => {
-    navigator.mediaSession.metadata = null
-    navigator.mediaSession.metadata = new MediaMetadata({
-        title: track.title,
-        artist: track.artist,
-        album: track.subtitle,
-        artwork: [{ src: track.cover, type: "image/jpeg", sizes: "480x480" }]
-    })
+const syncMediaSession = (track: Track | null) => {
+    if (track) {
+        navigator.mediaSession.metadata = new MediaMetadata({
+            title: track.title,
+            artist: track.artist,
+            album: track.subtitle,
+            artwork: [{ src: track.cover, type: "image/jpeg", sizes: "480x480" }]
+        })
+    } else {
+        navigator.mediaSession.metadata = null
+    }
 }
 
-export { fetchMusicSource, syncMediaSession, getTime, sign };
+export { fetchMusicSource, fetchLyric, syncMediaSession, getTime, sign };
 export type { Track };

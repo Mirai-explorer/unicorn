@@ -1,11 +1,13 @@
 import { styled } from "styled-components";
 import React, {SetStateAction, useRef} from "react";
-import { Track, fetchMusicSource, sign } from "@/components/Player/utils"
+import {Track, fetchMusicSource, sign, fetchLyric} from "@/components/Player/utils"
 import Icon from "../../Icons/player_icon";
 import cookie from "react-cookies";
 import JSONP from "fetch-jsonp";
+import axios from "axios";
+import crypto from "crypto-js";
 
-type resultType = {
+type kugouResultType = {
     FileName: string,
     FileHash: string,
     AlbumID: string,
@@ -16,6 +18,24 @@ type resultType = {
     Auxiliary: string,
     Image: string,
     SingerName: string
+}
+
+type neteaseResultType = {
+    al: {
+        id: number,
+        name: string,
+        picUrl: number
+    },
+    alia: string[],
+    ar: {
+        id: number,
+        name: string
+    }[],
+    dt: number,
+    name: string,
+    privilege: {
+        id: number
+    }
 }
 
 const SearchWrap =
@@ -164,75 +184,144 @@ const Search = ({isShowing, setIsShowing, setTracks, tracks, updates, setUpdate,
         Image: 'null',
         SingerName: 'null'
     }])
-    const [loading, setLoading] = React.useState(false)
-    const searchInputRef = useRef<HTMLInputElement>(null)
+    const [sourceType, setSourceType] = React.useState(0);
+    const [loading, setLoading] = React.useState(false);
+    const searchInputRef = useRef<HTMLInputElement>(null);
 
     const dropMenu = () => {
-        console.log('clicked')
+        setSourceType(sourceType + 1 > 1 ? 0 : sourceType + 1)
+        setResult([{
+            FileName: 'null',
+            FileHash: 'null',
+            AlbumID: 'null',
+            AlbumName: 'null',
+            EMixSongID: 'null',
+            Duration: 0,
+            OriSongName: 'null',
+            Auxiliary: 'null',
+            Image: 'null',
+            SingerName: 'null'
+        }])
     }
 
     const watchInputValue = (value:string) => {
         setValue(value)
     }
 
-    const doSearch = (keyword: string) => {
-        setLoading(true)
-        const params = {
-            appid: 1014,
-            bitrate: 0,
-            callback: 'callback123',
-            clienttime: new Date().getTime(),
-            clientver: 1000,
-            dfid: cookie.load('kg_dfid') || '4FHbnb44LtSM2JrXpX3riltQ',
-            filter: 10,
-            inputtype: 0,
-            iscorrection: 1,
-            isfuzzy: 0,
-            keyword: keyword,
-            mid: cookie.load('kg_mid') || '50e0be703d34ee6401eedf772101571b',
-            page: 1,
-            pagesize: 30,
-            platform: 'WebFilter',
-            privilege_filter: 0,
-            srcappid: 2919,
-            token: '',
-            userid: 0,
-            uuid: cookie.load('kg_mid') || '50e0be703d34ee6401eedf772101571b'
-        }
-        // a jsonp mode
-        JSONP(`https://complexsearch.kugou.com/v2/search/song?appid=1014&bitrate=0&clienttime=${params.clienttime}&clientver=1000&dfid=${cookie.load('kg_dfid') || '4FHbnb44LtSM2JrXpX3riltQ'}&filter=10&inputtype=0&iscorrection=1&isfuzzy=0&keyword=${keyword}&mid=${cookie.load('kg_mid') || '50e0be703d34ee6401eedf772101571b'}&page=1&pagesize=30&platform=WebFilter&privilege_filter=0&srcappid=2919&token=&userid=0&uuid=${cookie.load('kg_mid') || '50e0be703d34ee6401eedf772101571b'}&signature=${sign(Object.entries(params))}`, {jsonpCallbackFunction: 'callback123'})
-            .then(res => res.json())
-            .then(data => {
-                setLoading(false)
-                if (!data.err_code) {
-                    let list: resultType[] = [];
-                    data.data.lists.length > 0 && data.data.lists.map((item: resultType)=>{
-                        list.push({
-                            FileName: item.FileName,
-                            FileHash: item.FileHash,
-                            AlbumID: item.AlbumID,
-                            AlbumName: item.AlbumName,
-                            EMixSongID: item.EMixSongID,
-                            Duration: item.Duration,
-                            OriSongName: item.OriSongName,
-                            Auxiliary: item.Auxiliary,
-                            Image: item.Image,
-                            SingerName: item.SingerName
-                        })
-                    })
-                    list.length !== 0 ? setResult(list) : setResult([])
-                } else {
-                    throw new Error('an unexpected behavior occurred.')
+    const doSearch = (type: number, keyword: string) => {
+        setLoading(true);
+        switch (type) {
+            case 0:
+                const params = {
+                    appid: 1014,
+                    bitrate: 0,
+                    callback: 'callback123',
+                    clienttime: new Date().getTime(),
+                    clientver: 1000,
+                    dfid: cookie.load('kg_dfid') || '4FHbnb44LtSM2JrXpX3riltQ',
+                    filter: 10,
+                    inputtype: 0,
+                    iscorrection: 1,
+                    isfuzzy: 0,
+                    keyword: keyword,
+                    mid: cookie.load('kg_mid') || '50e0be703d34ee6401eedf772101571b',
+                    page: 1,
+                    pagesize: 30,
+                    platform: 'WebFilter',
+                    privilege_filter: 0,
+                    srcappid: 2919,
+                    token: '',
+                    userid: 0,
+                    uuid: cookie.load('kg_mid') || '50e0be703d34ee6401eedf772101571b'
                 }
-            })
-            .catch(err => {
-                setLoading(false)
-                setToastMessage({
-                    value: '发生不可预知的行为，错误信息：'+err.message,
-                    timestamp: new Date().getTime()
+                // a jsonp mode
+                JSONP(`https://complexsearch.kugou.com/v2/search/song?appid=1014&bitrate=0&clienttime=${params.clienttime}&clientver=1000&dfid=${cookie.load('kg_dfid') || '4FHbnb44LtSM2JrXpX3riltQ'}&filter=10&inputtype=0&iscorrection=1&isfuzzy=0&keyword=${keyword}&mid=${cookie.load('kg_mid') || '50e0be703d34ee6401eedf772101571b'}&page=1&pagesize=30&platform=WebFilter&privilege_filter=0&srcappid=2919&token=&userid=0&uuid=${cookie.load('kg_mid') || '50e0be703d34ee6401eedf772101571b'}&signature=${sign(Object.entries(params))}`, {jsonpCallbackFunction: 'callback123'})
+                    .then(res => res.json())
+                    .then(data => {
+                        setLoading(false)
+                        if (data.error_code === 0) {
+                            let list: kugouResultType[] = [];
+                            data.data.lists.length > 0 && data.data.lists.map((item: kugouResultType)=>{
+                                list.push({
+                                    FileName: item.FileName,
+                                    FileHash: item.FileHash,
+                                    AlbumID: item.AlbumID,
+                                    AlbumName: item.AlbumName,
+                                    EMixSongID: item.EMixSongID,
+                                    Duration: item.Duration,
+                                    OriSongName: item.OriSongName,
+                                    Auxiliary: item.Auxiliary,
+                                    Image: item.Image,
+                                    SingerName: item.SingerName
+                                })
+                            })
+                            list.length !== 0 ? setResult(list) : setResult([])
+                        } else {
+                            throw new Error('an unexpected behavior occurred.')
+                        }
+                    })
+                    .catch(err => {
+                        setLoading(false)
+                        setToastMessage({
+                            value: '发生不可预知的行为，错误信息：'+err.message,
+                            timestamp: new Date().getTime()
+                        })
+                        console.error('Please try again later:',err.message)
+                    })
+                break;
+            case 1:
+                // a jsonp mode
+                let data = [
+                    `{"s":"${value}","limit":20,"offset":0,"type":1,"strategy":5,"queryCorrect":true}`,
+                    ''
+                ]
+                const key = [crypto.enc.Utf8.parse('0CoJUm6Qyw8W8jud'), crypto.enc.Utf8.parse('m2d5ZcyUhxNUWqu4')]
+                const iv = crypto.enc.Utf8.parse('0102030405060708')
+                const encrypted = crypto.AES.encrypt(data[0], key[0], { iv: iv, mode: crypto.mode.CBC })
+                data[1] = encrypted.toString()
+                const encrypted2 = crypto.AES.encrypt(data[1], key[1], { iv: iv, mode: crypto.mode.CBC })
+                const encSecKey = "57177e98cbfae5064f3d1df01ba0c8d2c557608cb89d12a3b7cbfe04b9f784cbc0135a2b30e729b068905f3d8bcae62c7cac2836b19686d7ecfd1b58be569ceb286c9b60550df48c55df0d720b6d57edafec1bf9a07be8967d09a9273d4604da2f3ab15f0eec67de27c06513f74028796fb077676219030feb9d9f0b741765fe"
+                axios.post("https://bird.ioliu.cn/v2?url=https://interface.music.163.com/weapi/search/get", {
+                    params: encrypted2,
+                    encSecKey: encSecKey
+                }, {
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    }
+                }).then(res => {
+                    setLoading(false)
+                    if (res.data.code === 200) {
+                        let list: kugouResultType[] = [];
+                        let tempar: string[] = [];
+                        res.data.result.songs.length > 0 && res.data.result.songs.map((item: neteaseResultType)=>{
+                            item.ar.map(item => tempar.push(item.name))
+                            list.push({
+                                FileName: item.name,
+                                FileHash: String(item.privilege.id),
+                                AlbumID: String(item.al.id),
+                                AlbumName: item.al.name,
+                                EMixSongID: String(item.privilege.id),
+                                Duration: item.dt,
+                                OriSongName: item.name,
+                                Auxiliary: item.alia[0] || '',
+                                Image: String(item.al.picUrl),
+                                SingerName: tempar.join('、')
+                            })
+                        })
+                        list.length !== 0 ? setResult(list) : setResult([])
+                    } else {
+                        throw new Error('an unexpected behavior occurred.')
+                    }
+                }).catch(err => {
+                    setLoading(false)
+                    setToastMessage({
+                        value: '发生不可预知的行为，错误信息：'+err.message,
+                        timestamp: new Date().getTime()
+                    })
+                    console.error('Please try again later:',err.message)
                 })
-                console.error('Please try again later:',err.message)
-            })
+                break;
+        }
         /*
         // a proxy mode
         axios.get('/query',{
@@ -243,8 +332,8 @@ const Search = ({isShowing, setIsShowing, setTracks, tracks, updates, setUpdate,
             .then(res => {
                 setLoading(false)
                 if (!res.data.err_code) {
-                    let list: resultType[] = [];
-                    res.data.data.lists.length > 0 && res.data.data.lists.map((item: resultType)=>{
+                    let list: kugouResultType[] = [];
+                    res.data.data.lists.length > 0 && res.data.data.lists.map((item: kugouResultType)=>{
                         list.push({
                             FileName: item.FileName,
                             FileHash: item.FileHash,
@@ -277,7 +366,7 @@ const Search = ({isShowing, setIsShowing, setTracks, tracks, updates, setUpdate,
     const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
         if (e.key === 'Enter') {
             searchInputRef.current?.blur()
-            doSearch(value)
+            doSearch(sourceType, value)
         }
     }
 
@@ -297,38 +386,48 @@ const Search = ({isShowing, setIsShowing, setTracks, tracks, updates, setUpdate,
                 })
             }
         })
-        !flag && fetchMusicSource(track).then(res => {
-            // a jsonp mode
-            let promise = res.json()
-            promise.then(data => {
+        if (track.encode_audio_id!.length < 8) {
+            !flag && fetchMusicSource(0, track).then(data => {
+                // a jsonp mode
                 console.log(data)
                 if (!data.err_code) {
                     let item = data.data;
-                    let track_new: Track = {
-                        title: item.song_name,
-                        subtitle: item.album_name,
-                        artist: item.author_name,
-                        src: item.play_url,
-                        cover: item.img,
-                        lyric: item.lyrics,
-                        album_id: item.album_id,
-                        encode_audio_id: item.encode_album_audio_id,
-                        code: item.hash,
-                        timestamp: new Date().getTime() + 86400000,
-                        unique_index: tracks.length + 1,
-                        time_length: !item.is_free_part ? item.timelength : item.trans_param.hash_offset.end_ms
-                    };
-                    console.log([...tracks, track_new])
-                    setIsShowing(false)
-                    setTracks([...tracks, track_new])
-                    setUpdate(updates > 0 ? ++updates : 1)
-                    setToastMessage({
-                        value: item.song_name+' 已加入歌单，可在歌单选取播放',
-                        timestamp: new Date().getTime()
-                    })
+                    let regex = /^(http|https):\/\/[a-zA-Z0-9\-.]+\.[a-zA-Z]{2,}(\/\S*)?$/;
+                    if (typeof item.play_url === 'string' && regex.test(item.play_url)) {
+                        let track_new: Track = {
+                            title: item.song_name,
+                            subtitle: item.album_name,
+                            artist: item.author_name,
+                            src: item.play_url,
+                            cover: item.img,
+                            lyric: item.lyrics,
+                            album_id: item.album_id,
+                            encode_audio_id: item.encode_album_audio_id,
+                            code: item.hash,
+                            timestamp: new Date().getTime() + 86400000,
+                            unique_index: tracks.length + 1,
+                            time_length: !item.is_free_part ? item.timelength : item.trans_param.hash_offset.end_ms
+                        };
+                        console.log([...tracks, track_new])
+                        setIsShowing(false)
+                        setTracks([...tracks, track_new])
+                        setUpdate(updates > 0 ? ++updates : 1)
+                        setToastMessage({
+                            value: item.song_name+' 已加入歌单，可在歌单选取播放',
+                            timestamp: new Date().getTime()
+                        })
+                    } else {
+                        throw new Error('无法获取到有效源')
+                    }
                 } else {
                     throw new Error('an unexpected behavior occurred.')
                 }
+            }).catch(err => {
+                setToastMessage({
+                    value: '发生不可预知的行为，错误信息：'+err.message,
+                    timestamp: new Date().getTime()
+                })
+                console.error('Please try again later:',err.message)
             })
             /*
             // a proxy mode
@@ -361,13 +460,50 @@ const Search = ({isShowing, setIsShowing, setTracks, tracks, updates, setUpdate,
                 throw new Error('an unexpected behavior occurred.')
             }
             */
-        }).catch(err => {
-            setToastMessage({
-                value: '发生不可预知的行为，错误信息：'+err.message,
-                timestamp: new Date().getTime()
+        } else {
+            fetchMusicSource(1, track).then(async res => {
+                console.log(res.data)
+                if (res.data.status.code) {
+                    let item = res.data.data;
+                    if (res.data.status.code === 200) {
+                        let tempar: string[] = [];
+                        item.ar.map((item: any) => tempar.push(item.name));
+                        let track_new: Track = {
+                            title: item.name,
+                            subtitle: item.al.name,
+                            artist: tempar.join('、'),
+                            src: item.mp3.url,
+                            cover: item.al.picUrl,
+                            lyric: await fetchLyric(item.mp3.id),
+                            album_id: item.al.id,
+                            encode_audio_id: String(item.mp3.id),
+                            code: item.mp3.md5,
+                            timestamp: new Date().getTime() + 86400000,
+                            unique_index: tracks.length + 1,
+                            time_length: item.mp3.time
+                        };
+                        console.log([...tracks, track_new])
+                        setIsShowing(false)
+                        setTracks([...tracks, track_new])
+                        setUpdate(updates > 0 ? ++updates : 1)
+                        setToastMessage({
+                            value: item.name + ' 已加入歌单，可在歌单选取播放',
+                            timestamp: new Date().getTime()
+                        })
+                    } else {
+                        throw new Error('无法获取到有效源')
+                    }
+                } else {
+                    throw new Error('an unexpected behavior occurred.')
+                }
+            }).catch(err => {
+                setToastMessage({
+                    value: '发生不可预知的行为，错误信息：'+err.message,
+                    timestamp: new Date().getTime()
+                })
+                console.error('Please try again later:',err.message)
             })
-            console.error('Please try again later:',err.message)
-        })
+        }
     }
 
     const menuEvent = (id: string) => {
@@ -406,7 +542,16 @@ const Search = ({isShowing, setIsShowing, setTracks, tracks, updates, setUpdate,
                         </button>
                         <SearchGroup>
                             <SearchCardSwitch onClick={dropMenu}>
-                                <Icon className={`icon-kugou`} name="Kugou" width={18} height={18} fill="#1296DB" />
+                                {
+                                    sourceType === 0 && (
+                                        <Icon className={`icon-kugou`} name="Kugou" width={18} height={18} fill="#1296DB" />
+                                    )
+                                }
+                                {
+                                    sourceType === 1 && (
+                                        <Icon className={`icon-netease`} name="NeteaseMusic" width={18} height={18} fill="#E82202" />
+                                    )
+                                }
                             </SearchCardSwitch>
                             <SearchCardInput
                                 type="search"
@@ -415,14 +560,14 @@ const Search = ({isShowing, setIsShowing, setTracks, tracks, updates, setUpdate,
                                 onKeyDown={e => handleKeyDown(e)}
                                 ref={searchInputRef}
                             />
-                            <SearchCardButton name="button-search" onClick={() => doSearch(value)}>
+                            <SearchCardButton name="button-search" onClick={() => doSearch(sourceType, value)}>
                                 <Icon className={`icon-search`} name="Search" width={18} height={18} fill="#BFBFBF" />
                             </SearchCardButton>
                         </SearchGroup>
                     </SearchCardTitle>
                     <SearchCardContent>
                         {!loading && result.length > 0 && result[0].AlbumID !== 'null' && (
-                            result.map((item: resultType, index) => {
+                            result.map((item: kugouResultType, index) => {
                                 return(
                                     <SearchItem key={index}>
                                         <SearchItemLabel>

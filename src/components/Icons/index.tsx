@@ -1,5 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 
 interface IGeneral {
     [key: string]: {
@@ -331,20 +330,5 @@ function CIcons(props: { className: string; name: string; width: number; height:
         </svg>
     );
 }
-
-Icons.propTypes = {
-    className: PropTypes.string.isRequired,
-    name: PropTypes.string.isRequired,
-    width: PropTypes.number.isRequired,
-    height: PropTypes.number.isRequired,
-    fill: PropTypes.string,
-};
-
-CIcons.propTypes = {
-    className: PropTypes.string.isRequired,
-    name: PropTypes.string.isRequired,
-    width: PropTypes.number.isRequired,
-    height: PropTypes.number.isRequired,
-};
 
 export {Icons, CIcons};
