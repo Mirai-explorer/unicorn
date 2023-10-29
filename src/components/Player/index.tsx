@@ -304,10 +304,9 @@ const Player = () => {
                         }
                     } else if (res.data.status.code) {
                         let item: itemType2 = res.data.data;
-                        let regex = /^(http|https):\/\/[a-zA-Z0-9\-.]+\.[a-zA-Z]{2,}(\/\S*)?$/;
                         let tempar: string[] = [];
                         item.ar.map((item: any) => tempar.push(item.name));
-                        if (regex.test(item.mp3.url)) {
+                        if (typeof item.mp3.url === 'string' && item.mp3.url.length > 0) {
                             return update({
                                 title: item.name,
                                 subtitle: item.al.name,

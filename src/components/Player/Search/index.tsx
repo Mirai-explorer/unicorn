@@ -393,8 +393,7 @@ const Search = ({isShowing, setIsShowing, setTracks, tracks, updates, setUpdate,
                 console.log(data)
                 if (!data.err_code) {
                     let item = data.data;
-                    let regex = /^(http|https):\/\/[a-zA-Z0-9\-.]+\.[a-zA-Z]{2,}(\/\S*)?$/;
-                    if (typeof item.play_url === 'string' && regex.test(item.play_url)) {
+                    if (typeof item.play_url === 'string' && item.play_url.length > 0) {
                         let track_new: Track = {
                             title: item.song_name,
                             subtitle: item.album_name,
