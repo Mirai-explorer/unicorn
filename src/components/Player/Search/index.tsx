@@ -378,7 +378,7 @@ const Search = ({isShowing, setIsShowing, setTracks, tracks, updates, setUpdate,
         }
         let flag = false
         tracks.map(item => {
-            if (track.code === item.code) {
+            if (track.code === item.code || track.encode_audio_id === item.encode_audio_id) {
                 flag = true
                 setToastMessage({
                     value: '不可重复添加',

@@ -240,8 +240,8 @@ const Player = () => {
             if (_tracks.length > 0) {
                 setTracks(_tracks);
                 let hash = localStorage.getItem('trackHash');
-                if (hash) {
-                    let index = _tracks.findIndex(track => track.code === hash)
+                let index = _tracks.findIndex(track => track.code === hash)
+                if (hash && index > -1) {
                     setTrackIndex(index);
                     setReload(true);
                     setTimeout(() => {
