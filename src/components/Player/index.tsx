@@ -5,6 +5,7 @@ import {initDB, useIndexedDB} from "react-indexed-db-hook";
 import {Track, fetchMusicSource, getTime, syncMediaSession, fetchLyric} from "./utils";
 import styled from 'styled-components';
 import { ToastContainer, toast } from 'react-toastify';
+import { simpleConfirm, SimpleDialogContainer } from 'react-simple-dialogs'
 // import components
 import Title from "@/components/Player/Title";
 import Cover from "@/components/Player/Cover";
@@ -317,7 +318,7 @@ const Player = () => {
                                 album_id: item.al.id,
                                 encode_audio_id: String(item.mp3.id),
                                 code: item.mp3.md5,
-                                timestamp: new Date().getTime() + 86400000,
+                                timestamp: new Date().getTime() + 3600000,
                                 unique_index: i + 1,
                                 time_length: item.mp3.time
                             })
@@ -396,9 +397,129 @@ const Player = () => {
         }
     }
 
+    const handleDelete = async (text: string, index: number) => {
+        const isConfirmed = await simpleConfirm({
+            title: '删除警告',
+            message: text,
+            confirmLabel: '确认',
+            cancelLabel: '算了'
+        })
+        if (isConfirmed) {
+            if (tracks.length > 1) {
+                console.log(index+' deleted')
+                const _tracks = tracks.filter((item, num) => num !== index)
+                _tracks.forEach((item, num) => {
+                    item.unique_index = num + 1
+                })
+                console.log(_tracks)
+                setTracks(_tracks)
+                if (trackIndex === index) {
+                    setTrackIndex(trackIndex < _tracks.length ? trackIndex : 0)
+                    setReload(true)
+                } else {
+                    setTrackIndex(trackIndex < index ? trackIndex : trackIndex - 1)
+                }
+                setUpdate(updates < 0 ? updates - 1 : -1)
+            } else {
+                window.indexedDB.deleteDatabase("MiraiDB").onsuccess = () => {
+                    window.location.reload()
+                }
+            }
+        } else {
+            console.log('nothing to do')
+        }
+    }
+
+    const handleUpdate = async (text: string, index: number) => {
+        const isConfirmed = await simpleConfirm({
+            title: '确认更新',
+            message: text,
+            confirmLabel: '确认',
+            cancelLabel: '算了'
+        })
+        if (isConfirmed) {
+            let id = tracks[trackIndex].encode_audio_id
+            if (!isNaN(Number(id))) {
+                fetchMusicSource(0, tracks[trackIndex])
+                    .then(res => {
+                        if (res) {
+                            if (res.err_code === 0) {
+                                let item: itemType = res.data;
+                                let regex = /^(http|https):\/\/[a-zA-Z0-9\-.]+\.[a-zA-Z]{2,}(\/\S*)?$/;
+                                if (regex.test(item.play_url)) {
+                                    return update({
+                                        title: item.song_name,
+                                        subtitle: item.album_name,
+                                        artist: item.author_name,
+                                        src: item.play_url,
+                                        cover: item.img,
+                                        lyric: item.lyrics,
+                                        album_id: item.album_id,
+                                        encode_audio_id: item.encode_album_audio_id,
+                                        code: item.hash,
+                                        timestamp: new Date().getTime() + 86400000,
+                                        unique_index: trackIndex + 1,
+                                        time_length: !item.is_free_part ? item.timelength : item.trans_param.hash_offset.end_ms
+                                    })
+                                } else {
+                                    throw new Error("Can't fetch the source")
+                                }
+                            }
+                        }
+                    })
+                    .then(() => {
+                        setUpdatedTracks()
+                    })
+            } else {
+                fetchMusicSource(1, tracks[trackIndex])
+                    .then(async res => {
+                        if (res) {
+                            if (res.data.status.code) {
+                                let item: itemType2 = res.data.data;
+                                let tempar: string[] = [];
+                                item.ar.map((item: any) => tempar.push(item.name));
+                                if (item.mp3.url.length > 0) {
+                                    return update({
+                                        title: item.name,
+                                        subtitle: item.al.name,
+                                        artist: tempar.join('、'),
+                                        src: item.mp3.url,
+                                        cover: item.al.picUrl,
+                                        lyric: await fetchLyric(item.mp3.id),
+                                        album_id: item.al.id,
+                                        encode_audio_id: String(item.mp3.id),
+                                        code: item.mp3.md5,
+                                        timestamp: new Date().getTime() + 3600000,
+                                        unique_index: trackIndex + 1,
+                                        time_length: item.mp3.time
+                                    })
+                                } else {
+                                    throw new Error("Can't fetch the source")
+                                }
+                            }
+                        }
+                    })
+                    .then(() => {
+                        setUpdatedTracks()
+                    })
+            }
+        } else {
+            console.log('nothing to do')
+        }
+    }
+
     const handlePlayError = (e: Error) => {
         let value: string;
-        if (e.message.includes('no supported sources')) {
+        if (e.message.includes('no supported source')) {
+            // try to update the track
+            let id = tracks[trackIndex].encode_audio_id
+            if (id === '') {
+                handleDelete('该曲目为本地导入现已失效，是否从歌单移除？（若为最后一首将初始化数据库）', trackIndex)
+                    .then(() => console.log('manually removed.'))
+            } else {
+                handleUpdate('该曲目源链接已超出有效期，是否要尝试更新？', trackIndex)
+                    .then(() => console.log('manually updated.'))
+            }
             value = '播放源出错';
         } else if (e.message.includes('user didn\'t interact') || e.message.includes('user denied permission')) {
             value = '当前浏览器禁止自动播放，请手动点击播放';

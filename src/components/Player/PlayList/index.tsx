@@ -1,7 +1,7 @@
 import {styled} from "styled-components";
 import React, {SetStateAction, useEffect, useRef, useState} from "react";
 import {Track, getTime} from "@/components/Player/utils";
-import { simpleConfirm, SimpleDialogContainer } from 'react-simple-dialogs'
+import { simpleConfirm, SimpleDialogContainer } from 'react-simple-dialogs';
 import Icon from "@/components/Icons/player_icon";
 
 const PlayListWrap =

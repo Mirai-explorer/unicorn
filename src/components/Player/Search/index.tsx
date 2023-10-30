@@ -479,7 +479,7 @@ const Search = ({isShowing, setIsShowing, setTracks, tracks, updates, setUpdate,
                             album_id: item.al.id,
                             encode_audio_id: String(item.mp3.id),
                             code: item.mp3.md5,
-                            timestamp: new Date().getTime() + 86400000,
+                            timestamp: new Date().getTime() + 3600000,
                             unique_index: tracks.length + 1,
                             time_length: item.mp3.time
                         };
