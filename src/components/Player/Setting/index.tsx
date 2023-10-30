@@ -167,52 +167,47 @@ const Setting = ({isShowing, setIsShowing, tracks, setTracks, trackIndex, setTra
         }
         fetchMusicSource(0, track).then(res => {
             // a jsonp mode
-            let promise = res.json()
-            promise.then((data: { err_code: number; data: itemType; }) => {
-                console.log(data)
-                setDisable(false)
-                if (!data.err_code) {
-                    let item = data.data;
-                    let track_new: Track = {
-                        title: item.song_name,
-                        subtitle: item.album_name,
-                        artist: item.author_name,
-                        src: item.play_url,
-                        cover: item.img,
-                        lyric: item.lyrics,
-                        album_id: item.album_id,
-                        encode_audio_id: item.encode_album_audio_id,
-                        code: item.hash,
-                        timestamp: new Date().getTime() + 86400000,
-                        unique_index: tracks.length + 1,
-                        time_length: !item.is_free_part ? item.timelength : item.trans_param.hash_offset.end_ms
-                    };
-                    tracks[trackIndex] = {
-                        title: track_new.title,
-                        subtitle: track_new.subtitle,
-                        artist: track_new.artist,
-                        src: tracks[trackIndex].src,
-                        cover: track_new.cover,
-                        lyric: track_new.lyric,
-                        album_id: track_new.album_id,
-                        encode_audio_id: track_new.encode_audio_id,
-                        code: '',
-                        timestamp: tracks[trackIndex].timestamp,
-                        unique_index: tracks[trackIndex].unique_index,
-                        time_length: tracks[trackIndex].time_length
-                    };
-                    syncMediaSession(tracks[trackIndex])
-                    setInfo(item.song_name+' 更新成功')
-                } else if (data.err_code === 20010) {
-                    setInfo('更新失败，请检查输入 code 是否正确')
-                    throw new Error(`empty data returned, perhaps due to empty or incorrect code being inputted.`)
-                } else {
-                    setInfo('更新失败，出现未知异常')
-                    throw new Error(`an unknown [error:${data.err_code}] occurred.`)
-                }
-            }).catch((error: Error) => {
-                console.error(`Failed to fetch the music info related to [id:${text}] from Kugou.\n${error}`)
-            })
+            console.log(res)
+            setDisable(false)
+            if (res.err_code === 0) {
+                let item = res.data;
+                let track_new: Track = {
+                    title: item.song_name,
+                    subtitle: item.album_name,
+                    artist: item.author_name,
+                    src: item.play_url,
+                    cover: item.img,
+                    lyric: item.lyrics,
+                    album_id: item.album_id,
+                    encode_audio_id: item.encode_album_audio_id,
+                    code: item.hash,
+                    timestamp: new Date().getTime() + 86400000,
+                    unique_index: tracks.length + 1,
+                    time_length: !item.is_free_part ? item.timelength : item.trans_param.hash_offset.end_ms
+                };
+                tracks[trackIndex] = {
+                    title: track_new.title,
+                    subtitle: track_new.subtitle,
+                    artist: track_new.artist,
+                    src: tracks[trackIndex].src,
+                    cover: track_new.cover,
+                    lyric: track_new.lyric,
+                    album_id: track_new.album_id,
+                    encode_audio_id: track_new.encode_audio_id,
+                    code: '',
+                    timestamp: tracks[trackIndex].timestamp,
+                    unique_index: tracks[trackIndex].unique_index,
+                    time_length: tracks[trackIndex].time_length
+                };
+                syncMediaSession(tracks[trackIndex])
+                setInfo(item.song_name+' 更新成功')
+            } else if (res.err_code === 20010) {
+                setInfo('更新失败，请检查输入 code 是否正确')
+                throw new Error(`empty data returned, perhaps due to empty or incorrect code being inputted.`)
+            } else {
+                setInfo('更新失败，出现未知异常')
+                throw new Error(`an unknown [error:${res.err_code}] occurred.`)
+            }
             /*
             // a proxy mode
             console.log(res)
