@@ -306,7 +306,7 @@ const Player = () => {
                         let item: itemType2 = res.data.data;
                         let tempar: string[] = [];
                         item.ar.map((item: any) => tempar.push(item.name));
-                        if (typeof item.mp3.url === 'string' && item.mp3.url.length > 0) {
+                        if (item.mp3.url.length > 0) {
                             return update({
                                 title: item.name,
                                 subtitle: item.al.name,
