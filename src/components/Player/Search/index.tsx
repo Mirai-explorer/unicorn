@@ -466,7 +466,7 @@ const Search = ({isShowing, setIsShowing, setTracks, tracks, updates, setUpdate,
                 console.log(res.data)
                 if (res.data.status.code === 200) {
                     let item = res.data.data;
-                    if (typeof item.play_url === 'string' && item.play_url.length > 0) {
+                    if (typeof item.mp3.url === 'string' && item.mp3.url.length > 0) {
                         let tempar: string[] = [];
                         item.ar.map((item: any) => tempar.push(item.name));
                         let track_new: Track = {
