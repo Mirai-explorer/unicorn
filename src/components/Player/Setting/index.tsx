@@ -1,7 +1,8 @@
 import {styled} from "styled-components";
 import React, {SetStateAction, useRef, useState} from "react";
-import { fetchMusicSource, syncMediaSession, Track, itemType } from "@/components/Player/utils";
+import {fetchMusicSource, syncMediaSession, Track, itemType, fetchLyric} from "@/components/Player/utils";
 import Icon from "@/components/Icons/player_icon";
+import {toast} from "react-toastify";
 
 const SettingWrap =
     styled.div`
@@ -62,7 +63,7 @@ const SettingCardContent =
       overflow: auto;
       flex: 1;
     `
-const Setting = ({isShowing, setIsShowing, tracks, setTracks, trackIndex, setTrackIndex, setToastMessage, offset, setOffset, size, setSize} : {
+const Setting = ({isShowing, setIsShowing, tracks, setTracks, trackIndex, setTrackIndex, setToastMessage, offset, setOffset, size, setSize, update} : {
     isShowing: boolean,
     setIsShowing: React.Dispatch<SetStateAction<boolean>>,
     tracks: Track[],
@@ -76,13 +77,15 @@ const Setting = ({isShowing, setIsShowing, tracks, setTracks, trackIndex, setTra
     offset: number,
     setOffset: React.Dispatch<SetStateAction<number>>,
     size: string,
-    setSize: React.Dispatch<SetStateAction<string>>
+    setSize: React.Dispatch<SetStateAction<string>>,
+    update: <T = any>(value: T, key?: any) => Promise<any>
 }) => {
     const [text, setText] = useState('')
     const textRef = useRef<HTMLInputElement>(null)
     const [disable, setDisable] = useState(false)
     const [info, setInfo] = useState('')
     const [inputs, setInputs] = useState('0')
+    const [inputs2, setInputs2] = useState('1')
     const inputRef = useRef<HTMLInputElement>(null)
     const audioReader = (ref: React.ChangeEvent<HTMLInputElement>) => {
         /*
@@ -104,8 +107,8 @@ const Setting = ({isShowing, setIsShowing, tracks, setTracks, trackIndex, setTra
             let duration = 0
             let media: HTMLAudioElement | null = new Audio(src)
             media.onloadedmetadata = () => {
-                if (media!.duration != Infinity) {
-                    duration = media!.duration * 1000
+                if (media && media.duration !== Infinity) {
+                    duration = media.duration * 1000
                     media = null
                     tracks[tracks.length] = {
                         title: ref.target.files![0].name,
@@ -118,7 +121,7 @@ const Setting = ({isShowing, setIsShowing, tracks, setTracks, trackIndex, setTra
                         encode_audio_id: '',
                         code: '',
                         timestamp: new Date().getTime() + 3600000,
-                        unique_index: tracks.length + 1,
+                        unique_index: -1,
                         time_length: duration
                     }
                     setIsShowing(false)
@@ -252,6 +255,21 @@ const Setting = ({isShowing, setIsShowing, tracks, setTracks, trackIndex, setTra
         setInputs(value)
     }
 
+    const watchInput2 = (value: string) => {
+        setInputs2(value)
+    }
+
+    const changeTrack = async () => {
+        let target = tracks[Number(inputs2) - 1]
+        await update({
+            ...target,
+            timestamp: new Date().getTime(),
+            unique_index: target.unique_index,
+        }).then(() => {
+            console.log('修改完成')
+        })
+    }
+
     const handleInput = (value: string) => {
         const pattern = /^-?[0-4](\.+\d)?/;
         let matches = pattern.exec(value) && Number(pattern.exec(value)![0])
@@ -302,6 +320,15 @@ const Setting = ({isShowing, setIsShowing, tracks, setTracks, trackIndex, setTra
                                 </span>
                                 <button title="increase" onClick={() => handleInput(String((Number(inputs)*10+1)/10))}>+</button>
                                 <button title="reset" onClick={() => {setOffset(-0.6); setInputs("0")}}>复原</button>
+                            </div>
+                        </div>
+                        <div className="flex flex-col gap-4">
+                            <label htmlFor="text" className="text-sky-400">强制更新</label>
+                            <div className="flex gap-2">
+                                <span>
+                                    <input type="number" className="w-12 text-center" step={1} min={1} value={inputs2} onChange={e => watchInput2(e.target.value)} />
+                                </span>
+                                <button title="chenge_track" onClick={() => changeTrack()}>更改</button>
                             </div>
                         </div>
                     </SettingCardContent>

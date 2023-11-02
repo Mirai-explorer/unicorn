@@ -49,7 +49,7 @@ type itemType2 = {
     al: {
         id: number,
         name: string,
-        picUrl: number
+        picUrl: string
     },
     alia: string[],
     ar: {
@@ -265,11 +265,12 @@ const Player = () => {
         let uniques: number[] = [];
         // a jsonp mode
         Promise.all(
-            tracks.map((item: Track, id: number) => {
+            tracks.map((item: Track) => {
                 if (item.timestamp > time) {
-                    console.log('skipped',id)
+                    console.log('skipped',item.unique_index)
+                    return null
                 } else {
-                    console.log('ready to update',id)
+                    console.log('ready to update',item.unique_index)
                     uniques.push(item.unique_index)
                     return isNaN(Number(item.encode_audio_id)) ? fetchMusicSource(0, item) : fetchMusicSource(1, item)
                 }
@@ -291,7 +292,7 @@ const Player = () => {
                                 subtitle: item.album_name,
                                 artist: item.author_name,
                                 src: item.play_url,
-                                cover: item.img,
+                                cover: item.img.replaceAll('http:','https:'),
                                 lyric: item.lyrics,
                                 album_id: item.album_id,
                                 encode_audio_id: item.encode_album_audio_id,
@@ -312,8 +313,8 @@ const Player = () => {
                                 title: item.name,
                                 subtitle: item.al.name,
                                 artist: tempar.join('、'),
-                                src: item.mp3.url,
-                                cover: item.al.picUrl,
+                                src: item.mp3.url.replaceAll('http:','https:'),
+                                cover: item.al.picUrl.replaceAll('http:','https:'),
                                 lyric: await fetchLyric(item.mp3.id),
                                 album_id: item.al.id,
                                 encode_audio_id: String(item.mp3.id),
@@ -439,7 +440,7 @@ const Player = () => {
         })
         if (isConfirmed) {
             let id = tracks[trackIndex].encode_audio_id
-            if (!isNaN(Number(id))) {
+            if (isNaN(Number(id))) {
                 fetchMusicSource(0, tracks[trackIndex])
                     .then(res => {
                         if (res) {
@@ -452,7 +453,7 @@ const Player = () => {
                                         subtitle: item.album_name,
                                         artist: item.author_name,
                                         src: item.play_url,
-                                        cover: item.img,
+                                        cover: item.img.replaceAll('http:','https:'),
                                         lyric: item.lyrics,
                                         album_id: item.album_id,
                                         encode_audio_id: item.encode_album_audio_id,
@@ -479,11 +480,12 @@ const Player = () => {
                                 let tempar: string[] = [];
                                 item.ar.map((item: any) => tempar.push(item.name));
                                 if (item.mp3.url.length > 0) {
+                                    console.log(item.mp3.url)
                                     return update({
                                         title: item.name,
                                         subtitle: item.al.name,
                                         artist: tempar.join('、'),
-                                        src: item.mp3.url,
+                                        src: item.mp3.url.replaceAll('http:','https:'),
                                         cover: item.al.picUrl,
                                         lyric: await fetchLyric(item.mp3.id),
                                         album_id: item.al.id,
@@ -576,11 +578,13 @@ const Player = () => {
     }, []);
 
     useEffect(() => {
-        if (updates != 0) {
+        if (updates > 0) {
             tracks.map((data) => {
-                update(data).then(() => console.log('DATA UPDATED: a piece of data changed',updates > 0 ? '+' : '-'))
+                data.unique_index > 0 && update(data).then(() => console.log('DATA UPDATED: a piece of data changed','+'))
             })
-            updates < 0 && deleteRecord(tracks.length + 1).then(() => console.log('arrangement completed'))
+        }
+        if (updates < 0) {
+            deleteRecord(tracks.filter(item => item.unique_index > 0).length + 1).then(() => console.log('DATA UPDATED: a piece of data changed','-'))
         }
     }, [updates]);
 
@@ -597,7 +601,6 @@ const Player = () => {
     }, [isRotating]);
 
     useEffect(() => {
-        console.log('involved')
         if (audioRef.current && reload) {
             setReload(false);
             toPlay(false);
@@ -721,6 +724,7 @@ const Player = () => {
                     setOffset={setOffset}
                     size={size}
                     setSize={setSize}
+                    update={update}
                 />
             </Layout>
             <ToastContainer />

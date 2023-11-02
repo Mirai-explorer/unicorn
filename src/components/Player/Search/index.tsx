@@ -6,6 +6,7 @@ import cookie from "react-cookies";
 import JSONP from "fetch-jsonp";
 import axios from "axios";
 import crypto from "crypto-js";
+import {unique} from "next/dist/build/utils";
 
 type resultType = {
     FileName: string,
@@ -24,7 +25,7 @@ type resultType2 = {
     al: {
         id: number,
         name: string,
-        picUrl: number
+        picUrl: string
     },
     alia: string[],
     ar: {
@@ -251,7 +252,7 @@ const Search = ({isShowing, setIsShowing, setTracks, tracks, updates, setUpdate,
                                     Duration: item.Duration,
                                     OriSongName: item.OriSongName,
                                     Auxiliary: item.Auxiliary,
-                                    Image: item.Image,
+                                    Image: item.Image.replaceAll('http:','https:'),
                                     SingerName: item.SingerName
                                 })
                             })
@@ -272,7 +273,7 @@ const Search = ({isShowing, setIsShowing, setTracks, tracks, updates, setUpdate,
             case 1:
                 // a jsonp mode
                 let data = [
-                    `{"s":"${value}","limit":20,"offset":0,"type":1,"strategy":5,"queryCorrect":true}`,
+                    `{"s":"${value}","limit":30,"offset":0,"type":1,"strategy":5,"queryCorrect":true}`,
                     ''
                 ]
                 const key = [crypto.enc.Utf8.parse('0CoJUm6Qyw8W8jud'), crypto.enc.Utf8.parse('m2d5ZcyUhxNUWqu4')]
@@ -304,7 +305,7 @@ const Search = ({isShowing, setIsShowing, setTracks, tracks, updates, setUpdate,
                                 Duration: item.dt,
                                 OriSongName: item.name,
                                 Auxiliary: item.alia[0] || '',
-                                Image: String(item.al.picUrl),
+                                Image: item.al.picUrl.replaceAll('http:','https:'),
                                 SingerName: tempar.join('、')
                             })
                             tempar = []
@@ -400,13 +401,13 @@ const Search = ({isShowing, setIsShowing, setTracks, tracks, updates, setUpdate,
                             subtitle: item.album_name,
                             artist: item.author_name,
                             src: item.play_url,
-                            cover: item.img,
+                            cover: item.img.replaceAll('http:','https:'),
                             lyric: item.lyrics,
                             album_id: item.album_id,
                             encode_audio_id: item.encode_album_audio_id,
                             code: item.hash,
                             timestamp: new Date().getTime() + 86400000,
-                            unique_index: tracks.length + 1,
+                            unique_index: tracks.filter((item) => item.unique_index > 0).length + 1,
                             time_length: !item.is_free_part ? item.timelength : item.trans_param.hash_offset.end_ms
                         };
                         console.log([...tracks, track_new])
@@ -473,14 +474,14 @@ const Search = ({isShowing, setIsShowing, setTracks, tracks, updates, setUpdate,
                             title: item.name,
                             subtitle: item.al.name,
                             artist: tempar.join('、'),
-                            src: item.mp3.url,
-                            cover: item.al.picUrl,
+                            src: item.mp3.url.replaceAll('http:','https:'),
+                            cover: item.al.picUrl.replaceAll('http:','https:'),
                             lyric: await fetchLyric(item.mp3.id),
                             album_id: item.al.id,
                             encode_audio_id: String(item.mp3.id),
                             code: item.mp3.md5,
                             timestamp: new Date().getTime() + 3600000,
-                            unique_index: tracks.length + 1,
+                            unique_index: tracks.filter((item) => item.unique_index > 0).length + 1,
                             time_length: item.mp3.time
                         };
                         console.log([...tracks, track_new])
@@ -599,7 +600,7 @@ const Search = ({isShowing, setIsShowing, setTracks, tracks, updates, setUpdate,
                         )}
                         {!loading && result.length > 0 && result[0].AlbumID === 'null' && (
                             <div className="flex justify-center">
-                                输入歌曲或歌手名称开始搜索吧
+                                输入歌曲或歌手名开始搜索吧
                             </div>
                         )}
                         {!loading && result.length === 0 && (
