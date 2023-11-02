@@ -62,8 +62,12 @@ const SettingCardContent =
       gap: 2rem;
       overflow: auto;
       flex: 1;
+      
+      :checked + label {
+        color: #00b0ff;
+      }
     `
-const Setting = ({isShowing, setIsShowing, tracks, setTracks, trackIndex, setTrackIndex, setToastMessage, offset, setOffset, size, setSize, update} : {
+const Setting = ({isShowing, setIsShowing, tracks, setTracks, trackIndex, setTrackIndex, setToastMessage, offset, setOffset, size, setSize, update, layout, setLayout} : {
     isShowing: boolean,
     setIsShowing: React.Dispatch<SetStateAction<boolean>>,
     tracks: Track[],
@@ -78,7 +82,9 @@ const Setting = ({isShowing, setIsShowing, tracks, setTracks, trackIndex, setTra
     setOffset: React.Dispatch<SetStateAction<number>>,
     size: string,
     setSize: React.Dispatch<SetStateAction<string>>,
-    update: <T = any>(value: T, key?: any) => Promise<any>
+    update: <T = any>(value: T, key?: any) => Promise<any>,
+    layout: number,
+    setLayout: React.Dispatch<SetStateAction<number>>
 }) => {
     const [text, setText] = useState('')
     const textRef = useRef<HTMLInputElement>(null)
@@ -329,6 +335,36 @@ const Setting = ({isShowing, setIsShowing, tracks, setTracks, trackIndex, setTra
                                     <input type="number" className="w-12 text-center" step={1} min={1} value={inputs2} onChange={e => watchInput2(e.target.value)} />
                                 </span>
                                 <button title="chenge_track" onClick={() => changeTrack()}>更改</button>
+                            </div>
+                        </div>
+                        <div className="flex flex-col gap-4">
+                            <label htmlFor="text" className="text-sky-400">布局切换</label>
+                            <div className="flex gap-2">
+                                <input
+                                    type="radio"
+                                    id="layoutChoice1"
+                                    name="layout"
+                                    value="1"
+                                    onChange={() => {
+                                        setSize('default')
+                                        setLayout(1)
+                                    }}
+                                    defaultChecked={layout === 1 && true} />
+                                <label htmlFor="layoutChoice1">样式1</label>
+                                <input
+                                    type="radio"
+                                    id="layoutChoice2"
+                                    name="layout"
+                                    value="2"
+                                    onChange={() => {
+                                        setSize('mini')
+                                        setLayout(2)
+                                    }}
+                                    defaultChecked={layout === 2 && true}
+                                />
+                                <label htmlFor="layoutChoice2">样式2</label>
+                                <input type="radio" id="layoutChoice3" name="layout" value="3" onChange={() => setLayout(3)} defaultChecked={layout === 3 && true} />
+                                <label htmlFor="layoutChoice3">样式3</label>
                             </div>
                         </div>
                     </SettingCardContent>

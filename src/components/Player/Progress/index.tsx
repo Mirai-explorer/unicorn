@@ -23,7 +23,7 @@ const Digits =
     styled.div`
       display: flex;
       justify-content: space-between;
-      align-items: baseline;
+      align-items: center;
       height: 24px;
     `
 

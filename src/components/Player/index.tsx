@@ -123,7 +123,7 @@ const Layout =
       width: 100%;
       height: 100%;
       margin: 0;
-      padding: 0 5%;
+      padding: 0 max(32px, 5%);
       color: white;
       -webkit-backdrop-filter: blur(32px) brightness(0.8);
       backdrop-filter: blur(32px) brightness(0.8);
@@ -138,6 +138,31 @@ const Layout =
       }
     `
 
+const Layout1 =
+    styled.div`
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+      height: 100%;
+      gap: 1rem;
+      padding-top: 2rem;
+    `
+
+const Layout2 =
+    styled.div`
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      width: 100%;
+      padding-top: 2rem;
+    `
+
+const Layout3 =
+    styled.div`
+
+    `
+
 // Player
 const Player = () => {
     const { deleteRecord, update, getAll } = useIndexedDB("playlist");
@@ -148,7 +173,7 @@ const Player = () => {
     const [isPlaying, setIsPlaying] = useState(false);
     const [isRotating, setIsRotating] = useState(false);
     const [rotate, setRotate] = useState("paused");
-    const [size, setSize] = useState("mini");
+    const [size, setSize] = useState("default");
     const [reload, setReload] = useState(false);
     const [updates, setUpdate] = useState(0);
     const [isShowing, setIsShowing] = useState(false);
@@ -160,7 +185,9 @@ const Player = () => {
         value: '',
         timestamp: new Date().getTime()
     });
-    const [reduce, setReduce] = useState('')
+    const [reduce, setReduce] = useState('');
+    const [layout, setLayout] = useState(1);
+
 
     // Destructure for conciseness
     const {title, subtitle, artist, cover, src, time_length} = tracks[trackIndex];
@@ -319,7 +346,7 @@ const Player = () => {
                                 album_id: item.al.id,
                                 encode_audio_id: String(item.mp3.id),
                                 code: item.mp3.md5,
-                                timestamp: new Date().getTime() + 3600000,
+                                timestamp: new Date().getTime() + 1200000,
                                 unique_index: i + 1,
                                 time_length: item.mp3.time
                             })
@@ -491,7 +518,7 @@ const Player = () => {
                                         album_id: item.al.id,
                                         encode_audio_id: String(item.mp3.id),
                                         code: item.mp3.md5,
-                                        timestamp: new Date().getTime() + 3600000,
+                                        timestamp: new Date().getTime() + 1200000,
                                         unique_index: trackIndex + 1,
                                         time_length: item.mp3.time
                                     })
@@ -664,26 +691,83 @@ const Player = () => {
     return (
         <MiraiPlayer className={`bg-cover bg-center bg-no-repeat transition-all duration-300 ease-out`} style={{backgroundImage: `url(${tracks[trackIndex].cover})`}}>
             <Layout className={playListShowing ? 'scale' : 'full'}>
-                <Cover
-                    rotate={rotate}
-                    url={cover}
-                    data-size={size}
-                    desc={title}
-                    onDoubleClick={switchSearch}
-                />
-                <Lyric
-                    tracks={tracks}
-                    trackIndex={trackIndex}
-                    trackProgress={trackProgress}
-                    reduce={reduce}
-                    offset={offset}
-                />
-                <Title
-                    title={title || "音乐感动生活"}
-                    subtitle={subtitle || "Mirai 云端播放器"}
-                    singer={artist || "未知歌手"}
-                    trackIndex={trackIndex}
-                />
+                {layout === 1 && (
+                    <Layout1>
+                        <Cover
+                            rotate={rotate}
+                            url={cover}
+                            data-size={size}
+                            desc={title}
+                            onDoubleClick={switchSearch}
+                        />
+                        <Lyric
+                            tracks={tracks}
+                            trackIndex={trackIndex}
+                            trackProgress={trackProgress}
+                            reduce={reduce}
+                            offset={offset}
+                            layout={layout}
+                        />
+                        <Title
+                            title={title || "音乐感动生活"}
+                            subtitle={subtitle || "Mirai 云端播放器"}
+                            singer={artist || "未知歌手"}
+                            trackIndex={trackIndex}
+                        />
+                    </Layout1>
+                )}
+                {layout === 2 && (
+                    <>
+                        <Layout2>
+                            <Cover
+                                rotate={rotate}
+                                url={cover}
+                                data-size={size}
+                                desc={title}
+                                onDoubleClick={switchSearch}
+                            />
+                            <Title
+                                title={title || "音乐感动生活"}
+                                subtitle={subtitle || "Mirai 云端播放器"}
+                                singer={artist || "未知歌手"}
+                                trackIndex={trackIndex}
+                            />
+                        </Layout2>
+                        <Lyric
+                            tracks={tracks}
+                            trackIndex={trackIndex}
+                            trackProgress={trackProgress}
+                            reduce={reduce}
+                            offset={offset}
+                            layout={layout}
+                        />
+                    </>
+                )}
+                {layout === 3 && (
+                    <Layout3>
+                        <Cover
+                            rotate={rotate}
+                            url={cover}
+                            data-size={size}
+                            desc={title}
+                            onDoubleClick={switchSearch}
+                        />
+                        <Lyric
+                            tracks={tracks}
+                            trackIndex={trackIndex}
+                            trackProgress={trackProgress}
+                            reduce={reduce}
+                            offset={offset}
+                            layout={layout}
+                        />
+                        <Title
+                            title={title || "音乐感动生活"}
+                            subtitle={subtitle || "Mirai 云端播放器"}
+                            singer={artist || "未知歌手"}
+                            trackIndex={trackIndex}
+                        />
+                    </Layout3>
+                )}
                 <Progress
                     past={past}
                     _duration={_duration}
@@ -725,6 +809,8 @@ const Player = () => {
                     size={size}
                     setSize={setSize}
                     update={update}
+                    layout={layout}
+                    setLayout={setLayout}
                 />
             </Layout>
             <ToastContainer />

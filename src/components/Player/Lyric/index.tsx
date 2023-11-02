@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, {useEffect, useRef, useState} from "react";
 import styled, {keyframes} from "styled-components";
 import {Track} from "@/components/Player/utils";
 
@@ -14,6 +14,7 @@ const LyricWrap =
       align-items: center;
       width: 100%;
       flex: 1;
+      padding: 1rem 0;
 
       ::-webkit-scrollbar {
         width: 8px;
@@ -33,8 +34,16 @@ const LyricWrap =
 
 const Scroll =
     styled.div`
-      width: 90%;
+      width: 100%;
       height: 96px;
+      overflow-y: hidden;
+      overflow-x: hidden;
+    `
+
+const FullScroll =
+    styled.div`
+      width: 100%;
+      height: 60vh;
       overflow-y: hidden;
       overflow-x: hidden;
     `
@@ -54,6 +63,25 @@ const Waterfall =
       
       &.reduce {
         transition: transform 100ms linear;
+      }
+    `
+
+const FullWaterfall =
+    styled.div`
+      width: 100%;
+      height: inherit;
+      padding: 50% 0;
+      letter-spacing: 0.1em;
+      overflow: auto;
+      position: relative;
+      display: grid;
+      grid-auto-rows: minmax(max-content,auto);
+      transition: all 200ms linear;
+      scrollbar-width: none;
+      gap: 1rem;
+
+      &::-webkit-scrollbar {
+        width: 0;
       }
     `
 
@@ -97,15 +125,51 @@ const Line =
       }
     `
 
-const Lyric = ({ tracks, trackIndex, trackProgress, reduce, offset } : {
+const FullLine =
+    styled.div`
+      display: inline-grid;
+      align-items: center;
+      opacity: .3;
+      color: snow;
+      font-size: 18px;
+      font-weight: 500;
+      line-height: 1.5;
+      width: 100%;
+      white-space: pre-wrap;
+      overflow: hidden;
+      letter-spacing: 2px;
+      will-change: opacity, font-size, font-weight, line-height;
+      transition: all 400ms ease-out;
+      scroll-snap-align: center;
+      
+      &.bubble {
+        font-weight: 700;
+        opacity: 1;
+        font-size: 18px;
+      }
+
+      &.bubble, &.await {
+        transition: all 500ms ease-out;
+      }
+
+      .reduce {
+        &.bubble, &.await {
+          transition: all 100ms linear;
+        }
+      }
+    `
+
+const Lyric = ({ tracks, trackIndex, trackProgress, reduce, offset, layout } : {
     tracks: Track[],
     trackIndex: number,
     trackProgress: number,
     reduce: string,
-    offset: number
+    offset: number,
+    layout: number
 }) => {
     const [number, setNumber] = useState(0);
     const target: React.RefObject<HTMLDivElement> = React.createRef<HTMLDivElement>();
+    const eleRef = useRef<Array<HTMLDivElement | null >>([]);
     const parseLrc = (str: string) => {
         const regex: RegExp = /^\[(?<time>\d{2}:\d{2}(.\d{2,})?)\](?<text>.*)/;
         const lines: string[] | null = str.split("\n");
@@ -146,36 +210,70 @@ const Lyric = ({ tracks, trackIndex, trackProgress, reduce, offset } : {
 
     useEffect(() => {
         setNumber(syncLyric(lyric, trackProgress) as number);
-        target.current !== null ? target.current.style.transform = `translateY(${-(32 * number)+32}px)` : null;
     }, [trackProgress]);
+
+    useEffect(() => {
+        target.current !== null ? target.current.style.transform = `translateY(${-(32 * number)+32}px)` : null;
+        eleRef.current[number]?.scrollIntoView({ behavior: "smooth", block: "center" })
+    }, [number]);
 
     return (
         <LyricWrap>
-            <Scroll>
-                <Waterfall ref={target} className={reduce}>
-                    {lyric.length ? (
-                        lyric.map((item: lyricType, index : number) => {
-                            return (
-                                <Line
-                                    key={index}
-                                    className={
-                                        number === index
-                                            ? "bubble"
-                                            : number === index - 1
-                                                ? "await"
-                                                : ""
-                                    }
-                                    data-time={item.offset}
-                                >
-                                    {item.text}
-                                </Line>
-                            );
-                        })
-                    ) : (
-                        <Line className="bubble">暂无歌词</Line>
-                    )}
-                </Waterfall>
-            </Scroll>
+            {layout === 1 && (
+                <Scroll>
+                    <Waterfall ref={target} className={reduce}>
+                        {lyric.length ? (
+                            lyric.map((item: lyricType, index : number) => {
+                                return (
+                                    <Line
+                                        key={index}
+                                        className={
+                                            number === index
+                                                ? "bubble"
+                                                : number === index - 1
+                                                    ? "await"
+                                                    : ""
+                                        }
+                                        data-time={item.offset}
+                                    >
+                                        {item.text}
+                                    </Line>
+                                );
+                            })
+                        ) : (
+                            <Line className="bubble">暂无歌词</Line>
+                        )}
+                    </Waterfall>
+                </Scroll>
+            )}
+            {layout === 2 && (
+                <FullScroll>
+                    <FullWaterfall className={reduce}>
+                        {lyric.length ? (
+                            lyric.map((item: lyricType, index : number) => {
+                                return (
+                                    <FullLine
+                                        key={index}
+                                        className={
+                                            number === index
+                                                ? "bubble"
+                                                : number === index - 1
+                                                    ? "await"
+                                                    : ""
+                                        }
+                                        data-time={item.offset}
+                                        ref={target => eleRef.current[index] = target}
+                                    >
+                                        {item.text}
+                                    </FullLine>
+                                );
+                            })
+                        ) : (
+                            <Line className="bubble">暂无歌词</Line>
+                        )}
+                    </FullWaterfall>
+                </FullScroll>
+            )}
         </LyricWrap>
     );
 }

@@ -14,7 +14,7 @@ const rotate = keyframes`
     `
 
 const CoverWrap = styled.div`
-    padding-top: 2rem;
+    
 `
 
 const CoverShell = styled.div`
@@ -23,33 +23,30 @@ const CoverShell = styled.div`
       animation: ${rotate} 15s linear infinite;
       animation-play-state: paused;
       transition: box-shadow 1s ease-out;
-
-      &:hover {
-        box-shadow: 0 0 6px 8px rgba(255,255,255,.5), 0 0 6px 2px rgba(255,255,255,.5) inset;
-        cursor: wait;
-      }
       
       .source {
-        min-width: 200px;
-        min-height: 200px;
         max-width: 320px;
         max-height: 320px;
         border-radius: inherit;
       }
 
       .source[data-size="large"] {
-        width: 70vw;
-        height: 70vw;
-      }
-
-      .source[data-size="default"] {
         width: 50vw;
         height: 50vw;
       }
 
+      .source[data-size="default"] {
+        width: 30vw;
+        height: 30vw;
+        min-width: 160px;
+        min-height: 160px;
+      }
+
       .source[data-size="mini"] {
-        width: 20vw;
-        height: 20vw;
+        width: 10vw;
+        height: 10vw;
+        min-width: 80px;
+        min-height: 80px;
       }
     `
 
