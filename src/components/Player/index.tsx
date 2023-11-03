@@ -289,37 +289,35 @@ const Player = () => {
 
     const handleAllUpdates = (tracks: Track[]) => {
         const time = new Date().getTime();
-        let uniques: number[] = [];
+        let queue: number[] = [];
+        let updated: number[] = [];
         // a jsonp mode
         Promise.all(
+            // 逐个比对 timestamp，判断 track 是否需要更新，比对结果返回到下一阶段处理
             tracks.map((item: Track) => {
                 if (item.timestamp > time) {
                     console.log('skipped',item.unique_index)
                     return null
                 } else {
                     console.log('ready to update',item.unique_index)
-                    uniques.push(item.unique_index)
+                    queue.push(item.unique_index)
                     return isNaN(Number(item.encode_audio_id)) ? fetchMusicSource(0, item) : fetchMusicSource(1, item)
                 }
             })
         ).then(tasks => {
-            uniques.length > 0 && setToastMessage({
-                value: '数据更新中，请稍候...',
-                timestamp: new Date().getTime()
-            })
-            console.log(tasks)
+            // 待更新项不为 0 时给出更新提示，并逐个比对返回结果，按统一标准格式存入数据库
             tasks.map(async (res, i) => {
                 if (res) {
                     if (res.err_code === 0) {
                         let item: itemType = res.data;
                         let regex = /^(http|https):\/\/[a-zA-Z0-9\-.]+\.[a-zA-Z]{2,}(\/\S*)?$/;
                         if (regex.test(item.play_url)) {
-                            return update({
+                            update({
                                 title: item.song_name,
                                 subtitle: item.album_name,
                                 artist: item.author_name,
                                 src: item.play_url,
-                                cover: item.img.replaceAll('http:','https:'),
+                                cover: item.img.replaceAll('http:', 'https:'),
                                 lyric: item.lyrics,
                                 album_id: item.album_id,
                                 encode_audio_id: item.encode_album_audio_id,
@@ -327,7 +325,7 @@ const Player = () => {
                                 timestamp: new Date().getTime() + 86400000,
                                 unique_index: i + 1,
                                 time_length: !item.is_free_part ? item.timelength : item.trans_param.hash_offset.end_ms
-                            })
+                            }).then(() => updated.push(i + 1))
                         } else {
                             throw new Error("Can't fetch the source")
                         }
@@ -336,12 +334,12 @@ const Player = () => {
                         let tempar: string[] = [];
                         item.ar.map((item: any) => tempar.push(item.name));
                         if (item.mp3.url.length > 0) {
-                            return update({
+                            update({
                                 title: item.name,
                                 subtitle: item.al.name,
                                 artist: tempar.join('、'),
-                                src: item.mp3.url.replaceAll('http:','https:'),
-                                cover: item.al.picUrl.replaceAll('http:','https:'),
+                                src: item.mp3.url.replaceAll('http:', 'https:'),
+                                cover: item.al.picUrl.replaceAll('http:', 'https:'),
                                 lyric: await fetchLyric(item.mp3.id),
                                 album_id: item.al.id,
                                 encode_audio_id: String(item.mp3.id),
@@ -349,7 +347,7 @@ const Player = () => {
                                 timestamp: new Date().getTime() + 1200000,
                                 unique_index: i + 1,
                                 time_length: item.mp3.time
-                            })
+                            }).then(() => updated.push(i + 1))
                         } else {
                             throw new Error("Can't fetch the source")
                         }
@@ -357,8 +355,21 @@ const Player = () => {
                 }
             })
         }).then(() => {
-            console.log(uniques,'saved')
-            setUpdatedTracks()
+            console.log(queue, updated)
+            if (updated.length !== queue.length) {
+                setToastMessage({
+                    value: '数据更新中，请稍候...',
+                    timestamp: new Date().getTime()
+                })
+                setTimeout(() => {
+                    console.log(queue.filter(i => !updated.includes(i)).join('~'),'is timeout')
+                    setUpdatedTracks()
+                }, 3000)
+            } else {
+                setUpdatedTracks()
+            }
+        }).catch(err => {
+            console.log(err)
         })
         /*
         //a proxy mode
@@ -368,12 +379,12 @@ const Player = () => {
                     console.log('skipped',id)
                 } else {
                     console.log('ready to update',id)
-                    uniques.push(item.unique_index)
+                    queue.push(item.unique_index)
                     return fetchMusicSource(item)
                 }
             })
         ).then(axios.spread((...tasks) => {
-            uniques.length > 0 && setToastMessage({
+            queue.length > 0 && setToastMessage({
                 value: '数据更新中，请稍候...',
                 timestamp: new Date().getTime()
             })
