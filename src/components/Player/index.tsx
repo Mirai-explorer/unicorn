@@ -155,7 +155,6 @@ const Layout2 =
       align-items: center;
       gap: 1rem;
       width: 100%;
-      padding-top: 2rem;
     `
 
 const Layout3 =
@@ -446,9 +445,10 @@ const Player = () => {
         if (isConfirmed) {
             if (tracks.length > 1) {
                 console.log(index+' deleted')
+                let isLocal = tracks[index].unique_index < 0
                 const _tracks = tracks.filter((item, num) => num !== index)
                 _tracks.forEach((item, num) => {
-                    item.unique_index = num + 1
+                    item.unique_index = item.unique_index > 0 ? num + 1 : -1
                 })
                 console.log(_tracks)
                 setTracks(_tracks)
@@ -458,7 +458,7 @@ const Player = () => {
                 } else {
                     setTrackIndex(trackIndex < index ? trackIndex : trackIndex - 1)
                 }
-                setUpdate(updates < 0 ? updates - 1 : -1)
+                !isLocal && setUpdate(updates < 0 ? updates - 1 : -1)
             } else {
                 window.indexedDB.deleteDatabase("MiraiDB").onsuccess = () => {
                     window.location.reload()
@@ -551,15 +551,6 @@ const Player = () => {
     const handlePlayError = (e: Error) => {
         let value: string;
         if (e.message.includes('no supported source')) {
-            // try to update the track
-            let id = tracks[trackIndex].encode_audio_id
-            if (id === '') {
-                handleDelete('该曲目为本地导入现已失效，是否从歌单移除？（若为最后一首将初始化数据库）', trackIndex)
-                    .then(() => console.log('manually removed.'))
-            } else {
-                handleUpdate('该曲目源链接已超出有效期，是否要尝试更新？', trackIndex)
-                    .then(() => console.log('manually updated.'))
-            }
             value = '播放源出错';
         } else if (e.message.includes('user didn\'t interact') || e.message.includes('user denied permission')) {
             value = '当前浏览器禁止自动播放，请手动点击播放';
@@ -570,6 +561,19 @@ const Player = () => {
             value: value,
             timestamp: new Date().getTime()
         });
+        // try to update the track
+        let id = tracks[trackIndex].encode_audio_id;
+        let name = tracks[trackIndex].title;
+        let isExpired = (tracks[trackIndex].timestamp >= new Date().getTime());
+        if (isExpired) {
+            if (id === '') {
+                handleDelete(name+' 为本地导入现已失效，是否从歌单移除？（若为最后一首将初始化数据库）', trackIndex)
+                    .then(() => console.log('manually removed.'))
+            } else {
+                handleUpdate(name+' 源链接已超出有效期，是否要尝试更新？', trackIndex)
+                    .then(() => console.log('manually updated.'))
+            }
+        }
         console.error(e.message)
     }
 
@@ -728,7 +732,7 @@ const Player = () => {
                     </Layout1>
                 )}
                 {layout === 2 && (
-                    <>
+                    <Layout1>
                         <Layout2>
                             <Cover
                                 rotate={rotate}
@@ -752,7 +756,7 @@ const Player = () => {
                             offset={offset}
                             layout={layout}
                         />
-                    </>
+                    </Layout1>
                 )}
                 {layout === 3 && (
                     <Layout3>

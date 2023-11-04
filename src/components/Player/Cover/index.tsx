@@ -13,9 +13,10 @@ const rotate = keyframes`
       to { transform: rotate(360deg) }
     `
 
-const CoverWrap = styled.div`
-    
-`
+const CoverWrap =
+    styled.div`
+        flex-shrink: 0;
+    `
 
 const CoverShell = styled.div`
       border-radius: 50%;
@@ -25,8 +26,6 @@ const CoverShell = styled.div`
       transition: box-shadow 1s ease-out;
       
       .source {
-        max-width: 320px;
-        max-height: 320px;
         border-radius: inherit;
       }
 
@@ -40,13 +39,13 @@ const CoverShell = styled.div`
         height: 30vw;
         min-width: 160px;
         min-height: 160px;
+        max-width: 320px;
+        max-height: 320px;
       }
 
       .source[data-size="mini"] {
-        width: 10vw;
-        height: 10vw;
-        min-width: 80px;
-        min-height: 80px;
+        width: 80px;
+        height: 80px;
       }
     `
 

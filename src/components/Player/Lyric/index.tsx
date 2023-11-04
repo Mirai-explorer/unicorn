@@ -43,7 +43,7 @@ const Scroll =
 const FullScroll =
     styled.div`
       width: 100%;
-      height: 60vh;
+      height: 50vh;
       overflow-y: hidden;
       overflow-x: hidden;
     `
