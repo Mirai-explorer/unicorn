@@ -105,7 +105,7 @@ const fetchMusicSource = async(type: number, data: Track | sTrack) => {
 } //[INVOLVE]获取歌曲源
 
 const fetchLyric = async(id: number) => {
-    return axios.get(`https://bird.ioliu.cn/v1/?url=https://music.163.com/api/song/lyric?os=pc&id=${id}&lv=-1&kv=-1&tv=-1`).then(res => res.data.code && { lyric: res.data.lrc.lyric, tlyric: res.data.tlyric.lyric })
+    return axios.get(`https://bird.ioliu.cn/v1/?url=https://music.163.com/api/song/lyric?os=pc&id=${id}&lv=-1&kv=-1&tv=-1`).then(res => res.data.code && { lyric: res.data.lrc.lyric, tlyric: res.data.tlyric?.lyric || [''] })
 }
 
 const fetchKugouLyric = async(data: Track | lTrack) => {

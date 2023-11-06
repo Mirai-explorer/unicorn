@@ -517,6 +517,7 @@ const Player = () => {
                                 let item: itemType2 = res.data.data;
                                 let tempar: string[] = [];
                                 item.ar.map((item: any) => tempar.push(item.name));
+                                console.log(await fetchLyric(item.mp3.id))
                                 if (item.mp3.url.length > 0) {
                                     console.log(item.mp3.url)
                                     return update({
