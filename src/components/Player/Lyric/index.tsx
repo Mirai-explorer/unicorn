@@ -1,5 +1,5 @@
 import React, {useEffect, useRef, useState} from "react";
-import styled, {keyframes} from "styled-components";
+import styled from "styled-components";
 import {Track} from "@/components/Player/utils";
 
 type lyricType = {
@@ -123,6 +123,10 @@ const Line =
           transition: all 100ms linear;
         }
       }
+      
+      & span.other_lyric {
+        font-size: 16px;
+      }
     `
 
 const FullLine =
@@ -138,8 +142,8 @@ const FullLine =
       white-space: pre-wrap;
       overflow: hidden;
       letter-spacing: 2px;
-      will-change: opacity, font-size, font-weight, line-height;
-      transition: all 400ms ease-out;
+      will-change: opacity, font-weight;
+      transition: opacity 500ms cubic-bezier(0.19, 1, 0.22, 1);
       scroll-snap-align: center;
       
       &.bubble {
@@ -149,7 +153,7 @@ const FullLine =
       }
 
       &.bubble, &.await {
-        transition: all 500ms ease-out;
+        transition: all 500ms cubic-bezier(0.215, 0.61, 0.355, 1);
       }
 
       .reduce {
@@ -159,13 +163,14 @@ const FullLine =
       }
     `
 
-const Lyric = ({ tracks, trackIndex, trackProgress, reduce, offset, layout } : {
+const Lyric = ({ tracks, trackIndex, trackProgress, reduce, offset, layout, otherLyric } : {
     tracks: Track[],
     trackIndex: number,
     trackProgress: number,
     reduce: string,
     offset: number,
-    layout: number
+    layout: number,
+    otherLyric: string[]
 }) => {
     const [number, setNumber] = useState(0);
     const target: React.RefObject<HTMLDivElement> = React.createRef<HTMLDivElement>();
@@ -264,7 +269,8 @@ const Lyric = ({ tracks, trackIndex, trackProgress, reduce, offset, layout } : {
                                         data-time={item.offset}
                                         ref={target => eleRef.current[index] = target}
                                     >
-                                        {item.text}
+                                        <span className="other_lyric">{otherLyric[index]}</span>
+                                        <span>{item.text}</span>
                                     </FullLine>
                                 );
                             })
@@ -277,7 +283,5 @@ const Lyric = ({ tracks, trackIndex, trackProgress, reduce, offset, layout } : {
         </LyricWrap>
     );
 }
-
-
 
 export default Lyric;

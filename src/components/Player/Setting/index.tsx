@@ -1,6 +1,13 @@
 import {styled} from "styled-components";
 import React, {SetStateAction, useRef, useState} from "react";
-import {fetchMusicSource, syncMediaSession, Track, itemType, fetchLyric} from "@/components/Player/utils";
+import {
+    fetchMusicSource,
+    syncMediaSession,
+    Track,
+    itemType,
+    fetchLyric,
+    fetchKugouLyric
+} from "@/components/Player/utils";
 import Icon from "@/components/Icons/player_icon";
 import {toast} from "react-toastify";
 
@@ -67,7 +74,7 @@ const SettingCardContent =
         color: #00b0ff;
       }
     `
-const Setting = ({isShowing, setIsShowing, tracks, setTracks, trackIndex, setTrackIndex, setToastMessage, offset, setOffset, size, setSize, update, layout, setLayout} : {
+const Setting = ({isShowing, setIsShowing, tracks, setTracks, trackIndex, setTrackIndex, setToastMessage, offset, setOffset, size, setSize, update, layout, setLayout, setOtherLyric} : {
     isShowing: boolean,
     setIsShowing: React.Dispatch<SetStateAction<boolean>>,
     tracks: Track[],
@@ -84,14 +91,20 @@ const Setting = ({isShowing, setIsShowing, tracks, setTracks, trackIndex, setTra
     setSize: React.Dispatch<SetStateAction<string>>,
     update: <T = any>(value: T, key?: any) => Promise<any>,
     layout: number,
-    setLayout: React.Dispatch<SetStateAction<number>>
+    setLayout: React.Dispatch<SetStateAction<number>>,
+    setOtherLyric: React.Dispatch<SetStateAction<string[]>>
 }) => {
     const [text, setText] = useState('')
     const textRef = useRef<HTMLInputElement>(null)
     const [disable, setDisable] = useState(false)
     const [info, setInfo] = useState('')
+    const [info2, setInfo2] = useState('')
     const [inputs, setInputs] = useState('0')
     const [inputs2, setInputs2] = useState('1')
+    const [lyric, setLyric] = useState({
+        translation: [''],
+        romaji: ['']
+    })
     const inputRef = useRef<HTMLInputElement>(null)
     const audioReader = (ref: React.ChangeEvent<HTMLInputElement>) => {
         /*
@@ -292,6 +305,53 @@ const Setting = ({isShowing, setIsShowing, tracks, setTracks, trackIndex, setTra
         setOffset((-matches * 10 - 6) / 10)
     }
 
+    const getFullLyric = (() => {
+        function fetch() {
+            setInfo2('正在获取...')
+            if (isNaN(Number(tracks[trackIndex].encode_audio_id))) {
+                fetchKugouLyric(tracks[trackIndex]).then(data => {
+                    setInfo2('歌词获取成功')
+                    tracks[trackIndex].lyric = data.lrc
+                    setLyric({
+                        translation: data.landata.length > 1 ? data.landata[1].content.replaceAll('[','').replaceAll(' ]]','').split(' ],') : data.landata[0].content.replaceAll('[','').replaceAll(' ]]','').split(' ],'),
+                        romaji: data.landata.length > 1 ? data.landata[0].content.replace(/\s+/g, " ").replaceAll('[','').replaceAll(' ]]','').split(' ],') : ['']
+                    })
+                }).catch(err => {
+                    setInfo2('歌词获取失败')
+                    console.error(err.message)
+                })
+            } else {
+                setInfo2('即将支持网易云音乐...')
+                /*
+                fetchLyric(Number(tracks[trackIndex].encode_audio_id)).then(data => {
+                    setInfo2('歌词获取成功')
+                    setLyric({
+                        translation: data.tlyric.lyric,
+                        romaji: ['']
+                    })
+                }).catch(err => {
+                    setInfo2('歌词获取失败')
+                    console.error(err.message)
+                })
+                */
+            }
+        }
+        function clear() {
+            setOtherLyric([''])
+            setInfo2('多行歌词已关闭')
+        }
+        function useTranslation() {
+            setOtherLyric(lyric.translation)
+            setInfo2('显示翻译')
+        }
+        function useRomaji() {
+            setOtherLyric(lyric.romaji)
+            setInfo2('显示罗马音')
+        }
+        return {
+            fetch, clear, useTranslation, useRomaji
+        }
+    })()
     return(
         <SettingWrap className={`${isShowing?'show':'hidden'}`}>
             <SettingStack>
@@ -366,6 +426,16 @@ const Setting = ({isShowing, setIsShowing, tracks, setTracks, trackIndex, setTra
                                 <input type="radio" id="layoutChoice3" name="layout" value="3" onChange={() => setLayout(3)} defaultChecked={layout === 3 && true} />
                                 <label htmlFor="layoutChoice3">样式3</label>
                             </div>
+                        </div>
+                        <div className="flex flex-col gap-4">
+                            <label htmlFor="text" className="text-sky-400">获取歌词（目前酷狗限定）</label>
+                            <div className="flex gap-2">
+                                <button title="reset" onClick={() => getFullLyric.fetch()}>获取</button>
+                                <button title="reset" onClick={() => getFullLyric.clear()}>清空</button>
+                                <button title="reset" onClick={() => getFullLyric.useTranslation()}>中文翻译</button>
+                                <button title="reset" onClick={() => getFullLyric.useRomaji()}>罗马音（若有）</button>
+                            </div>
+                            <div>{info2}</div>
                         </div>
                     </SettingCardContent>
                 </SettingCard>

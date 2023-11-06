@@ -24,6 +24,13 @@ type sTrack = {
     encode_audio_id: string | undefined
 }
 
+type lTrack = {
+    code: string,
+    title: string,
+    artist: string,
+    time_length: number
+}
+
 type itemType = {
     play_url: string,
     song_name: string,
@@ -98,7 +105,23 @@ const fetchMusicSource = async(type: number, data: Track | sTrack) => {
 } //[INVOLVE]获取歌曲源
 
 const fetchLyric = async(id: number) => {
-    return axios.get(`https://bird.ioliu.cn/v1/?url=https://music.163.com/api/song/lyric?os=pc&id=${id}&lv=-1&kv=-1&tv=-1`).then(res => res.data.code && res.data.lrc.lyric)
+    return axios.get(`https://bird.ioliu.cn/v1/?url=https://music.163.com/api/song/lyric?os=pc&id=${id}&lv=-1&kv=-1&tv=-1`).then(res => res.data.code && { lyric: res.data.lrc.lyric, tlyric: res.data.tlyric.lyric })
+}
+
+const fetchKugouLyric = async(data: Track | lTrack) => {
+    const time = new Date().getTime()
+    const params = {
+        clienttime: time,
+        clientver: 20000,
+        dfid: '-',
+        hash: data.code,
+        keyword: `${data.artist} - ${data.title}`,
+        mid: time,
+        srcappid: 2919,
+        timelength: data.time_length,
+        uuid: time
+    }
+    return axios.get(`https://bird.ioliu.cn/v1/?url=https://m3ws.kugou.com/api/v1/krc/get_lyrics?keyword=${data.artist}%20-%20${data.title}&hash=${data.code}&timelength=${data.time_length}&srcappid=2919&clientver=20000&clienttime=${time}&mid=${time}&uuid=${time}&dfid=-&signature=${sign(Object.entries(params))}`).then(res => res.data.data)
 }
 
 const getTime = (type: number) => {
@@ -133,5 +156,5 @@ const syncMediaSession = (track: Track | null) => {
     }
 }
 
-export { fetchMusicSource, fetchLyric, syncMediaSession, getTime, sign };
+export { fetchMusicSource, fetchLyric, fetchKugouLyric, syncMediaSession, getTime, sign };
 export type { Track, itemType, itemType2 };

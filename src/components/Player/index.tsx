@@ -186,7 +186,7 @@ const Player = () => {
     });
     const [reduce, setReduce] = useState('');
     const [layout, setLayout] = useState(1);
-
+    const [otherLyric, setOtherLyric] = useState(['']);
 
     // Destructure for conciseness
     const {title, subtitle, artist, cover, src, time_length} = tracks[trackIndex];
@@ -337,13 +337,13 @@ const Player = () => {
                                 title: item.name,
                                 subtitle: item.al.name,
                                 artist: tempar.join('、'),
-                                src: item.mp3.url.replaceAll('http:', 'https:'),
+                                src: `https://music.163.com/song/media/outer/url?id=${item.mp3.id}.mp3`,
                                 cover: item.al.picUrl.replaceAll('http:', 'https:'),
-                                lyric: await fetchLyric(item.mp3.id),
+                                lyric: fetchLyric(item.mp3.id).then(data => data.lyric),
                                 album_id: item.al.id,
                                 encode_audio_id: String(item.mp3.id),
                                 code: item.mp3.md5,
-                                timestamp: new Date().getTime() + 1200000,
+                                timestamp: new Date().getTime() + 86400000,
                                 unique_index: i + 1,
                                 time_length: item.mp3.time
                             }).then(() => updated.push(i + 1))
@@ -523,13 +523,13 @@ const Player = () => {
                                         title: item.name,
                                         subtitle: item.al.name,
                                         artist: tempar.join('、'),
-                                        src: item.mp3.url.replaceAll('http:','https:'),
+                                        src: `https://music.163.com/song/media/outer/url?id=${item.mp3.id}.mp3`,
                                         cover: item.al.picUrl,
-                                        lyric: await fetchLyric(item.mp3.id),
+                                        lyric: fetchLyric(item.mp3.id).then(data => data.lyric),
                                         album_id: item.al.id,
                                         encode_audio_id: String(item.mp3.id),
                                         code: item.mp3.md5,
-                                        timestamp: new Date().getTime() + 1200000,
+                                        timestamp: new Date().getTime() + 86400000,
                                         unique_index: trackIndex + 1,
                                         time_length: item.mp3.time
                                     })
@@ -561,6 +561,7 @@ const Player = () => {
             value: value,
             timestamp: new Date().getTime()
         });
+        /*
         // try to update the track
         let id = tracks[trackIndex].encode_audio_id;
         let name = tracks[trackIndex].title;
@@ -574,6 +575,7 @@ const Player = () => {
                     .then(() => console.log('manually updated.'))
             }
         }
+        */
         console.error(e.message)
     }
 
@@ -697,6 +699,7 @@ const Player = () => {
                     toRandomTrack();
                     break;
             }
+
         }
     }, [audioRef.current?.ended]);
 
@@ -722,6 +725,7 @@ const Player = () => {
                             reduce={reduce}
                             offset={offset}
                             layout={layout}
+                            otherLyric={otherLyric}
                         />
                         <Title
                             title={title || "音乐感动生活"}
@@ -755,6 +759,7 @@ const Player = () => {
                             reduce={reduce}
                             offset={offset}
                             layout={layout}
+                            otherLyric={otherLyric}
                         />
                     </Layout1>
                 )}
@@ -774,6 +779,7 @@ const Player = () => {
                             reduce={reduce}
                             offset={offset}
                             layout={layout}
+                            otherLyric={otherLyric}
                         />
                         <Title
                             title={title || "音乐感动生活"}
@@ -826,6 +832,7 @@ const Player = () => {
                     update={update}
                     layout={layout}
                     setLayout={setLayout}
+                    setOtherLyric={setOtherLyric}
                 />
             </Layout>
             <ToastContainer />
