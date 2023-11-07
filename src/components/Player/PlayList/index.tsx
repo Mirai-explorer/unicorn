@@ -151,10 +151,11 @@ const PlayList = ({tracks, setTracks, trackIndex, setTrackIndex, isShowing, setI
         if (isConfirmed) {
             if (tracks.length > 1) {
                 console.log(index+' deleted')
-                let isLocal = tracks[index].unique_index < 0
-                const _tracks = tracks.filter((item, num) => num !== index)
+                const _tracks = tracks.filter((item, id) => id !== index)
                 _tracks.forEach((item, num) => {
-                    item.unique_index = item.unique_index > 0 ? num + 1 : -1
+                    if (item.unique_index > 0) {
+                        item.unique_index = num + 1
+                    }
                 })
                 console.log(_tracks)
                 setTracks(_tracks)
@@ -164,7 +165,7 @@ const PlayList = ({tracks, setTracks, trackIndex, setTrackIndex, isShowing, setI
                 } else {
                     setTrackIndex(trackIndex < index ? trackIndex : --trackIndex)
                 }
-                !isLocal && setUpdate(updates < 0 ? --updates : -1)
+                setUpdate(updates < 0 ? updates - 1 : -1)
             } else {
                 console.log('禁止删除')
             }

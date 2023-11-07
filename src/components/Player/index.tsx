@@ -607,10 +607,10 @@ const Player = () => {
             localStorage.setItem('trackProgress', progress.current.trackProgress);
             e.returnValue = "";
         })
-        getAll().then((tracks: Track[]) => {
-            console.log('1 >> get tracks and check whether it has expired:',tracks)
+        getAll().then((_tracks: Track[]) => {
+            console.log('1 >> get tracks and check whether it has expired:',_tracks)
             // 若从数据库获取的音轨数等于 0 则启用预存数据并更新，否则检查获取音轨是否过期
-            tracks.length > 0 ? handleAllUpdates(tracks.filter(track => track.code)) : handleAllUpdates(tracks0);
+            _tracks.length > 0 ? handleAllUpdates(_tracks.filter(track => track.code)) : handleAllUpdates(tracks0);
         });
         return(() => {
             window.removeEventListener('beforeunload', e => {
@@ -623,13 +623,19 @@ const Player = () => {
     }, []);
 
     useEffect(() => {
-        if (updates > 0) {
+        let length = 0;
+        if (updates !== 0) {
             tracks.map((data) => {
-                data.unique_index > 0 && update(data).then(() => console.log('DATA UPDATED: a piece of data changed','+'))
+                if (data.unique_index > 0) {
+                    update(data)
+                    length ++
+                }
             })
-        }
-        if (updates < 0) {
-            deleteRecord(tracks.filter(item => item.unique_index > 0).length + 1).then(() => console.log('DATA UPDATED: a piece of data changed','-'))
+            if (updates < 0) {
+                deleteRecord(length + 1).then(() => {
+                    console.log('DATA UPDATED: a piece of data changed','-')
+                })
+            }
         }
     }, [updates]);
 
