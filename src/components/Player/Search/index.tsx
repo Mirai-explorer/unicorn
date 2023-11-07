@@ -134,6 +134,10 @@ const SearchCardContent =
       display: block;
       overflow: auto;
       flex: 1;
+
+      &::-webkit-scrollbar {
+        display: none;
+      }
     `
 
 const SearchItem =
@@ -380,7 +384,7 @@ const Search = ({isShowing, setIsShowing, setTracks, tracks, updates, setUpdate,
         }
         let flag = false
         tracks.map(item => {
-            if (track.code === item.code || track.encode_audio_id === item.encode_audio_id) {
+            if (track.code === item.code || track.code === item.encode_audio_id) {
                 flag = true
                 setToastMessage({
                     value: '不可重复添加',
@@ -477,7 +481,7 @@ const Search = ({isShowing, setIsShowing, setTracks, tracks, updates, setUpdate,
                             src: `https://music.163.com/song/media/outer/url?id=${item.mp3.id}.mp3`,
                             cover: item.al.picUrl.replaceAll('http:','https:'),
                             lyric: await fetchLyric(item.mp3.id).then(data => data.lyric),
-                            album_id: item.al.id,
+                            album_id: String(item.al.id),
                             encode_audio_id: String(item.mp3.id),
                             code: item.mp3.md5,
                             timestamp: new Date().getTime() + 86400000,

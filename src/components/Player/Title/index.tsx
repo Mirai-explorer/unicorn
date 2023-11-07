@@ -1,11 +1,13 @@
 import {keyframes, styled} from "styled-components";
 import React, {useEffect} from "react";
+import {className} from "postcss-selector-parser";
 
 type propsType = {
     title: string;
     subtitle: string;
     singer: string;
     trackIndex: number;
+    className?: string
 }
 
 interface customCSSProperties extends React.CSSProperties {
@@ -19,9 +21,22 @@ const TitleWrap =
       flex-direction: column;
       justify-content: space-around;
       width: 100%;
-      height: 72px;
+      height: 100%;
+      max-height: 72px;
       color: white;
       overflow: hidden;
+      
+      &.thick {
+        justify-content: center;
+        gap: 0.25rem;
+      }
+      
+      &.thin {
+        justify-content: center;
+        gap: 0.25rem;
+        text-align: center;
+        max-width: 320px;
+      }
     `
 
 const marquee_anime =
@@ -60,9 +75,13 @@ const Line =
       
       &.primary {
         font-size: 20px;
-        font-weight: bold;
+        font-weight: 700;
         text-shadow: 0 3px 6px rgba(0,0,0,.16);
         letter-spacing: 0.06em;
+      }
+      
+      .thick &.primary {
+        font-size: 16px;
       }
       
       .marquee {
@@ -89,6 +108,10 @@ const Line =
         font-size: 16px;
         letter-spacing: 0.04em;
         color: rgba(255, 255, 255, .8);
+      }
+
+      .thick &.tertiary {
+        font-size: 14px;
       }
     `
 
@@ -122,7 +145,7 @@ const Title = (props: propsType) => {
     }
 
     return (
-        <TitleWrap>
+        <TitleWrap className={props.className || 'normal'}>
             <Line className="primary">
                 <div className="marquee" id="m1" ref={ref1} style={style1}>
                     <span>{props.title}</span>

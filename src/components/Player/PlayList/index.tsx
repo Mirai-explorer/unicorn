@@ -87,6 +87,10 @@ const PlayListCardContent =
       overflow: auto;
       flex: 1;
       gap: .25rem;
+
+      &::-webkit-scrollbar {
+        display: none;
+      }
     `
 
 const PlayItem =

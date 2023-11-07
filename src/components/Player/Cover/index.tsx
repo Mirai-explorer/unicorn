@@ -5,7 +5,8 @@ interface propsType extends React.InputHTMLAttributes<HTMLInputElement> {
     rotate: string,
     url: string,
     ['data-size']: string,
-    desc: string
+    desc: string,
+    className?: string
 }
 
 const rotate = keyframes`
@@ -18,22 +19,39 @@ const CoverWrap =
         flex-shrink: 0;
     `
 
-const CoverShell = styled.div`
+const CoverShell =
+    styled.div`
       border-radius: 50%;
       box-shadow: 0 3px 6px rgba(0,0,0,.16);
       animation: ${rotate} 15s linear infinite;
       animation-play-state: paused;
-      transition: box-shadow 1s ease-out;
+      
+      &.thick, &.thin {
+        animation: none;
+      }
+
+      &.thick {
+        border-radius: 20%;
+      }
+
+      &.thin {
+        border-radius: 10%;
+      }
       
       .source {
         border-radius: inherit;
+        transition: all 0.5s ease-out;
       }
-
+      
       .source[data-size="large"] {
         width: 50vw;
         height: 50vw;
+        min-width: 320px;
+        min-height: 320px;
+        max-width: 600px;
+        max-height: 600px;
       }
-
+      
       .source[data-size="default"] {
         width: 30vw;
         height: 30vw;
@@ -42,17 +60,21 @@ const CoverShell = styled.div`
         max-width: 320px;
         max-height: 320px;
       }
-
+      
       .source[data-size="mini"] {
-        width: 80px;
-        height: 80px;
+        width: 15vw;
+        height: 15vw;
+        min-width: 64px;
+        min-height: 64px;
+        max-width: 80px;
+        max-height: 80px;
       }
     `
 
 const Cover = (props: propsType) => {
     return (
         <CoverWrap>
-            <CoverShell style={{ animationPlayState: `${props.rotate}`}} onDoubleClick={props.onDoubleClick}>
+            <CoverShell className={props.className || 'normal'} style={{ animationPlayState: `${props.rotate}`}} onDoubleClick={props.onDoubleClick}>
                 <img
                     className="source"
                     src={props.url}

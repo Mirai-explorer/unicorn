@@ -125,8 +125,8 @@ const Layout =
       margin: 0;
       padding: 0 max(32px, 5%);
       color: white;
-      -webkit-backdrop-filter: blur(32px) brightness(0.8);
-      backdrop-filter: blur(32px) brightness(0.8);
+      -webkit-backdrop-filter: blur(64px) brightness(0.7);
+      backdrop-filter: blur(64px) brightness(0.7);
       transition: scale .25s cubic-bezier(.42,.19,.62,1);
       
       &.full {
@@ -145,7 +145,6 @@ const Layout1 =
       align-items: center;
       width: 100%;
       height: 100%;
-      gap: 1rem;
       padding-top: 2rem;
     `
 
@@ -159,7 +158,12 @@ const Layout2 =
 
 const Layout3 =
     styled.div`
-
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      justify-content: center;
+      align-items: center;
+      gap: 2rem;
     `
 
 // Player
@@ -751,12 +755,14 @@ const Player = () => {
                                 data-size={size}
                                 desc={title}
                                 onDoubleClick={switchSearch}
+                                className={`thick`}
                             />
                             <Title
                                 title={title || "音乐感动生活"}
                                 subtitle={subtitle || "Mirai 云端播放器"}
                                 singer={artist || "未知歌手"}
                                 trackIndex={trackIndex}
+                                className={`thick`}
                             />
                         </Layout2>
                         <Lyric
@@ -778,21 +784,14 @@ const Player = () => {
                             data-size={size}
                             desc={title}
                             onDoubleClick={switchSearch}
-                        />
-                        <Lyric
-                            tracks={tracks}
-                            trackIndex={trackIndex}
-                            trackProgress={trackProgress}
-                            reduce={reduce}
-                            offset={offset}
-                            layout={layout}
-                            otherLyric={otherLyric}
+                            className={`thin`}
                         />
                         <Title
                             title={title || "音乐感动生活"}
                             subtitle={subtitle || "Mirai 云端播放器"}
                             singer={artist || "未知歌手"}
                             trackIndex={trackIndex}
+                            className={`thin`}
                         />
                     </Layout3>
                 )}

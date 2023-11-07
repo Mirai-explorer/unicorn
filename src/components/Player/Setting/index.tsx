@@ -423,7 +423,12 @@ const Setting = ({isShowing, setIsShowing, tracks, setTracks, trackIndex, setTra
                                     defaultChecked={layout === 2 && true}
                                 />
                                 <label htmlFor="layoutChoice2">样式2</label>
-                                <input type="radio" id="layoutChoice3" name="layout" value="3" onChange={() => setLayout(3)} defaultChecked={layout === 3 && true} />
+                                <input type="radio" id="layoutChoice3" name="layout" value="3"
+                                       onChange={() => {
+                                           setSize('large')
+                                           setLayout(3)
+                                       }}
+                                       defaultChecked={layout === 3 && true} />
                                 <label htmlFor="layoutChoice3">样式3</label>
                             </div>
                         </div>
@@ -432,8 +437,8 @@ const Setting = ({isShowing, setIsShowing, tracks, setTracks, trackIndex, setTra
                             <div className="flex gap-2">
                                 <button title="reset" onClick={() => getFullLyric.fetch()}>获取</button>
                                 <button title="reset" onClick={() => getFullLyric.clear()}>清空</button>
-                                <button title="reset" onClick={() => getFullLyric.useTranslation()}>中文翻译</button>
-                                <button title="reset" onClick={() => getFullLyric.useRomaji()}>罗马音（若有）</button>
+                                <button title="reset" onClick={() => getFullLyric.useTranslation()}>翻译/粤拼</button>
+                                <button title="reset" onClick={() => getFullLyric.useRomaji()}>罗马字（韩日）</button>
                             </div>
                             <div>{info2}</div>
                         </div>
