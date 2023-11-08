@@ -74,7 +74,7 @@ const SettingCardContent =
         color: #00b0ff;
       }
     `
-const Setting = ({isShowing, setIsShowing, tracks, setTracks, trackIndex, setTrackIndex, setToastMessage, offset, setOffset, size, setSize, update, layout, setLayout, setOtherLyric} : {
+const Setting = ({isShowing, setIsShowing, tracks, setTracks, trackIndex, setTrackIndex, setToastMessage, offset, setOffset, size, setSize, update, layout, setLayout, otherLyric, lyricMode, setLyricMode} : {
     isShowing: boolean,
     setIsShowing: React.Dispatch<SetStateAction<boolean>>,
     tracks: Track[],
@@ -92,7 +92,12 @@ const Setting = ({isShowing, setIsShowing, tracks, setTracks, trackIndex, setTra
     update: <T = any>(value: T, key?: any) => Promise<any>,
     layout: number,
     setLayout: React.Dispatch<SetStateAction<number>>,
-    setOtherLyric: React.Dispatch<SetStateAction<string[]>>
+    otherLyric: ({
+        translation: string[],
+        romaji: string[]
+    } | null)[],
+    lyricMode: number,
+    setLyricMode: React.Dispatch<SetStateAction<number>>
 }) => {
     const [text, setText] = useState('')
     const textRef = useRef<HTMLInputElement>(null)
@@ -101,10 +106,6 @@ const Setting = ({isShowing, setIsShowing, tracks, setTracks, trackIndex, setTra
     const [info2, setInfo2] = useState('')
     const [inputs, setInputs] = useState('0')
     const [inputs2, setInputs2] = useState('1')
-    const [lyric, setLyric] = useState({
-        translation: [''],
-        romaji: ['']
-    })
     const inputRef = useRef<HTMLInputElement>(null)
     const audioReader = (ref: React.ChangeEvent<HTMLInputElement>) => {
         /*
@@ -312,10 +313,10 @@ const Setting = ({isShowing, setIsShowing, tracks, setTracks, trackIndex, setTra
                 fetchKugouLyric(tracks[trackIndex]).then(data => {
                     setInfo2('歌词获取成功')
                     tracks[trackIndex].lyric = data.lrc
-                    setLyric({
+                    otherLyric[trackIndex] = {
                         translation: data.landata.length > 1 ? data.landata[1].content.replaceAll('[','').replaceAll(' ]]','').split(' ],') : data.landata[0].content.replaceAll('[','').replaceAll(' ]]','').split(' ],'),
                         romaji: data.landata.length > 1 ? data.landata[0].content.replace(/\s+/g, " ").replaceAll('[','').replaceAll(' ]]','').split(' ],') : ['']
-                    })
+                    }
                 }).catch(err => {
                     setInfo2('歌词获取失败')
                     console.error(err.message)
@@ -336,20 +337,20 @@ const Setting = ({isShowing, setIsShowing, tracks, setTracks, trackIndex, setTra
                 */
             }
         }
-        function clear() {
-            setOtherLyric([''])
-            setInfo2('多行歌词已关闭')
+        function close() {
+            setLyricMode(0)
+            setInfo2('多语言歌词已关闭')
         }
         function useTranslation() {
-            setOtherLyric(lyric.translation)
-            setInfo2('显示翻译')
+            setLyricMode(1)
+            setInfo2('显示翻译/粤拼')
         }
         function useRomaji() {
-            setOtherLyric(lyric.romaji)
+            setLyricMode(2)
             setInfo2('显示罗马音')
         }
         return {
-            fetch, clear, useTranslation, useRomaji
+            fetch, close, useTranslation, useRomaji
         }
     })()
     return(
@@ -433,12 +434,35 @@ const Setting = ({isShowing, setIsShowing, tracks, setTracks, trackIndex, setTra
                             </div>
                         </div>
                         <div className="flex flex-col gap-4">
-                            <label htmlFor="text" className="text-sky-400">获取歌词（目前酷狗限定）</label>
+                            <label htmlFor="text" className="text-sky-400">多语言歌词（目前酷狗限定）</label>
                             <div className="flex gap-2">
                                 <button title="reset" onClick={() => getFullLyric.fetch()}>获取</button>
-                                <button title="reset" onClick={() => getFullLyric.clear()}>清空</button>
-                                <button title="reset" onClick={() => getFullLyric.useTranslation()}>翻译/粤拼</button>
-                                <button title="reset" onClick={() => getFullLyric.useRomaji()}>罗马字（韩日）</button>
+                                <input
+                                    type="radio"
+                                    id="lyricChoice1"
+                                    name="lyric"
+                                    value="0"
+                                    onChange={() => getFullLyric.close()}
+                                    defaultChecked={lyricMode === 0 && true} />
+                                <label htmlFor="lyricChoice1">关闭</label>
+                                <input
+                                    type="radio"
+                                    id="lyricChoice2"
+                                    name="lyric"
+                                    value="1"
+                                    onChange={() => getFullLyric.useTranslation()}
+                                    defaultChecked={lyricMode === 1 && true}
+                                />
+                                <label htmlFor="lyricChoice2">翻译/粤拼</label>
+                                <input
+                                    type="radio"
+                                    id="lyricChoice3"
+                                    name="lyric"
+                                    value="2"
+                                    onChange={() => getFullLyric.useRomaji()}
+                                    defaultChecked={lyricMode === 2 && true}
+                                />
+                                <label htmlFor="lyricChoice3">罗马字（韩日）</label>
                             </div>
                             <div>{info2}</div>
                         </div>

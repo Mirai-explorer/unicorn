@@ -5,7 +5,6 @@ import {initDB, useIndexedDB} from "react-indexed-db-hook";
 import {Track, fetchMusicSource, getTime, syncMediaSession, fetchLyric} from "./utils";
 import styled from 'styled-components';
 import { ToastContainer, toast } from 'react-toastify';
-import { simpleConfirm, SimpleDialogContainer } from 'react-simple-dialogs'
 // import components
 import Title from "@/components/Player/Title";
 import Cover from "@/components/Player/Cover";
@@ -21,6 +20,7 @@ import 'react-toastify/dist/ReactToastify.css';
 // import extra data/config
 import tracks0 from "@/assets/data/tracks";
 import {DBConfig} from "@/app/IDBConfig";
+import {number} from "prop-types";
 
 // Initialize indexDB database
 initDB(DBConfig);
@@ -190,7 +190,8 @@ const Player = () => {
     });
     const [reduce, setReduce] = useState('');
     const [layout, setLayout] = useState(1);
-    const [otherLyric, setOtherLyric] = useState(['']);
+    const [otherLyric, setOtherLyric] = useState([null]);
+    const [lyricMode, setLyricMode] = useState(0)
 
     // Destructure for conciseness
     const {title, subtitle, artist, cover, src, time_length} = tracks[trackIndex];
@@ -241,6 +242,10 @@ const Player = () => {
             }
             audioRef.current.ontimeupdate = () => {
                 setTrackProgress(audioRef.current?.currentTime as number);
+                progress.current.trackProgress = String(audioRef.current?.currentTime as number | 0);
+                if (audioRef.current?.currentTime as number > 0) {
+                    localStorage.setItem('trackProgress', String(audioRef.current?.currentTime as number));
+                }
             }
         }
     };
@@ -332,7 +337,7 @@ const Player = () => {
                         } else {
                             throw new Error("Can't fetch the source")
                         }
-                    } else if (res.data.status.code) {
+                    } else if (res.data.status?.code) {
                         let item: itemType2 = res.data.data;
                         let tempar: string[] = [];
                         item.ar.map((item: any) => tempar.push(item.name));
@@ -439,120 +444,6 @@ const Player = () => {
         }
     }
 
-    const handleDelete = async (text: string, index: number) => {
-        const isConfirmed = await simpleConfirm({
-            title: '删除警告',
-            message: text,
-            confirmLabel: '确认',
-            cancelLabel: '算了'
-        })
-        if (isConfirmed) {
-            if (tracks.length > 1) {
-                console.log(index+' deleted')
-                let isLocal = tracks[index].unique_index < 0
-                const _tracks = tracks.filter((item, num) => num !== index)
-                _tracks.forEach((item, num) => {
-                    item.unique_index = item.unique_index > 0 ? num + 1 : -1
-                })
-                console.log(_tracks)
-                setTracks(_tracks)
-                if (trackIndex === index) {
-                    setTrackIndex(trackIndex < _tracks.length ? trackIndex : 0)
-                    setReload(true)
-                } else {
-                    setTrackIndex(trackIndex < index ? trackIndex : trackIndex - 1)
-                }
-                !isLocal && setUpdate(updates < 0 ? updates - 1 : -1)
-            } else {
-                window.indexedDB.deleteDatabase("MiraiDB").onsuccess = () => {
-                    window.location.reload()
-                }
-            }
-        } else {
-            console.log('nothing to do')
-        }
-    }
-
-    const handleUpdate = async (text: string, index: number) => {
-        const isConfirmed = await simpleConfirm({
-            title: '确认更新',
-            message: text,
-            confirmLabel: '确认',
-            cancelLabel: '算了'
-        })
-        if (isConfirmed) {
-            let id = tracks[trackIndex].encode_audio_id
-            if (isNaN(Number(id))) {
-                fetchMusicSource(0, tracks[trackIndex])
-                    .then(res => {
-                        if (res) {
-                            if (res.err_code === 0) {
-                                let item: itemType = res.data;
-                                let regex = /^(http|https):\/\/[a-zA-Z0-9\-.]+\.[a-zA-Z]{2,}(\/\S*)?$/;
-                                if (regex.test(item.play_url)) {
-                                    return update({
-                                        title: item.song_name,
-                                        subtitle: item.album_name,
-                                        artist: item.author_name,
-                                        src: item.play_url,
-                                        cover: item.img.replaceAll('http:','https:'),
-                                        lyric: item.lyrics,
-                                        album_id: item.album_id,
-                                        encode_audio_id: item.encode_album_audio_id,
-                                        code: item.hash,
-                                        timestamp: new Date().getTime() + 86400000,
-                                        unique_index: trackIndex + 1,
-                                        time_length: !item.is_free_part ? item.timelength : item.trans_param.hash_offset.end_ms
-                                    })
-                                } else {
-                                    throw new Error("Can't fetch the source")
-                                }
-                            }
-                        }
-                    })
-                    .then(() => {
-                        setUpdatedTracks()
-                    })
-            } else {
-                fetchMusicSource(1, tracks[trackIndex])
-                    .then(async res => {
-                        if (res) {
-                            if (res.data.status.code) {
-                                let item: itemType2 = res.data.data;
-                                let tempar: string[] = [];
-                                item.ar.map((item: any) => tempar.push(item.name));
-                                console.log(await fetchLyric(item.mp3.id))
-                                if (item.mp3.url.length > 0) {
-                                    console.log(item.mp3.url)
-                                    return update({
-                                        title: item.name,
-                                        subtitle: item.al.name,
-                                        artist: tempar.join('、'),
-                                        src: `https://music.163.com/song/media/outer/url?id=${item.mp3.id}.mp3`,
-                                        cover: item.al.picUrl,
-                                        lyric: await fetchLyric(item.mp3.id).then(data => data.lyric),
-                                        album_id: item.al.id,
-                                        encode_audio_id: String(item.mp3.id),
-                                        code: item.mp3.md5,
-                                        timestamp: new Date().getTime() + 86400000,
-                                        unique_index: trackIndex + 1,
-                                        time_length: item.mp3.time
-                                    })
-                                } else {
-                                    throw new Error("Can't fetch the source")
-                                }
-                            }
-                        }
-                    })
-                    .then(() => {
-                        setUpdatedTracks()
-                    })
-            }
-        } else {
-            console.log('nothing to do')
-        }
-    }
-
     const handlePlayError = (e: Error) => {
         let value: string;
         if (e.message.includes('no supported source')) {
@@ -604,25 +495,13 @@ const Player = () => {
     }
 
     useEffect(() => {
-        window.addEventListener('beforeunload', e => {
-            audioRef.current?.pause();
-            e.preventDefault();
-            localStorage.setItem('trackHash', progress.current.trackHash);
-            localStorage.setItem('trackProgress', progress.current.trackProgress);
-            e.returnValue = "";
-        })
         getAll().then((_tracks: Track[]) => {
             console.log('1 >> get tracks and check whether it has expired:',_tracks)
-            // 若从数据库获取的音轨数等于 0 则启用预存数据并更新，否则检查获取音轨是否过期
+            // 若从数据库获取的音轨数等于 0 则启用预存数据并更新，否则检查获取的音轨是否过期
             _tracks.length > 0 ? handleAllUpdates(_tracks.filter(track => track.code)) : handleAllUpdates(tracks0);
         });
         return(() => {
-            window.removeEventListener('beforeunload', e => {
-                e.preventDefault();
-                localStorage.setItem('trackHash', progress.current.trackHash);
-                localStorage.setItem('trackProgress', progress.current.trackProgress);
-                e.returnValue = "";
-            })
+
         })
     }, []);
 
@@ -670,6 +549,7 @@ const Player = () => {
                 // Set the isReady ref as true for the next pass
                 isReady.current = true;
             }
+            localStorage.setItem('trackHash', progress.current.trackHash);
         }
     }, [reload]);
 
@@ -677,7 +557,10 @@ const Player = () => {
         if (audioRef.current) {
             audioRef.current.ontimeupdate = () => {
                 setTrackProgress(audioRef.current?.currentTime as number);
-                progress.current.trackProgress = String(audioRef.current?.currentTime);
+                progress.current.trackProgress = String(audioRef.current?.currentTime as number);
+                if (audioRef.current?.currentTime as number > 0) {
+                    localStorage.setItem('trackProgress', String(audioRef.current?.currentTime as number));
+                }
             }
         }
     }, [audioRef.current?.readyState]);
@@ -737,6 +620,7 @@ const Player = () => {
                             offset={offset}
                             layout={layout}
                             otherLyric={otherLyric}
+                            lyricMode={lyricMode}
                         />
                         <Title
                             title={title || "音乐感动生活"}
@@ -773,6 +657,7 @@ const Player = () => {
                             offset={offset}
                             layout={layout}
                             otherLyric={otherLyric}
+                            lyricMode={lyricMode}
                         />
                     </Layout1>
                 )}
@@ -838,7 +723,9 @@ const Player = () => {
                     update={update}
                     layout={layout}
                     setLayout={setLayout}
-                    setOtherLyric={setOtherLyric}
+                    otherLyric={otherLyric}
+                    lyricMode={lyricMode}
+                    setLyricMode={setLyricMode}
                 />
             </Layout>
             <ToastContainer />
@@ -854,6 +741,7 @@ const Player = () => {
                 setReload={setReload}
                 toPlay={toPlay}
                 playState={isPlaying}
+                otherLyric={otherLyric}
             />
         </MiraiPlayer>
     )

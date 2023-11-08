@@ -123,10 +123,6 @@ const Line =
           transition: all 100ms linear;
         }
       }
-      
-      & span.other_lyric {
-        font-size: 16px;
-      }
     `
 
 const FullLine =
@@ -161,16 +157,24 @@ const FullLine =
           transition: all 100ms linear;
         }
       }
+
+      span.other_lyric {
+        font-size: 16px;
+      }
     `
 
-const Lyric = ({ tracks, trackIndex, trackProgress, reduce, offset, layout, otherLyric } : {
+const Lyric = ({ tracks, trackIndex, trackProgress, reduce, offset, layout, otherLyric, lyricMode } : {
     tracks: Track[],
     trackIndex: number,
     trackProgress: number,
     reduce: string,
     offset: number,
     layout: number,
-    otherLyric: string[]
+    otherLyric: ({
+        translation: string[],
+        romaji: string[]
+    } | null)[],
+    lyricMode?: number
 }) => {
     const [number, setNumber] = useState(0);
     const target: React.RefObject<HTMLDivElement> = React.createRef<HTMLDivElement>();
@@ -216,6 +220,11 @@ const Lyric = ({ tracks, trackIndex, trackProgress, reduce, offset, layout, othe
     useEffect(() => {
         setNumber(syncLyric(lyric, trackProgress) as number);
     }, [trackProgress]);
+
+    useEffect(() => {
+        target.current !== null ? target.current.style.transform = `translateY(32px)` : null;
+        eleRef.current[0]?.scrollIntoView({ behavior: "smooth", block: "center" })
+    }, [trackIndex]);
 
     useEffect(() => {
         target.current !== null ? target.current.style.transform = `translateY(${-(32 * number)+32}px)` : null;
@@ -269,8 +278,12 @@ const Lyric = ({ tracks, trackIndex, trackProgress, reduce, offset, layout, othe
                                         data-time={item.offset}
                                         ref={target => eleRef.current[index] = target}
                                     >
-                                        <span className="other_lyric">{otherLyric[index]}</span>
                                         <span>{item.text}</span>
+                                        <span className="other_lyric">
+                                            {lyricMode === 0 && ''}
+                                            {lyricMode === 1 && otherLyric[trackIndex]?.translation[index]}
+                                            {lyricMode === 2 && otherLyric[trackIndex]?.romaji[index]}
+                                        </span>
                                     </FullLine>
                                 );
                             })

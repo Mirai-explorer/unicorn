@@ -130,7 +130,7 @@ const PlayItemLabel =
       gap: 8px;
     `
 
-const PlayList = ({tracks, setTracks, trackIndex, setTrackIndex, isShowing, setIsShowing, updates, setUpdate, setReload, toPlay, playState} : {
+const PlayList = ({tracks, setTracks, trackIndex, setTrackIndex, isShowing, setIsShowing, updates, setUpdate, setReload, toPlay, playState, otherLyric} : {
     tracks: Track[],
     setTracks: React.Dispatch<SetStateAction<Track[]>>,
     trackIndex: number,
@@ -141,7 +141,11 @@ const PlayList = ({tracks, setTracks, trackIndex, setTrackIndex, isShowing, setI
     setUpdate: React.Dispatch<SetStateAction<number>>,
     setReload: React.Dispatch<SetStateAction<boolean>>,
     toPlay: Function,
-    playState: boolean
+    playState: boolean,
+    otherLyric: ({
+        translation: string[],
+        romaji: string[]
+    } | null)[]
 }) => {
     const [X, setX] = useState(0)
     const target = useRef<Array<HTMLDivElement | null >>([])
@@ -161,6 +165,7 @@ const PlayList = ({tracks, setTracks, trackIndex, setTrackIndex, isShowing, setI
                         item.unique_index = num + 1
                     }
                 })
+                otherLyric?.splice(index, 1)
                 console.log(_tracks)
                 setTracks(_tracks)
                 if (trackIndex === index) {
