@@ -44,6 +44,7 @@ const PlayListCard =
       font-size: 16px;
       border-radius: 1rem 1rem 0 0;
       background: #FFFFFF;
+      color: #000000;
       height: 70vh;
       max-height: 600px;
       width: 100%;

@@ -46,7 +46,7 @@ const App = () => {
   const [lang, setLang] = useState(0);
   return (
       <Provider store={store}>
-        <div className="app text-[#333333]">
+        <div className="app text-[#333333] bg-white">
           <HomeHeader></HomeHeader>
           <HomeAside></HomeAside>
           <HomeMain>
