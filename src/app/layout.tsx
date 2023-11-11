@@ -38,7 +38,7 @@ export const metadata: Metadata = {
       url: '/icons/apple-touch-icon-152x152.png', sizes: '152x152', type: 'image/png'
     }]
   },
-  //themeColor: '#000000',
+  themeColor: '#000000',
   manifest: '/manifest.json',
   appleWebApp: {
     capable: true,
@@ -48,7 +48,7 @@ export const metadata: Metadata = {
   generator: 'Next.js',
   applicationName: site_config.title,
   referrer: 'origin-when-cross-origin',
-  //colorScheme: 'light',
+  colorScheme: 'light',
   authors: [{ name: 'Aubrey Tang', url: site_config.url }],
   creator: 'Aubrey Tang',
   publisher: 'Aubrey Tang',
