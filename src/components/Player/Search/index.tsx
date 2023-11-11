@@ -5,7 +5,7 @@ import Icon from "../../Icons/player_icon";
 import cookie from "react-cookies";
 import JSONP from "fetch-jsonp";
 import axios from "axios";
-import crypto from "crypto-js";
+import crypto from "crypto-es";
 
 type resultType = {
     FileName: string,

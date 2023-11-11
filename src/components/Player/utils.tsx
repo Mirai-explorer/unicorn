@@ -1,6 +1,6 @@
 import axios from "axios";
 import cookie from "react-cookies";
-import md5 from "crypto-js/md5";
+import { MD5 } from "crypto-es/lib/md5";
 import JSONP from "fetch-jsonp";
 
 type Track = {
@@ -74,7 +74,7 @@ type itemType2 = {
 const sign = (params: [string, number | string][]) => {
     let source: string[] = [];
     params.forEach((v,i)=>{source[i]=v.join('=')});
-    return md5('NVPh5oo715z5DIWAeQlhMDsWXXQV4hwt'+source.join('')+'NVPh5oo715z5DIWAeQlhMDsWXXQV4hwt').toString()
+    return MD5('NVPh5oo715z5DIWAeQlhMDsWXXQV4hwt'+source.join('')+'NVPh5oo715z5DIWAeQlhMDsWXXQV4hwt').toString()
 }
 
 const fetchMusicSource = async(type: number, data: Track | sTrack) => {
