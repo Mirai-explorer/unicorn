@@ -38,7 +38,6 @@ export const metadata: Metadata = {
       url: '/icons/apple-touch-icon-152x152.png', sizes: '152x152', type: 'image/png'
     }]
   },
-  themeColor: '#000000',
   manifest: '/manifest.json',
   appleWebApp: {
     capable: true,
@@ -48,7 +47,6 @@ export const metadata: Metadata = {
   generator: 'Next.js',
   applicationName: site_config.title,
   referrer: 'origin-when-cross-origin',
-  colorScheme: 'light',
   authors: [{ name: 'Aubrey Tang', url: site_config.url }],
   creator: 'Aubrey Tang',
   publisher: 'Aubrey Tang',
@@ -88,6 +86,8 @@ export default function RootLayout({
   return (
     <html lang="zh">
       <head>
+        <meta name="theme-color" content="#000000" />
+        <meta name="color-scheme" content="light dark" />
         <meta name="baidu-site-verification" content="codeva-e9EzDkx3j5" />
       </head>
       <body>{children}</body>
