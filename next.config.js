@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
-const withPWA = require('next-pwa')({
-    dest: 'public'
-})
+const withPWA = require('next-pwa')({ dest: 'public'})
+
+const { withSentryConfig } = require("@sentry/nextjs");
 
 const nextConfig = {
     output: 'export',
@@ -10,44 +10,41 @@ const nextConfig = {
         domains: [
             'imge.kugou.com'
         ]
+    },
+    sentry: {
+        widenClientFileUpload: true,
+
+        // Transpiles SDK to be compatible with IE11 (increases bundle size)
+        transpileClientSDK: true,
+
+        // Routes browser requests to Sentry through a Next.js rewrite to circumvent ad-blockers (increases server load)
+        tunnelRoute: "/monitoring-tunnel",
+
+        // Hides source maps from generated client bundles
+        hideSourceMaps: true,
+
+        // Automatically tree-shake Sentry logger statements to reduce bundle size
+        disableLogger: true
     }
 }
 
-module.exports = withPWA(nextConfig)
+const sentryWebpackPluginOptions = {
+    // Additional config options for the Sentry webpack plugin. Keep in mind that
+    // the following options are set automatically, and overriding them is not
+    // recommended:
+    //   release, url, configFile, stripPrefix, urlPrefix, include, ignore
 
-
-// Injected content via Sentry wizard below
-
-const { withSentryConfig } = require("@sentry/nextjs");
-
-module.exports = withSentryConfig(
-  module.exports,
-  {
-    // For all available options, see:
-    // https://github.com/getsentry/sentry-webpack-plugin#options
-
-    // Suppresses source map uploading logs during build
-    silent: true,
     org: "mirai-explorer",
     project: "javascript-nextjs",
-  },
-  {
+
+    // An auth token is required for uploading source maps.
+    authToken: process.env.SENTRY_AUTH_TOKEN,
+
+    silent: true, // Suppresses all logs
+
     // For all available options, see:
-    // https://docs.sentry.io/platforms/javascript/guides/nextjs/manual-setup/
+    // https://github.com/getsentry/sentry-webpack-plugin#options.
+};
 
-    // Upload a larger set of source maps for prettier stack traces (increases build time)
-    widenClientFileUpload: true,
-
-    // Transpiles SDK to be compatible with IE11 (increases bundle size)
-    transpileClientSDK: true,
-
-    // Routes browser requests to Sentry through a Next.js rewrite to circumvent ad-blockers (increases server load)
-    tunnelRoute: "/monitoring",
-
-    // Hides source maps from generated client bundles
-    hideSourceMaps: true,
-
-    // Automatically tree-shake Sentry logger statements to reduce bundle size
-    disableLogger: true,
-  }
-);
+// Make sure adding Sentry options is the last code to run before exporting
+module.exports = withSentryConfig(withPWA(nextConfig), sentryWebpackPluginOptions);
