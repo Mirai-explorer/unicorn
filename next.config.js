@@ -13,7 +13,7 @@ const nextConfig = {
     }
 }
 
-module.exports = withPWA(nextConfig)
+module.exports = nextConfig
 
 
 // Injected content via Sentry wizard below
