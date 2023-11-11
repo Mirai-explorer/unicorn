@@ -1,10 +1,7 @@
 import React from 'react';
-import crypto from "crypto-js";
-import md5 from "crypto-js/md5";
 
 const Barcode = () => {
-    const str = '1234637'
-    const strMd5 = crypto.MD5(str).toString().toLowerCase()
+    const strMd5 = Math.sqrt(3)
     console.log(strMd5)
     return(
         <div>
