@@ -6,7 +6,6 @@ import cookie from "react-cookies";
 import JSONP from "fetch-jsonp";
 import axios from "axios";
 import crypto from "crypto-js";
-import {unique} from "next/dist/build/utils";
 
 type resultType = {
     FileName: string,
