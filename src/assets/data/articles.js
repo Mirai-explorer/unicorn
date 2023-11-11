@@ -1,4 +1,4 @@
-export default [
+const articles = [
     {
         "post": {
             "game_id": 2,
@@ -3983,3 +3983,5 @@ export default [
         "is_mentor": false
     }
 ]
+
+export default articles;
