@@ -20,7 +20,6 @@ import 'react-toastify/dist/ReactToastify.css';
 // import extra data/config
 import tracks0 from "@/assets/data/tracks";
 import {DBConfig} from "@/app/IDBConfig";
-import {number} from "prop-types";
 
 // Initialize indexDB database
 initDB(DBConfig);
