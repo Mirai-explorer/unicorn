@@ -74,13 +74,28 @@ type itemType2 = {
 const sign = (params: [string, number | string][]) => {
     let source: string[] = [];
     params.forEach((v,i)=>{source[i]=v.join('=')});
+    console.log('NVPh5oo715z5DIWAeQlhMDsWXXQV4hwt'+source.join('')+'NVPh5oo715z5DIWAeQlhMDsWXXQV4hwt')
     return MD5('NVPh5oo715z5DIWAeQlhMDsWXXQV4hwt'+source.join('')+'NVPh5oo715z5DIWAeQlhMDsWXXQV4hwt').toString()
 }
 
 const fetchMusicSource = async(type: number, data: Track | sTrack) => {
     // a jsonp mode
     if (type === 0) {
-        return JSONP(`https://wwwapi.kugou.com/yy/index.php?r=play/getdata&dfid=${cookie.load('kg_dfid') || '4FHbnb44LtSM2JrXpX3riltQ'}&mid=${cookie.load('kg_mid') || '50e0be703d34ee6401eedf772101571b'}&appid=1014&encode_album_audio_id=${data.encode_audio_id}&platid=4&_=${new Date().getTime()}`).then(res => res.json())
+        const time = new Date().getTime()
+        const params = {
+            appid: 1014,
+            clienttime: time,
+            clientver: 20000,
+            dfid: cookie.load('kg_dfid') || '4FHbnb44LtSM2JrXpX3riltQ',
+            encode_album_audio_id: data.encode_audio_id,
+            mid: cookie.load('kg_mid') || '50e0be703d34ee6401eedf772101571b',
+            platid: 4,
+            srcappid: 2919,
+            token: '',
+            userid: 0,
+            uuid: cookie.load('kg_mid') || '50e0be703d34ee6401eedf772101571b'
+        }
+        return axios.get(`https://thingproxy.freeboard.io/fetch/https://wwwapi.kugou.com/play/songinfo?srcappid=2919&clientver=20000&clienttime=${new Date().getTime()}&mid=${cookie.load('kg_mid') || '50e0be703d34ee6401eedf772101571b'}&uuid=${cookie.load('kg_mid') || '50e0be703d34ee6401eedf772101571b'}&dfid=${cookie.load('kg_dfid') || '4FHbnb44LtSM2JrXpX3riltQ'}&appid=1014&platid=4&encode_album_audio_id=${data.encode_audio_id}&token=&userid=0&signature=${sign(Object.entries(params))}`).then(res => res.status && res.data)
     } else {
         return axios.get(`https://bird.ioliu.cn/netease/song`, {
             params: {
@@ -105,7 +120,7 @@ const fetchMusicSource = async(type: number, data: Track | sTrack) => {
 } //[INVOLVE]获取歌曲源
 
 const fetchLyric = async(id: number) => {
-    return axios.get(`https://bird.ioliu.cn/v1/?url=https://music.163.com/api/song/lyric?os=pc&id=${id}&lv=-1&kv=-1&tv=-1`).then(res => res.data.code && { lyric: res.data.lrc.lyric, tlyric: res.data.tlyric?.lyric || [''] })
+    return axios.get(`https://thingproxy.freeboard.io/fetch/https://music.163.com/api/song/lyric?os=pc&id=${id}&lv=-1&kv=-1&tv=-1`).then(res => res.data.code && { lyric: res.data.lrc.lyric, tlyric: res.data.tlyric?.lyric || [''] })
 }
 
 const fetchKugouLyric = async(data: Track | lTrack) => {
@@ -121,7 +136,7 @@ const fetchKugouLyric = async(data: Track | lTrack) => {
         timelength: data.time_length,
         uuid: time
     }
-    return axios.get(`https://bird.ioliu.cn/v1/?url=https://m3ws.kugou.com/api/v1/krc/get_lyrics?keyword=${data.artist}%20-%20${data.title}&hash=${data.code}&timelength=${data.time_length}&srcappid=2919&clientver=20000&clienttime=${time}&mid=${time}&uuid=${time}&dfid=-&signature=${sign(Object.entries(params))}`).then(res => res.data.data)
+    return axios.get(`https://thingproxy.freeboard.io/fetch/https://m3ws.kugou.com/api/v1/krc/get_lyrics?keyword=${data.artist}%20-%20${data.title}&hash=${data.code}&timelength=${data.time_length}&srcappid=2919&clientver=20000&clienttime=${time}&mid=${time}&uuid=${time}&dfid=-&signature=${sign(Object.entries(params))}`).then(res => res.data.data)
 }
 
 const getTime = (type: number) => {

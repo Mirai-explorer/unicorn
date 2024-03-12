@@ -5,10 +5,10 @@ const Barcode = dynamic(() => import("@/components/Kit/Barcode"), {
     ssr: false
 });
 
-const Page = () => {
+const BarcodePage = () => {
     return(
         <Barcode></Barcode>
     )
 }
 
-export default Page;
+export default BarcodePage;

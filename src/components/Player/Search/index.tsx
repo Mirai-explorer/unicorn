@@ -285,7 +285,7 @@ const Search = ({isShowing, setIsShowing, setTracks, tracks, updates, setUpdate,
                 data[1] = encrypted.toString()
                 const encrypted2 = crypto.AES.encrypt(data[1], key[1], { iv: iv, mode: crypto.mode.CBC })
                 const encSecKey = "57177e98cbfae5064f3d1df01ba0c8d2c557608cb89d12a3b7cbfe04b9f784cbc0135a2b30e729b068905f3d8bcae62c7cac2836b19686d7ecfd1b58be569ceb286c9b60550df48c55df0d720b6d57edafec1bf9a07be8967d09a9273d4604da2f3ab15f0eec67de27c06513f74028796fb077676219030feb9d9f0b741765fe"
-                axios.post("https://bird.ioliu.cn/v2?url=https://interface.music.163.com/weapi/search/get", {
+                axios.post(`https://corsproxy.io/?${encodeURIComponent(`https://interface.music.163.com/weapi/search/get`)}`, {
                     params: encrypted2,
                     encSecKey: encSecKey
                 }, {
