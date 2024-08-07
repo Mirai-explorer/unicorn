@@ -74,7 +74,7 @@ const SettingCardContent =
         color: #00b0ff;
       }
     `
-const Setting = ({isShowing, setIsShowing, tracks, setTracks, trackIndex, setTrackIndex, setToastMessage, offset, setOffset, size, setSize, update, layout, setLayout, otherLyric, lyricMode, setLyricMode} : {
+const Setting = ({isShowing, setIsShowing, tracks, setTracks, trackIndex, setTrackIndex, setToastMessage, offset, setOffset, fontSize, setFontSize, size, setSize, update, layout, setLayout, otherLyric, lyricMode, setLyricMode} : {
     isShowing: boolean,
     setIsShowing: React.Dispatch<SetStateAction<boolean>>,
     tracks: Track[],
@@ -87,6 +87,8 @@ const Setting = ({isShowing, setIsShowing, tracks, setTracks, trackIndex, setTra
     }>>,
     offset: number,
     setOffset: React.Dispatch<SetStateAction<number>>,
+    fontSize: number,
+    setFontSize: React.Dispatch<SetStateAction<number>>,
     size: string,
     setSize: React.Dispatch<SetStateAction<string>>,
     update: <T = any>(value: T, key?: any) => Promise<any>,
@@ -106,6 +108,7 @@ const Setting = ({isShowing, setIsShowing, tracks, setTracks, trackIndex, setTra
     const [info2, setInfo2] = useState('')
     const [inputs, setInputs] = useState('0')
     const [inputs2, setInputs2] = useState('1')
+    const [inputs3, setInputs3] = useState('18')
     const inputRef = useRef<HTMLInputElement>(null)
     const audioReader = (ref: React.ChangeEvent<HTMLInputElement>) => {
         /*
@@ -279,6 +282,10 @@ const Setting = ({isShowing, setIsShowing, tracks, setTracks, trackIndex, setTra
         setInputs2(value)
     }
 
+    const watchInput3 = (value: string) => {
+        setInputs3(value)
+    }
+
     const changeTrack = async () => {
         let target = tracks[Number(inputs2) - 1]
         await update({
@@ -304,6 +311,22 @@ const Setting = ({isShowing, setIsShowing, tracks, setTracks, trackIndex, setTra
         }
         setInputs(String(matches))
         setOffset((-matches * 10 - 6) / 10)
+    }
+
+    const handleFontSize = (value: string) => {
+        const pattern = /1 [6-9] | 2 [0-9] | 30/;;
+        let matches = pattern.exec(value) && Number(pattern.exec(value)![0])
+        if (matches === null || matches === 0) {
+            if (Number(value) < 16) {
+                matches = 16
+            } else if (Number(value) > 30) {
+                matches = 30
+            } else {
+                matches = Number(value)
+            }
+        }
+        setInputs3(String(matches))
+        setFontSize(matches)
     }
 
     const getFullLyric = (() => {
@@ -366,12 +389,15 @@ const Setting = ({isShowing, setIsShowing, tracks, setTracks, trackIndex, setTra
                     <SettingCardContent>
                         <div className="flex flex-col gap-4">
                             <label htmlFor="file" className="text-sky-400">添加本地音频文件</label>
-                            <input type="file" name="file" id="file" accept="audio/*" onChange={ref => audioReader(ref)} />
+                            <input type="file" name="file" id="file" accept="audio/*"
+                                   onChange={ref => audioReader(ref)}/>
                         </div>
                         <div className="flex flex-col gap-4">
                             <label htmlFor="text" className="text-sky-400">同步信息</label>
                             <div className="flex gap-4">
-                                <input type="text" name="audio" className="text-[14px] placeholder:text-[14px]" minLength={6} maxLength={10} placeholder="请输入audio_id" onChange={e => inputOnChange(e.target.value)} ref={textRef} />
+                                <input type="text" name="audio" className="text-[14px] placeholder:text-[14px]"
+                                       minLength={6} maxLength={10} placeholder="请输入audio_id"
+                                       onChange={e => inputOnChange(e.target.value)} ref={textRef}/>
                                 <button title="paste" onClick={() => readClipboard()}>粘贴</button>
                                 <button title="sync" onClick={() => syncInfo()} disabled={disable}>同步</button>
                             </div>
@@ -380,20 +406,53 @@ const Setting = ({isShowing, setIsShowing, tracks, setTracks, trackIndex, setTra
                         <div className="flex flex-col gap-4">
                             <label htmlFor="text" className="text-sky-400">歌词同步</label>
                             <div className="flex gap-2">
-                                <button title="decrease" onClick={() => handleInput(String((Number(inputs)*10-1)/10))}>-</button>
+                                <button title="decrease"
+                                        onClick={() => handleInput(String((Number(inputs) * 10 - 1) / 10))}>-
+                                </button>
                                 <span>
-                                    <input type="number" className="w-12 text-center" step={0.1} min={-5} max={5} value={inputs} onChange={e => watchInput(e.target.value)} onBlur={e => handleInput(e.target.value)} ref={inputRef}/>
+                                    <input type="number" className="w-12 text-center" step={0.1} min={-5} max={5}
+                                           value={inputs} onChange={e => watchInput(e.target.value)}
+                                           onBlur={e => handleInput(e.target.value)} ref={inputRef}/>
                                     s
                                 </span>
-                                <button title="increase" onClick={() => handleInput(String((Number(inputs)*10+1)/10))}>+</button>
-                                <button title="reset" onClick={() => {setOffset(-0.6); setInputs("0")}}>复原</button>
+                                <button title="increase"
+                                        onClick={() => handleInput(String((Number(inputs) * 10 + 1) / 10))}>+
+                                </button>
+                                <button title="reset" onClick={() => {
+                                    setOffset(-0.6);
+                                    setInputs("0")
+                                }}>复原
+                                </button>
+                            </div>
+                        </div>
+                        <div className="flex flex-col gap-4">
+                            <label htmlFor="text" className="text-sky-400">歌词字号</label>
+                            <div className="flex gap-2">
+                                <button title="decrease"
+                                        onClick={() => handleFontSize(String((Number(inputs3) * 10 - 10) / 10))}>-
+                                </button>
+                                <span>
+                                    <input type="number" className="w-12 text-center" step={1} min={16} max={30}
+                                           value={inputs3} onChange={e => watchInput3(e.target.value)}
+                                           onBlur={e => handleFontSize(e.target.value)} ref={inputRef}/>
+                                    pt
+                                </span>
+                                <button title="increase"
+                                        onClick={() => handleFontSize(String((Number(inputs3) * 10 + 10) / 10))}>+
+                                </button>
+                                <button title="reset" onClick={() => {
+                                    setFontSize(18);
+                                    setInputs3("18")
+                                }}>复原
+                                </button>
                             </div>
                         </div>
                         <div className="flex flex-col gap-4">
                             <label htmlFor="text" className="text-sky-400">强制更新</label>
                             <div className="flex gap-2">
                                 <span>
-                                    <input type="number" className="w-12 text-center" step={1} min={1} value={inputs2} onChange={e => watchInput2(e.target.value)} />
+                                    <input type="number" className="w-12 text-center" step={1} min={1} value={inputs2}
+                                           onChange={e => watchInput2(e.target.value)}/>
                                 </span>
                                 <button title="chenge_track" onClick={() => changeTrack()}>更改</button>
                             </div>
@@ -410,7 +469,7 @@ const Setting = ({isShowing, setIsShowing, tracks, setTracks, trackIndex, setTra
                                         setSize('default')
                                         setLayout(1)
                                     }}
-                                    defaultChecked={layout === 1 && true} />
+                                    defaultChecked={layout === 1 && true}/>
                                 <label htmlFor="layoutChoice1">样式1</label>
                                 <input
                                     type="radio"
@@ -429,7 +488,7 @@ const Setting = ({isShowing, setIsShowing, tracks, setTracks, trackIndex, setTra
                                            setSize('large')
                                            setLayout(3)
                                        }}
-                                       defaultChecked={layout === 3 && true} />
+                                       defaultChecked={layout === 3 && true}/>
                                 <label htmlFor="layoutChoice3">样式3</label>
                             </div>
                         </div>
@@ -443,7 +502,7 @@ const Setting = ({isShowing, setIsShowing, tracks, setTracks, trackIndex, setTra
                                     name="lyric"
                                     value="0"
                                     onChange={() => getFullLyric.close()}
-                                    defaultChecked={lyricMode === 0 && true} />
+                                    defaultChecked={lyricMode === 0 && true}/>
                                 <label htmlFor="lyricChoice1">关闭</label>
                                 <input
                                     type="radio"

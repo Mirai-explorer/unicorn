@@ -182,6 +182,7 @@ const Player = () => {
     const [settingShowing, setSettingShowing] = useState(false);
     const [playListShowing, setPlayListShowing] = useState(false);
     const [loopMode, setLoopMode] = useState(0);
+    const [fontSize, setFontSize] = useState(18);
     const [offset, setOffset] = useState(-0.6);
     const [toastMessage, setToastMessage] = useState({
         value: '',
@@ -616,6 +617,7 @@ const Player = () => {
                             trackIndex={trackIndex}
                             trackProgress={trackProgress}
                             reduce={reduce}
+                            fontSize={fontSize}
                             offset={offset}
                             layout={layout}
                             otherLyric={otherLyric}
@@ -653,6 +655,7 @@ const Player = () => {
                             trackIndex={trackIndex}
                             trackProgress={trackProgress}
                             reduce={reduce}
+                            fontSize={fontSize}
                             offset={offset}
                             layout={layout}
                             otherLyric={otherLyric}
@@ -715,6 +718,8 @@ const Player = () => {
                     trackIndex={trackIndex}
                     setTrackIndex={setTrackIndex}
                     setToastMessage={setToastMessage}
+                    fontSize={fontSize}
+                    setFontSize={setFontSize}
                     offset={offset}
                     setOffset={setOffset}
                     size={size}

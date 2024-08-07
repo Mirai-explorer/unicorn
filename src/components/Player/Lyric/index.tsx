@@ -131,7 +131,7 @@ const FullLine =
       align-items: center;
       opacity: .3;
       color: snow;
-      font-size: 18px;
+      font-size:  ${props => (props as any).$size | 18}px;
       font-weight: 500;
       line-height: 1.5;
       width: 100%;
@@ -145,7 +145,7 @@ const FullLine =
       &.bubble {
         font-weight: 700;
         opacity: 1;
-        font-size: 18px;
+        font-size:  ${(props) => (props as any).$size | 18}px;
       }
 
       &.bubble, &.await {
@@ -163,11 +163,12 @@ const FullLine =
       }
     `
 
-const Lyric = ({ tracks, trackIndex, trackProgress, reduce, offset, layout, otherLyric, lyricMode } : {
+const Lyric = ({ tracks, trackIndex, trackProgress, reduce, fontSize, offset, layout, otherLyric, lyricMode } : {
     tracks: Track[],
     trackIndex: number,
     trackProgress: number,
     reduce: string,
+    fontSize: number,
     offset: number,
     layout: number,
     otherLyric: ({
@@ -276,6 +277,7 @@ const Lyric = ({ tracks, trackIndex, trackProgress, reduce, offset, layout, othe
                                                     : ""
                                         }
                                         data-time={item.offset}
+                                        $size={fontSize}
                                         ref={target => eleRef.current[index] = target}
                                     >
                                         <span>{item.text}</span>
