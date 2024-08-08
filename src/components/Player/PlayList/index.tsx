@@ -273,7 +273,7 @@ const PlayList = ({tracks, setTracks, trackIndex, setTrackIndex, isShowing, setI
                                         onTouchStart={e => touchStart(e, index)}
                                         onTouchMove={e => onTouch(e, index)}
                                         onTouchEnd={e => touchEnd(e, index)}
-                                        ref={ref => target.current[index] = ref}
+                                        ref={(ref => target.current[index] = ref) as React.LegacyRef<any>}
                                         draggable
                                     >
                                         <PlayItemLabel>

@@ -1,5 +1,5 @@
 "use client"
-import React, {useEffect, useRef, useState} from 'react';
+import React, {LegacyRef, RefCallback, RefObject, useEffect, useRef, useState} from 'react';
 import {keyframes, styled} from "styled-components";
 
 const Container =
@@ -141,8 +141,8 @@ const New = () => {
     }
 
     useEffect(() => {
-        let items = eleRef.current
-        let io = new IntersectionObserver(entries => {
+        const items = eleRef.current
+        const io = new IntersectionObserver(entries => {
             entries.forEach(item => {
                 if (item.intersectionRatio === 1) {
                     setShow(true)
@@ -163,19 +163,19 @@ const New = () => {
     }, []);
     return(
         <Container className="old" ref={target}>
-            <PageCard className="blue" ref={target => eleRef.current[0] = target}>
+            <PageCard className="blue" ref={(target => eleRef.current[0] = target) as LegacyRef<any>}>
                 <Typo className={show ? 'show':''}>
                     <Headline>这是标题</Headline>
                     <Content>这是一段文字</Content>
                 </Typo>
             </PageCard>
-            <PageCard className="yellow" ref={target => eleRef.current[1] = target}>
+            <PageCard className="yellow" ref={(target => eleRef.current[1] = target) as LegacyRef<any>}>
                 <Typo className={show ? 'show':''}>
                     <Headline>这是标题</Headline>
                     <Content>这是一段文字</Content>
                 </Typo>
             </PageCard>
-            <PageCard className="green" ref={target => eleRef.current[2] = target}>
+            <PageCard className="green" ref={(target => eleRef.current[2] = target) as LegacyRef<any>}>
                 <Typo className={show ? 'show':''}>
                     <Headline>这是标题</Headline>
                     <Content>这是一段文字</Content>

@@ -126,12 +126,12 @@ const Line =
     `
 
 const FullLine =
-    styled.div`
+    styled.div<{$size: number}>`
       display: inline-grid;
       align-items: center;
       opacity: .3;
       color: snow;
-      font-size:  ${props => (props as any).$size | 18}px;
+      font-size:  ${props => props.$size | 18}px;
       font-weight: 500;
       line-height: 1.5;
       width: 100%;
@@ -145,7 +145,7 @@ const FullLine =
       &.bubble {
         font-weight: 700;
         opacity: 1;
-        font-size:  ${(props) => (props as any).$size | 18}px;
+        font-size:  ${(props) => props.$size | 18}px;
       }
 
       &.bubble, &.await {
@@ -278,7 +278,7 @@ const Lyric = ({ tracks, trackIndex, trackProgress, reduce, fontSize, offset, la
                                         }
                                         data-time={item.offset}
                                         $size={fontSize}
-                                        ref={target => eleRef.current[index] = target}
+                                        ref={(target => eleRef.current[index] = target) as React.LegacyRef<any>}
                                     >
                                         <span>{item.text}</span>
                                         <span className="other_lyric">
