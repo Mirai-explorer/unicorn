@@ -86,16 +86,16 @@ const fetchMusicSource = async(type: number, data: Track | sTrack) => {
             appid: 1014,
             clienttime: time,
             clientver: 20000,
-            dfid: cookie.load('kg_dfid') || '4FHbnb44LtSM2JrXpX3riltQ',
+            dfid: cookie.load('kg_dfid') || '2UHESU2QNUu24TpfQl3Qnedv',
             encode_album_audio_id: data.encode_audio_id,
-            mid: cookie.load('kg_mid') || '50e0be703d34ee6401eedf772101571b',
+            mid: cookie.load('kg_mid') || '53c3138021cb02ea435a33c586fd4fbb',
             platid: 4,
             srcappid: 2919,
             token: '',
             userid: 0,
-            uuid: cookie.load('kg_mid') || '50e0be703d34ee6401eedf772101571b'
+            uuid: cookie.load('kg_mid') || '53c3138021cb02ea435a33c586fd4fbb'
         }
-        return axios.get(`https://thingproxy.freeboard.io/fetch/https://wwwapi.kugou.com/play/songinfo?srcappid=2919&clientver=20000&clienttime=${new Date().getTime()}&mid=${cookie.load('kg_mid') || '50e0be703d34ee6401eedf772101571b'}&uuid=${cookie.load('kg_mid') || '50e0be703d34ee6401eedf772101571b'}&dfid=${cookie.load('kg_dfid') || '4FHbnb44LtSM2JrXpX3riltQ'}&appid=1014&platid=4&encode_album_audio_id=${data.encode_audio_id}&token=&userid=0&signature=${sign(Object.entries(params))}`).then(res => res.status && res.data)
+        return axios.get(`https://thingproxy.freeboard.io/fetch/https://wwwapi.kugou.com/play/songinfo?srcappid=2919&clientver=20000&clienttime=${new Date().getTime()}&mid=${cookie.load('kg_mid') || '53c3138021cb02ea435a33c586fd4fbb'}&uuid=${cookie.load('kg_mid') || '53c3138021cb02ea435a33c586fd4fbb'}&dfid=${cookie.load('kg_dfid') || '2UHESU2QNUu24TpfQl3Qnedv'}&appid=1014&platid=4&encode_album_audio_id=${data.encode_audio_id}&token=&userid=0&signature=${sign(Object.entries(params))}`).then(res => res.status && res.data)
     } else {
         return axios.get(`https://bird.ioliu.cn/netease/song`, {
             params: {
