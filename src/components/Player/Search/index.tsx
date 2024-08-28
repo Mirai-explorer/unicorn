@@ -432,7 +432,30 @@ const Search = ({isShowing, setIsShowing, setTracks, tracks, updates, setUpdate,
                     value: '发生不可预知的行为，错误信息：'+err.message,
                     timestamp: new Date().getTime()
                 })
-                console.error('Please try again later:',err.message)
+                if (!navigator.clipboard) {
+                    setToastMessage({
+                        value: `复制失败，您当前的访问环境不支持自动复制，请记录URL【${err.config.url}】`,
+                        timestamp: new Date().getTime()
+                    })
+                    return 0
+                }
+                navigator.clipboard
+                    .writeText(err.config.url)
+                    .then(
+                        (res) => {
+                            setToastMessage({
+                                value: '请求资源的URL已同步到剪贴板',
+                                timestamp: new Date().getTime()
+                            })
+                        },
+                    )
+                    .catch((error) => {
+                        setToastMessage({
+                            value: `复制失败，请记录URL【${err.config.url}】，错误信息：${error}`,
+                            timestamp: new Date().getTime()
+                        })
+                    });
+                console.error('Error info:',err)
             })
             /*
             // a proxy mode
@@ -506,7 +529,7 @@ const Search = ({isShowing, setIsShowing, setTracks, tracks, updates, setUpdate,
                     value: '发生不可预知的行为，错误信息：'+err.message,
                     timestamp: new Date().getTime()
                 })
-                console.error('Please try again later:',err.message)
+                console.error('Error info:',err)
             })
         }
     }

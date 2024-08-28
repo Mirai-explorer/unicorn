@@ -730,6 +730,8 @@ const Player = () => {
                     otherLyric={otherLyric}
                     lyricMode={lyricMode}
                     setLyricMode={setLyricMode}
+                    updates={updates}
+                    setUpdate={setUpdate}
                 />
             </Layout>
             <ToastContainer />

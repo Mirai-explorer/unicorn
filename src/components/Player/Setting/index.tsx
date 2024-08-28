@@ -74,7 +74,7 @@ const SettingCardContent =
         color: #00b0ff;
       }
     `
-const Setting = ({isShowing, setIsShowing, tracks, setTracks, trackIndex, setTrackIndex, setToastMessage, offset, setOffset, fontSize, setFontSize, size, setSize, update, layout, setLayout, otherLyric, lyricMode, setLyricMode} : {
+const Setting = ({isShowing, setIsShowing, tracks, setTracks, trackIndex, setTrackIndex, setToastMessage, offset, setOffset, fontSize, setFontSize, size, setSize, update, layout, setLayout, otherLyric, lyricMode, setLyricMode, updates, setUpdate} : {
     isShowing: boolean,
     setIsShowing: React.Dispatch<SetStateAction<boolean>>,
     tracks: Track[],
@@ -99,13 +99,16 @@ const Setting = ({isShowing, setIsShowing, tracks, setTracks, trackIndex, setTra
         romaji: string[]
     } | null)[],
     lyricMode: number,
-    setLyricMode: React.Dispatch<SetStateAction<number>>
+    setLyricMode: React.Dispatch<SetStateAction<number>>,
+    updates: number,
+    setUpdate: React.Dispatch<SetStateAction<number>>
 }) => {
     const [text, setText] = useState('')
     const textRef = useRef<HTMLInputElement>(null)
     const [disable, setDisable] = useState(false)
     const [info, setInfo] = useState('')
     const [info2, setInfo2] = useState('')
+    const [string, setString] = useState('')
     const [inputs, setInputs] = useState('0')
     const [inputs2, setInputs2] = useState('1')
     const [inputs3, setInputs3] = useState('18')
@@ -376,6 +379,44 @@ const Setting = ({isShowing, setIsShowing, tracks, setTracks, trackIndex, setTra
             fetch, close, useTranslation, useRomaji
         }
     })()
+
+    const pip = (() => {
+        const target = `<div>1</div>`
+        function enable() {
+
+        }
+        function disable() {
+
+        }
+        return {
+            enable, disable
+        }
+    })()
+
+    const manualUpdate = (item: any) => {
+        let track_new: Track = {
+            title: item.song_name,
+            subtitle: item.album_name,
+            artist: item.author_name,
+            src: item.play_url,
+            cover: item.img.replaceAll('http:','https:'),
+            lyric: item.lyrics,
+            album_id: item.album_id,
+            encode_audio_id: item.encode_album_audio_id,
+            code: item.hash,
+            timestamp: new Date().getTime() + 86400000,
+            unique_index: tracks.filter((item) => item.unique_index > 0).length + 1,
+            time_length: !item.is_free_part ? item.timelength : item.trans_param.hash_offset.end_ms
+        };
+        console.log([...tracks, track_new])
+        setTracks([...tracks, track_new])
+        setUpdate(updates > 0 ? ++updates : 1)
+        setToastMessage({
+            value: item.song_name+' 已加入歌单，可在歌单选取播放',
+            timestamp: new Date().getTime()
+        })
+    }
+
     return(
         <SettingWrap className={`${isShowing?'show':'hidden'}`}>
             <SettingStack>
@@ -524,6 +565,20 @@ const Setting = ({isShowing, setIsShowing, tracks, setTracks, trackIndex, setTra
                                 <label htmlFor="lyricChoice3">罗马字（韩日）</label>
                             </div>
                             <div>{info2}</div>
+                        </div>
+                        <div className="flex flex-col gap-4">
+                            <label htmlFor="text" className="text-sky-400">画中画模式</label>
+                            <div className="flex gap-2">
+                                <button title="reset" onClick={() => pip.enable()}>进入</button>
+                                <button title="reset" onClick={() => pip.disable()}>退出</button>
+                            </div>
+                        </div>
+                        <div className="flex flex-col gap-4">
+                            <label htmlFor="text" className="text-sky-400">手动维护</label>
+                            <textarea placeholder="请输入标准JSON字符串" onBlur={(e) => setString(e.target.value)}></textarea>
+                            <div className="flex gap-2">
+                                <button title="submit" onClick={() => manualUpdate(JSON.parse(string)?.data)}>提交</button>
+                            </div>
                         </div>
                     </SettingCardContent>
                 </SettingCard>
