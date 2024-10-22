@@ -1,7 +1,6 @@
 import axios from "axios";
 import cookie from "react-cookies";
 import { MD5 } from "crypto-es/lib/md5";
-import JSONP from "fetch-jsonp";
 
 type Track = {
     title: string,
@@ -95,7 +94,7 @@ const fetchMusicSource = async(type: number, data: Track | sTrack) => {
             userid: 0,
             uuid: cookie.load('kg_mid') || '53c3138021cb02ea435a33c586fd4fbb'
         }
-        return axios.get(`https://thingproxy.freeboard.io/fetch/https://wwwapi.kugou.com/play/songinfo?srcappid=2919&clientver=20000&clienttime=${new Date().getTime()}&mid=${cookie.load('kg_mid') || '53c3138021cb02ea435a33c586fd4fbb'}&uuid=${cookie.load('kg_mid') || '53c3138021cb02ea435a33c586fd4fbb'}&dfid=${cookie.load('kg_dfid') || '2UHESU2QNUu24TpfQl3Qnedv'}&appid=1014&platid=4&encode_album_audio_id=${data.encode_audio_id}&token=&userid=0&signature=${sign(Object.entries(params))}`).then(res => res.status && res.data)
+        return axios.get(`https://thingproxy.freeboard.io/fetch/https://wwwapi.kugou.com/play/songinfo?srcappid=2919&clientver=20000&clienttime=${time}&mid=${cookie.load('kg_mid') || '53c3138021cb02ea435a33c586fd4fbb'}&uuid=${cookie.load('kg_mid') || '53c3138021cb02ea435a33c586fd4fbb'}&dfid=${cookie.load('kg_dfid') || '2UHESU2QNUu24TpfQl3Qnedv'}&appid=1014&platid=4&encode_album_audio_id=${data.encode_audio_id}&token=&userid=0&signature=${sign(Object.entries(params))}`).then(res => res.status && res.data)
     } else {
         return axios.get(`https://bird.ioliu.cn/netease/song`, {
             params: {
