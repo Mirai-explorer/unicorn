@@ -178,7 +178,7 @@ const Lyric = ({ tracks, trackIndex, trackProgress, reduce, fontSize, offset, la
     lyricMode?: number
 }) => {
     const [number, setNumber] = useState(0);
-    const target: React.RefObject<HTMLDivElement> = React.createRef<HTMLDivElement>();
+    const target = useRef<HTMLDivElement | null>(null);
     const eleRef = useRef<Array<HTMLDivElement | null >>([]);
     const parseLrc = (str: string) => {
         const regex: RegExp = /^\[(?<time>\d{2}:\d{2}(.\d{2,})?)\](?<text>.*)/;

@@ -192,7 +192,9 @@ const PlayList = ({tracks, setTracks, trackIndex, setTrackIndex, isShowing, setI
             confirmText: '确认',
             cancelText: '算了',
             onConfirm: async () => {
+                console.log('success')
                 window.indexedDB.deleteDatabase("MiraiDB").onsuccess = () => {
+
                     window.location.reload()
                 }
             },
