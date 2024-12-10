@@ -1,8 +1,8 @@
 import {styled} from "styled-components";
 import React, {SetStateAction, useEffect, useRef, useState} from "react";
 import {Track, getTime} from "@/components/Player/utils";
-import { simpleConfirm, SimpleDialogContainer } from 'react-simple-dialogs';
 import Icon from "@/components/Icons/player_icon";
+import { useModal } from '@/components/Modal/useModal';
 
 const PlayListWrap =
     styled.div`
@@ -150,53 +150,56 @@ const PlayList = ({tracks, setTracks, trackIndex, setTrackIndex, isShowing, setI
 }) => {
     const [X, setX] = useState(0)
     const target = useRef<Array<HTMLDivElement | null >>([])
+    const { ModalComponent, showModal } = useModal();
     const delConfirm = async (text: string, index: number) => {
-        const isConfirmed = await simpleConfirm({
+        await showModal({
             title: '删除警告',
-            message: text,
-            confirmLabel: '确认',
-            cancelLabel: '算了'
-        })
-        if (isConfirmed) {
-            if (tracks.length > 1) {
-                console.log(index+' deleted')
-                const _tracks = tracks.filter((item, id) => id !== index)
-                _tracks.forEach((item, num) => {
-                    if (item.unique_index > 0) {
-                        item.unique_index = num + 1
+            content: text,
+            confirmText: '确认',
+            cancelText: '算了',
+            onConfirm: async () => {
+                if (tracks.length > 1) {
+                    console.log(index+' deleted')
+                    const _tracks = tracks.filter((item, id) => id !== index)
+                    _tracks.forEach((item, num) => {
+                        if (item.unique_index > 0) {
+                            item.unique_index = num + 1
+                        }
+                    })
+                    otherLyric?.splice(index, 1)
+                    console.log(_tracks)
+                    setTracks(_tracks)
+                    if (trackIndex === index) {
+                        setTrackIndex(trackIndex < _tracks.length ? trackIndex : 0)
+                        setReload(true)
+                    } else {
+                        setTrackIndex(trackIndex < index ? trackIndex : --trackIndex)
                     }
-                })
-                otherLyric?.splice(index, 1)
-                console.log(_tracks)
-                setTracks(_tracks)
-                if (trackIndex === index) {
-                    setTrackIndex(trackIndex < _tracks.length ? trackIndex : 0)
-                    setReload(true)
+                    setUpdate(updates < 0 ? updates - 1 : -1)
                 } else {
-                    setTrackIndex(trackIndex < index ? trackIndex : --trackIndex)
+                    console.log('禁止删除')
                 }
-                setUpdate(updates < 0 ? updates - 1 : -1)
-            } else {
-                console.log('禁止删除')
+            },
+            onCancel: () => {
+                console.log('nothing to do')
             }
-        } else {
-            console.log('nothing to do')
-        }
+        })
     }
     const resetConfirm = async () => {
-        const isConfirmed = await simpleConfirm({
+        await showModal({
             title: '数据库初始化警告',
-            message: '确认要初始化数据库吗？（此操作无法撤销，请谨慎操作）',
-            confirmLabel: '确认',
-            cancelLabel: '算了'
+            content: '确认要初始化数据库吗？（此操作无法撤销，请谨慎操作）',
+            confirmText: '确认',
+            cancelText: '算了',
+            onConfirm: async () => {
+                window.indexedDB.deleteDatabase("MiraiDB").onsuccess = () => {
+                    window.location.reload()
+                }
+            },
+            onCancel: () => {
+                console.log('nothing to do')
+            },
         })
-        if (isConfirmed) {
-            window.indexedDB.deleteDatabase("MiraiDB").onsuccess = () => {
-                window.location.reload()
-            }
-        } else {
-            console.log('nothing to do')
-        }
     }
 
     useEffect(() => {
@@ -277,7 +280,7 @@ const PlayList = ({tracks, setTracks, trackIndex, setTrackIndex, isShowing, setI
                                         draggable
                                     >
                                         <PlayItemLabel>
-                                            <img src={item.cover} className={`w-12 h-12 rounded-xl`} alt={item.title} loading="lazy" />
+                                            <img src={item.cover} className="!w-12 !h-12 rounded-xl" alt={item.title} loading="lazy" />
                                             <div className="flex flex-col flex-grow overflow-hidden gap-0.25">
                                                 <span className="play-item_title text-ellipsis whitespace-nowrap overflow-hidden text-[16px]">{item.title}</span>
                                                 <span className="play-item_subtitle text-ellipsis whitespace-nowrap overflow-hidden text-[#888888] text-[14px]">{item.artist}</span>
@@ -296,7 +299,7 @@ const PlayList = ({tracks, setTracks, trackIndex, setTrackIndex, isShowing, setI
                     </PlayListCardContent>
                 </PlayListCard>
             </PlayListStack>
-            <SimpleDialogContainer />
+            {ModalComponent}
         </PlayListWrap>
     )
 }

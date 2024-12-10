@@ -40,20 +40,24 @@ type resultType2 = {
 
 const SearchWrap =
     styled.div`
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      -webkit-backdrop-filter: blur(8px) contrast(0.5);
-      backdrop-filter: blur(8px) contrast(0.5);
-      background: rgba(255,255,255,.3);
-      z-index: 999;
-      content-visibility: auto;
-      
-      &.show {
-        display: block;
-      }
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        -webkit-backdrop-filter: blur(8px) contrast(0.5);
+        backdrop-filter: blur(8px) contrast(0.5);
+        background: rgba(255,255,255,.3);
+        z-index: 999;
+        content-visibility: auto;
+        &.show {
+            display: block;
+        }
+
+        &.hidden {
+            visibility: hidden;
+            background-color: transparent;
+        }
     `
 
 const SearchStack =
@@ -610,7 +614,7 @@ const Search = ({isShowing, setIsShowing, setTracks, tracks, updates, setUpdate,
                                                         addToTracks((e.target as HTMLElement).dataset)
                                                     }}
                                                 />
-                                                <img src={(item.Image).replace('{size}','120')} className="w-12 h-12 rounded-xl" alt={item.OriSongName} loading="lazy" />
+                                                <img src={(item.Image).replace('{size}','120')} className="!w-12 !h-12 rounded-xl" alt={item.OriSongName} loading="lazy" />
                                                 <div className="flex flex-col gap-0.5" >
                                                     <span className="text-sky-500">{item.OriSongName}</span>
                                                     <span className="text-sm text-gray-500">{item.SingerName}</span>

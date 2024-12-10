@@ -80,9 +80,11 @@ const Controller = ({ isPlaying, onPlayPauseClick, onPrevClick, onNextClick, onP
     loopMode: number,
     setLoopMode: React.Dispatch<React.SetStateAction<number>>
 }) => {
+    const openSettings = () => {
+        setSettingShowing(true)
+    }
     const openPlaylist = () => {
         onPlayListClick(true)
-
     }
     return(
         <ControllerWrap>
@@ -121,7 +123,7 @@ const Controller = ({ isPlaying, onPlayPauseClick, onPrevClick, onNextClick, onP
                     <Button
                         type="button"
                         className="setting"
-                        onClick={() => setSettingShowing(true)}
+                        onClick={() => openSettings()}
                         aria-label="Setting"
                     >
                         <Icon className={`icon-setting`} name="Setting" width={24} height={24} />

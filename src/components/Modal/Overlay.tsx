@@ -1,5 +1,4 @@
-import {MouseEventHandler, TouchEventHandler, UIEventHandler} from "react";
-import {Properties} from "csstype";
+import React, {MouseEventHandler, TouchEventHandler, UIEventHandler} from "react";
 
 interface IModalOverlayProps {
     onClick?: MouseEventHandler,

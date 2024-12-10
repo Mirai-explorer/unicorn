@@ -1,0 +1,74 @@
+/* 背景遮罩 */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000; /* 保证弹窗在页面最上层 */
+}
+
+/* 弹出窗口内容 */
+.modal-content {
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    width: 400px;
+    max-width: 90%;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    position: relative;
+}
+
+/* 关闭按钮 */
+.modal-close-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: transparent;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+/* 标题 */
+.modal-content h2 {
+    margin-top: 0;
+}
+
+/* 内容区域 */
+.modal-body {
+    margin-bottom: 20px;
+}
+
+/* 按钮区域 */
+.modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+/* 按钮样式 */
+.modal-btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.modal-cancel {
+    background-color: #ccc;
+}
+
+.modal-confirm {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.modal-btn:hover {
+    opacity: 0.8;
+}

@@ -9,24 +9,27 @@ import {
     fetchKugouLyric
 } from "@/components/Player/utils";
 import Icon from "@/components/Icons/player_icon";
-import {toast} from "react-toastify";
 
 const SettingWrap =
     styled.div`
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      -webkit-backdrop-filter: blur(8px) contrast(0.5);
-      backdrop-filter: blur(8px) contrast(0.5);
-      background: rgba(255,255,255,.3);
-      z-index: 999;
-      content-visibility: auto;
-
-      &.show {
-        display: block;
-      }
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        -webkit-backdrop-filter: blur(8px) contrast(0.5);
+        backdrop-filter: blur(8px) contrast(0.5);
+        background: rgba(255,255,255,.3);
+        z-index: 999;
+        content-visibility: auto; 
+        &.show {
+            display: block;
+        }
+        
+        &.hidden {
+            visibility: hidden;
+            background-color: transparent;
+        }
     `
 
 const SettingStack =
