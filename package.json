@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "install": "npm install --legacy-peer-deps"
+    "install": "npm install --legacy-peer-deps",
+    "postinstall": "npm install --legacy-peer-deps"
   },
   "dependencies": {
     "@sentry/nextjs": "^8.42.0",
