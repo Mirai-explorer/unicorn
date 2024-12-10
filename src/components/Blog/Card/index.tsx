@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
-import { EventEmitter } from 'ahooks/lib/useEventEmitter';
 import Image from "next/image";
+import {useEventEmitter} from "@/components/Hooks/EventContext";
 
 interface articleProps {
     post: {
@@ -133,11 +133,12 @@ const parseTime: Function = (timestamp: number) => {
 
 const gameType = ["崩坏3", "原神", "崩坏学园2", "未定事件簿", "米游社", "崩坏：星穹铁道"]
 
-const Card = ({ article, event$ } : { article: articleProps, event$: EventEmitter<any> }) => {
+const Card = ({ article } : { article: articleProps }) => {
     const [viewed, setViewed] = useState(false);
+    const { emit } = useEventEmitter(); // 获取 emit 函数
     const Viewer = () => {
         !viewed && setViewed(true);
-        event$.emit({ viewed: viewed, images: article.image_list });
+        emit({ viewed: viewed, images: article.image_list });
     }
     return(
         <div className="card flex flex-col px-6 py-8 relative">

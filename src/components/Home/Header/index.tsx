@@ -1,9 +1,8 @@
 import React from 'react';
-import { useDispatch } from 'react-redux';
-import { open } from './toggleSlice';
 import HomeHeaderNav from "@/components/Home/Nav";
 import { Icons as Icon } from "@/components/Icons/index";
 import {styled} from "styled-components";
+import {useAside} from '@/components/Home/Header/AsideContext';
 
 const navLinks = [
     {
@@ -49,15 +48,17 @@ const NavRight =
     `
 
 const HomeHeader = () => {
-    const dispatch = useDispatch()
+    const { state, dispatch } = useAside();
     return(
-        <header className="header sticky top-0 bg-[#ffffffdd] shadow flex items-center justify-center backdrop-saturate-[1.8] backdrop-blur-[5px]">
-            <nav className="navbar flex justify-evenly h-[70px] w-full px-5 py-1 gap-4 max-w-[992px] min-[992px]:justify-between">
+        <header
+            className="header sticky top-0 bg-[#ffffffdd] shadow flex items-center justify-center backdrop-saturate-[1.8] backdrop-blur-[5px]">
+            <nav
+                className="navbar flex justify-evenly h-[70px] w-full !px-5 !py-1 gap-4 max-w-[992px] min-[992px]:justify-between">
                 <NavLeft>
                     <button
                         className="block w-5 rounded-xl"
                         aria-label="控制侧边栏显示"
-                        onClick={() => dispatch(open())}
+                        onClick={() => dispatch({type: 'OPEN'})}
                     >
                         <Icon className="icon-menu" name="Menu" height={20} width={20} fill="#333333"/>
                     </button>
@@ -69,7 +70,7 @@ const HomeHeader = () => {
                     <button
                         className="block w-5 rounded-xl"
                         aria-label="搜索"
-                        onClick={() => dispatch(open())}
+                        onClick={() => dispatch({type: 'OPEN'})}
                     >
                         <Icon className="icon-search" name="Search" height={20} width={20} fill="#333333"/>
                     </button>

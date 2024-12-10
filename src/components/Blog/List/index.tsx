@@ -1,10 +1,13 @@
-import {ReactNode} from "react";
+import React, {ReactNode} from "react";
+import {EventProvider} from "@/components/Hooks/EventContext";
 
 const List = ({ children } : { children: ReactNode }) => {
     return(
-        <div className="article_list">
-            {children}
-        </div>
+        <EventProvider>
+            <div className="article_list">
+                {children}
+            </div>
+        </EventProvider>
     )
 }
 

@@ -1,8 +1,6 @@
 "use client"
 import HomeMain from "@/components/Home/Main";
 import HomeFooter from "@/components/Home/Footer";
-import { store } from './store';
-import { Provider } from 'react-redux';
 import Card from '@/components/Common/Card';
 import CardProfile from '@/components/Common/Card/Profile';
 import CardColumn from '@/components/Common/Card/Column';
@@ -11,7 +9,8 @@ import CardList from '@/components/Common/Card/List';
 import Tag from '@/components/Common/Tag';
 import { Icons as Icon } from "@/components/Icons/index";
 import dynamic from "next/dynamic";
-import {useState} from "react";
+import React, {useState} from "react";
+import {AsideProvider} from "@/components/Home/Header/AsideContext";
 
 const HomeHeader = dynamic(() => import("@/components/Home/Header"), {
   ssr: false
@@ -45,14 +44,15 @@ const App = () => {
   }]
   const [lang, setLang] = useState(0);
   return (
-      <Provider store={store}>
-        <div className="app text-[#333333] bg-white">
+      <div className="app text-[#333333] bg-white">
+        <AsideProvider>
           <HomeHeader></HomeHeader>
           <HomeAside></HomeAside>
           <HomeMain>
             <div className="main_layout flex flex-col gap-4 tracking-wide">
               <Card direction="col">
-                <CardProfile title="阿伟" subtitle="Aubrey" avatar="/images/profile/avatar0001.jpg" status="技术宅一枚，多多关照~" direction="col" />
+                <CardProfile title="阿伟" subtitle="Aubrey" avatar="/images/profile/avatar0001.jpg"
+                             status="技术宅一枚，多多关照~" direction="col"/>
                 <CardColumn>
                   <CardItem keyname="常住地" value="上海·杨浦" icon={true} name="Location"></CardItem>
                   <CardItem keyname="生日" value="2-26" icon={true} name="Birthday"></CardItem>
@@ -60,16 +60,18 @@ const App = () => {
               </Card>
               <section className="flex flex-col gap-4">
                 <div className="inline-flex items-center text-[1rem] font-semibold text-[#977A5C] tracking-wide">
-                  <i className="ps-2 pe-2">
-                    <Icon className="icon-interest" name="Interest" width={24} height={24} fill="#977A5C" />
+                  <i className="!ps-2 !pe-2">
+                    <Icon className="icon-interest" name="Interest" width={24} height={24} fill="#977A5C"/>
                   </i>
                   <span className="primary">兴趣爱好•技能特长</span>
                 </div>
                 <div className={`waterfall flex flex-row gap-5 flex-wrap max-w-[992px]`}>
-                  <Card title="语言" icon="Language" color="#977A5C" direction="row" index={lang} action={setLang} data={language}>
-                    <div className="card_slot_node flex flex-col gap-3 pt-6 pb-6">
-                      <div className="card_section flex flex-col gap-y-4 pl-2 border-l-[#f3f3f3] border-l-[1px]">
-                        <div className="card_section_title inline-flex text-[20px] font-semibold">{language[lang].name}</div>
+                  <Card title="语言" icon="Language" color="#977A5C" direction="row" index={lang} action={setLang}
+                        data={language}>
+                    <div className="card_slot_node flex flex-col gap-3 !pt-6 !pb-6">
+                      <div className="card_section flex flex-col gap-y-4 !pl-2 border-l-[#f3f3f3] border-l-[1px]">
+                        <div
+                            className="card_section_title inline-flex text-[20px] font-semibold">{language[lang].name}</div>
                         <div className="card_section_content flex flex-col gap-y-4">
                           <div className={`flex flex-col gap-y-2`}>
                             <div>当前水平</div>
@@ -88,7 +90,7 @@ const App = () => {
                     </div>
                   </Card>
                   <Card title="音乐" icon="Music" color="#bb338a" direction="col">
-                    <div className="card_slot_node flex flex-col gap-3 pl-4 pr-4 pt-2 pb-2">
+                    <div className="card_slot_node flex flex-col gap-3 !pl-4 !pr-4 !pt-2 !pb-2">
                       <div className="card_section flex flex-col gap-3">
                         <div className="card_section_title inline-flex text-[1rem]">喜欢的音乐类型</div>
                         <div className="card_part flex flex-wrap gap-2">
@@ -119,7 +121,7 @@ const App = () => {
                     </div>
                   </Card>
                   <Card title="电影 / Film" icon="Film" color="#cccccc" direction="col">
-                    <div className="card_slot_node flex flex-col gap-3 pl-4 pr-4 pt-2 pb-2">
+                    <div className="card_slot_node flex flex-col gap-3 !pl-4 !pr-4 !pt-2 !pb-2">
                       <div className="card_section flex flex-col gap-3">
                         <div className="card_section_title inline-flex text-[1rem]">喜欢的电影类型</div>
                         <div className="card_section_content flex flex-wrap gap-2">
@@ -139,15 +141,15 @@ const App = () => {
                         </div>
                       </div>
                       <div className="card_part">
-                        -力荐<br />
-                        -电影/观影场所挑选手册<br />
-                        -我和电影的故事<br />
-                        -尝试：电影剪辑<br />
+                        -力荐<br/>
+                        -电影/观影场所挑选手册<br/>
+                        -我和电影的故事<br/>
+                        -尝试：电影剪辑<br/>
                       </div>
                     </div>
                   </Card>
                   <Card title="ACG / Anime·Comic·Game" icon="Anime" color="#cccccc" direction="col">
-                    <div className="card_slot_node flex flex-col gap-3 pl-4 pr-4 pt-2 pb-2">
+                    <div className="card_slot_node flex flex-col gap-3 !pl-4 !pr-4 !pt-2 !pb-2">
                       <div className="card_section flex flex-col gap-3">
                         <div className="card_section_title inline-flex text-[1rem]">喜欢的ACG·动漫画</div>
                         <div className="card_section_content flex flex-col gap-2">
@@ -172,12 +174,12 @@ const App = () => {
                         <Tag name="天使动漫"></Tag>
                       </div>
                       <div className="card_part">
-                        -漫展/相关展会活动<br />
+                        -漫展/相关展会活动<br/>
                       </div>
                     </div>
                   </Card>
                   <Card title="ACG / Anime·Comic·Game" icon="Game" color="#cccccc" direction="col">
-                    <div className="card_slot_node flex flex-col gap-3 pl-4 pr-4 pt-2 pb-2">
+                    <div className="card_slot_node flex flex-col gap-3 !pl-4 !pr-4 !pt-2 !pb-2">
                       <div className="card_section flex flex-col gap-3">
                         <div className="card_section_title inline-flex text-[1rem]">喜欢的ACG·游戏类型</div>
                         <div className="card_section_content flex flex-wrap gap-2">
@@ -210,14 +212,14 @@ const App = () => {
                         </div>
                       </div>
                       <div className="card_part">
-                        -漫展/相关展会活动<br />
-                        -期望的游戏内容/模式/美术表现/音乐<br />
-                        -尝试：游戏制作<br />
+                        -漫展/相关展会活动<br/>
+                        -期望的游戏内容/模式/美术表现/音乐<br/>
+                        -尝试：游戏制作<br/>
                       </div>
                     </div>
                   </Card>
                   <Card title="旅行 / Trip" icon="Trip" color="#cccccc" direction="col">
-                    <div className="card_slot_node flex flex-col gap-3 pl-4 pr-4 pt-2 pb-2">
+                    <div className="card_slot_node flex flex-col gap-3 !pl-4 !pr-4 !pt-2 !pb-2">
                       <div className="card_section flex flex-col gap-3">
                         <div className="card_section_title inline-flex text-[1rem]">去过哪些地方</div>
                         <div className="card_section_content flex flex-wrap gap-2">
@@ -254,15 +256,15 @@ const App = () => {
                         <Tag name="旅行雷达"></Tag>
                       </div>
                       <div className="card_part">
-                        -想去哪些地方<br />
-                        -喜欢怎样的景色/景观/景物<br />
-                        -酒店挑选指南<br />
-                        -出行指南<br />
+                        -想去哪些地方<br/>
+                        -喜欢怎样的景色/景观/景物<br/>
+                        -酒店挑选指南<br/>
+                        -出行指南<br/>
                       </div>
                     </div>
                   </Card>
                   <Card title="阅读 / Reading" icon="Reading" color="#cccccc" direction="col">
-                    <div className="card_slot_node flex flex-col gap-3 pl-4 pr-4 pt-2 pb-2">
+                    <div className="card_slot_node flex flex-col gap-3 !pl-4 !pr-4 !pt-2 !pb-2">
                       <div className="card_section flex flex-col gap-3">
                         <div className="card_section_title inline-flex text-[1rem]">读过哪些好书</div>
                         <div className="card_section_content flex flex-col gap-2">
@@ -279,12 +281,12 @@ const App = () => {
                         <Tag name="豆瓣"></Tag>
                       </div>
                       <div className="card_part">
-                        -我的书单<br />
+                        -我的书单<br/>
                       </div>
                     </div>
                   </Card>
                   <Card title="摄影•视频创作 / Creation" icon="Creation" color="#cccccc" direction="col">
-                    <div className="card_slot_node flex flex-col gap-3 pl-4 pr-4 pt-2 pb-2">
+                    <div className="card_slot_node flex flex-col gap-3 !pl-4 !pr-4 !pt-2 !pb-2">
                       <div className="card_section flex flex-col gap-3">
                         <div className="card_section_title inline-flex text-[1rem]">喜欢的摄影/视频作品</div>
                         <div className="card_section_content flex flex-col gap-2">
@@ -302,12 +304,12 @@ const App = () => {
                         <Tag name="Google相机"></Tag>
                       </div>
                       <div className="card_part">
-                        -摄影入门教程<br />
+                        -摄影入门教程<br/>
                       </div>
                     </div>
                   </Card>
                   <Card title="数码科技 / Digital & Tech." icon="Tech" color="#cccccc" direction="col">
-                    <div className="card_slot_node flex flex-col gap-3 pl-4 pr-4 pt-2 pb-2">
+                    <div className="card_slot_node flex flex-col gap-3 !pl-4 !pr-4 !pt-2 !pb-2">
                       <div className="card_section flex flex-col gap-3">
                         <div className="card_section_title inline-flex text-[1rem]">喜欢的数码产品</div>
                         <div className="card_section_content flex flex-col gap-2">
@@ -337,15 +339,15 @@ const App = () => {
                         <Tag name="酷安"></Tag>
                       </div>
                       <div className="card_part">
-                        -数码产品怎么选<br />
-                        -关注的数码品牌<br />
-                        -喜欢的科技产品<br />
-                        -关注的科技公司<br />
+                        -数码产品怎么选<br/>
+                        -关注的数码品牌<br/>
+                        -喜欢的科技产品<br/>
+                        -关注的科技公司<br/>
                       </div>
                     </div>
                   </Card>
                   <Card title="美食 / Delicious Food" icon="Delicious" color="#cccccc" direction="col">
-                    <div className="card_slot_node flex flex-col gap-3 pl-4 pr-4 pt-2 pb-2">
+                    <div className="card_slot_node flex flex-col gap-3 !pl-4 !pr-4 !pt-2 !pb-2">
                       <div className="card_section flex flex-col gap-3">
                         <div className="card_section_title inline-flex text-[1rem]">喜欢的美食</div>
                         <div className="card_section_content flex flex-col gap-2">
@@ -362,12 +364,12 @@ const App = () => {
                         <Tag name="美团"></Tag>
                       </div>
                       <div className="card_part">
-                        -自制酸奶<br />
+                        -自制酸奶<br/>
                       </div>
                     </div>
                   </Card>
                   <Card title="薅羊毛 / Coupon Clipping" icon="Coupon" color="#cccccc" direction="col">
-                    <div className="card_slot_node flex flex-col gap-3 pl-4 pr-4 pt-2 pb-2">
+                    <div className="card_slot_node flex flex-col gap-3 !pl-4 !pr-4 !pt-2 !pb-2">
                       <div className="card_section flex flex-col gap-3">
                         <div className="card_section_title inline-flex text-[1rem]">薅羊毛的魔力</div>
                         <div className="card_section_content flex flex-col gap-2">
@@ -385,12 +387,12 @@ const App = () => {
                         <Tag name="羊毛撸啊撸（公众号）"></Tag>
                       </div>
                       <div className="card_part">
-                        -羊毛小贴士<br />
+                        -羊毛小贴士<br/>
                       </div>
                     </div>
                   </Card>
                   <Card title="编程 / Programing" icon="Programing" color="#cccccc" direction="col">
-                    <div className="card_slot_node flex flex-col gap-3 pl-4 pr-4 pt-2 pb-2">
+                    <div className="card_slot_node flex flex-col gap-3 !pl-4 !pr-4 !pt-2 !pb-2">
                       <div className="card_section flex flex-col gap-3">
                         <div className="card_section_title inline-flex text-[1rem]">薅走一根头发</div>
                         <div className="card_section_content flex flex-col gap-2">
@@ -406,50 +408,50 @@ const App = () => {
                       </div>
                       <div className="card_part">
                         <p>
-                          •&nbsp;技术探索<br />
-                          •&nbsp;信息加工<br />
-                          •&nbsp;平面设计<br />
+                          •&nbsp;技术探索<br/>
+                          •&nbsp;信息加工<br/>
+                          •&nbsp;平面设计<br/>
                         </p>
                         <p>
-                          •&nbsp;公交/地铁/火车/航空迷<br />
-                          •&nbsp;天文<br />
-                          •&nbsp;历史<br />
+                          •&nbsp;公交/地铁/火车/航空迷<br/>
+                          •&nbsp;天文<br/>
+                          •&nbsp;历史<br/>
                         </p>
 
-                        <p>•&nbsp;编程<br />
-                          Web开发方向&nbsp;[<br />
-                          Next.js&nbsp;on&nbsp;React(Priority)<br />
-                          Nuxt.js&nbsp;on&nbsp;Vue.js<br />
-                          Vanilla&nbsp;JavaScript[ES2021]<br />
-                          ]<br />
-                          原生/桌面/服务器开发方向&nbsp;[<br />
-                          Kotlin<br />
-                          Swift<br />
-                          C<br />
-                          C#<br />
-                          C++<br />
-                          Java<br />
-                          Python<br />
-                          Golang<br />
-                          Lua<br />
-                          ]<br />
-                          跨平台开发方向&nbsp;[<br />
-                          Flutter<br />
-                          React&nbsp;Native<br />
-                          Electron<br />
-                          ]<br />
-                          常用IDE&nbsp;[<br />
-                          WebStorm<br />
-                          IDEA<br />
-                          Visual&nbsp;Studio<br />
-                          Android&nbsp;Studio<br />
-                          VS&nbsp;Code<br />
+                        <p>•&nbsp;编程<br/>
+                          Web开发方向&nbsp;[<br/>
+                          Next.js&nbsp;on&nbsp;React(Priority)<br/>
+                          Nuxt.js&nbsp;on&nbsp;Vue.js<br/>
+                          Vanilla&nbsp;JavaScript[ES2021]<br/>
+                          ]<br/>
+                          原生/桌面/服务器开发方向&nbsp;[<br/>
+                          Kotlin<br/>
+                          Swift<br/>
+                          C<br/>
+                          C#<br/>
+                          C++<br/>
+                          Java<br/>
+                          Python<br/>
+                          Golang<br/>
+                          Lua<br/>
+                          ]<br/>
+                          跨平台开发方向&nbsp;[<br/>
+                          Flutter<br/>
+                          React&nbsp;Native<br/>
+                          Electron<br/>
+                          ]<br/>
+                          常用IDE&nbsp;[<br/>
+                          WebStorm<br/>
+                          IDEA<br/>
+                          Visual&nbsp;Studio<br/>
+                          Android&nbsp;Studio<br/>
+                          VS&nbsp;Code<br/>
                           ]</p>
                       </div>
                     </div>
                   </Card>
                   <Card title="找到我 / Finding me" icon="Wave" color="#cccccc" direction="col">
-                    <div className="card_slot_node flex flex-col gap-3 pl-4 pr-4 pt-2 pb-2">
+                    <div className="card_slot_node flex flex-col gap-3 !pl-4 !pr-4 !pt-2 !pb-2">
                       <div className="card_section flex flex-col gap-3">
                         <div className="card_section_title inline-flex text-[1rem]">欢迎一起探讨...</div>
                         <div className="card_section_content flex flex-col gap-2">
@@ -468,38 +470,38 @@ const App = () => {
                         <Tag name="StackFlow"></Tag>
                       </div>
                       <div className="card_part">
-                        <p>Contact&nbsp;with&nbsp;me<br />
-                          社交平台<br />
-                          Facebook<br />
-                          Instagram<br />
-                          Telegram<br />
-                          Discord<br />
-                          Skype<br />
+                        <p>Contact&nbsp;with&nbsp;me<br/>
+                          社交平台<br/>
+                          Facebook<br/>
+                          Instagram<br/>
+                          Telegram<br/>
+                          Discord<br/>
+                          Skype<br/>
                           微博</p>
 
-                        <p>内容社区/创作平台<br />
-                          微信公众号<br />
-                          豆瓣<br />
-                          知乎<br />
-                          酷安<br />
-                          百度贴吧<br />
-                          YouTube<br />
-                          GitHub<br />
-                          Gitee<br />
-                          电子邮箱<br />
-                          QQ邮箱<br />
-                          网易163邮箱<br />
-                          Outlook<br />
+                        <p>内容社区/创作平台<br/>
+                          微信公众号<br/>
+                          豆瓣<br/>
+                          知乎<br/>
+                          酷安<br/>
+                          百度贴吧<br/>
+                          YouTube<br/>
+                          GitHub<br/>
+                          Gitee<br/>
+                          电子邮箱<br/>
+                          QQ邮箱<br/>
+                          网易163邮箱<br/>
+                          Outlook<br/>
                         </p>
 
-                        <p>游戏社区<br />
-                          Steam<br />
+                        <p>游戏社区<br/>
+                          Steam<br/>
                           Ubi</p>
 
-                        <p>欢迎赞助<br />
-                          支付宝<br />
-                          云闪付<br />
-                          微信支付<br />
+                        <p>欢迎赞助<br/>
+                          支付宝<br/>
+                          云闪付<br/>
+                          微信支付<br/>
                           PayPal</p>
                       </div>
                     </div>
@@ -509,8 +511,8 @@ const App = () => {
             </div>
           </HomeMain>
           <HomeFooter></HomeFooter>
-        </div>
-      </Provider>
+        </AsideProvider>
+      </div>
   )
 }
 

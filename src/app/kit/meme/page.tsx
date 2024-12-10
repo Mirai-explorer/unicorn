@@ -1,8 +1,8 @@
 "use client"
 import dynamic from "next/dynamic";
-import {store} from "@/app/store";
-import {Provider} from "react-redux";
 import HomeMain from "@/components/Home/Main";
+import React from 'react'
+import {AsideProvider} from "@/components/Home/Header/AsideContext";
 
 const HomeHeader = dynamic(() => import("@/components/Home/Header"), {
     ssr: false
@@ -18,8 +18,8 @@ const Meme = dynamic(() => import("@/components/Kit/Meme"), {
 
 const MemePage = () => {
     return(
-        <Provider store={store}>
-            <div>
+        <div>
+            <AsideProvider>
                 <HomeHeader></HomeHeader>
                 <HomeAside></HomeAside>
                 <HomeMain>
@@ -27,8 +27,8 @@ const MemePage = () => {
                         <Meme></Meme>
                     </div>
                 </HomeMain>
-            </div>
-        </Provider>
+            </AsideProvider>
+        </div>
     )
 }
 

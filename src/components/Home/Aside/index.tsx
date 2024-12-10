@@ -1,9 +1,6 @@
 import React from "react";
-import {useSelector} from "react-redux";
-import {RootState} from "@/app/store";
 import {ModalOverlay} from "@/components/Modal/Overlay";
-import { useDispatch } from 'react-redux';
-import { close } from '@/components/Home/Header/toggleSlice';
+import { useAside } from '@/components/Home/Header/AsideContext';
 import Link from 'next/link';
 import Image from "next/image";
 import { styled } from "styled-components";
@@ -143,14 +140,13 @@ const Contacts =
     `
 
 const HomeAside = () => {
-    const toggle = useSelector((state: RootState) => state.toggle.action)
-    const dispatch = useDispatch()
+    const { state, dispatch } = useAside();
     return(
         <Drawer>
-            <Aside className={`aside ${toggle ? 'open' : ''}`}>
+            <Aside className={`aside ${state.action ? 'open' : ''}`}>
                 <Content>
                     <Section className={`header`}>
-                        <button>
+                        <button onClick={() => dispatch({ type: 'CLOSE' })}>
 
                         </button>
                         <Image src={logo} alt="logo" width={170} height={40}></Image>
@@ -191,8 +187,8 @@ const HomeAside = () => {
                 </Content>
             </Aside>
             <ModalOverlay
-                show={toggle}
-                onClick={() => dispatch(close())}
+                show={state.action}
+                onClick={() => dispatch({ type: 'CLOSE' })}
             ></ModalOverlay>
         </Drawer>
     )

@@ -1,7 +1,7 @@
 "use client";
 // import dependencies/usages
 import React, {useEffect, useRef, useState} from "react";
-import {initDB, useIndexedDB} from "react-indexed-db-hook";
+import IndexedDBHelper from "@/utils/IndexedDBHelper";
 import {Track, fetchMusicSource, getTime, syncMediaSession, fetchLyric} from "./utils";
 import styled from 'styled-components';
 import { ToastContainer, toast } from 'react-toastify';
@@ -22,7 +22,8 @@ import tracks0 from "@/assets/data/tracks";
 import {DBConfig} from "@/app/IDBConfig";
 
 // Initialize indexDB database
-initDB(DBConfig);
+const dbHelper = new IndexedDBHelper(DBConfig);
+const store = 'playlist'
 
 // Define the type of item to fetch on update
 type itemType = {
@@ -167,7 +168,6 @@ const Layout3 =
 
 // Player
 const Player = () => {
-    const { deleteRecord, update, getAll } = useIndexedDB("playlist");
     // State
     const [tracks, setTracks] = useState(tracks0);
     const [trackIndex, setTrackIndex] = useState(0);
@@ -251,19 +251,19 @@ const Player = () => {
     };
 
     const toPrevTrack = () => {
-        let index = trackIndex - 1 < 0 ? tracks.length - 1 : trackIndex - 1;
+        const index = trackIndex - 1 < 0 ? tracks.length - 1 : trackIndex - 1;
         setTrackIndex(index);
         setReload(true);
     };
 
     const toNextTrack = () => {
-        let index = trackIndex < tracks.length - 1 ? trackIndex + 1 : 0;
+        const index = trackIndex < tracks.length - 1 ? trackIndex + 1 : 0;
         setTrackIndex(index);
         setReload(true);
     };
 
     const toRandomTrack = () => {
-        let index = Math.round(Math.random() * (tracks.length - 1));
+        const index = Math.round(Math.random() * (tracks.length - 1));
         setTrackIndex(index);
         setReload(true);
     }
@@ -271,12 +271,12 @@ const Player = () => {
     const notify = (string: string) => toast(string);
 
     const setUpdatedTracks = () => {
-        getAll().then((_tracks: Track[]) => {
+        dbHelper.getAllData(store).then((_tracks: Track[]) => {
             console.log('tracks check once again:',_tracks)
             if (_tracks.length > 0) {
                 setTracks(_tracks);
-                let hash = localStorage.getItem('trackHash');
-                let index = _tracks.findIndex(track => track.code === hash)
+                const hash = localStorage.getItem('trackHash');
+                const index = _tracks.findIndex(track => track.code === hash)
                 if (hash && index > -1) {
                     setTrackIndex(index);
                     setReload(true);
@@ -297,8 +297,8 @@ const Player = () => {
 
     const handleAllUpdates = (tracks: Track[]) => {
         const time = new Date().getTime();
-        let queue: number[] = [];
-        let updated: number[] = [];
+        const queue: number[] = [];
+        const updated: number[] = [];
         // a jsonp mode
         Promise.all(
             // 逐个比对 timestamp，判断 track 是否需要更新，比对结果返回到下一阶段处理
@@ -317,10 +317,10 @@ const Player = () => {
             tasks.map(async (res, i) => {
                 if (res) {
                     if (res.err_code === 0) {
-                        let item: itemType = res.data;
-                        let regex = /^(http|https):\/\/[a-zA-Z0-9\-.]+\.[a-zA-Z]{2,}(\/\S*)?$/;
+                        const item: itemType = res.data;
+                        const regex = /^(http|https):\/\/[a-zA-Z0-9\-.]+\.[a-zA-Z]{2,}(\/\S*)?$/;
                         if (regex.test(item.play_url)) {
-                            update({
+                            dbHelper.updateData(store,{
                                 title: item.song_name,
                                 subtitle: item.album_name,
                                 artist: item.author_name,
@@ -338,11 +338,11 @@ const Player = () => {
                             throw new Error("Can't fetch the source")
                         }
                     } else if (res.data.status?.code) {
-                        let item: itemType2 = res.data.data;
-                        let tempar: string[] = [];
+                        const item: itemType2 = res.data.data;
+                        const tempar: string[] = [];
                         item.ar.map((item: any) => tempar.push(item.name));
                         if (item.mp3.url.length > 0) {
-                            update({
+                            dbHelper.updateData(store,{
                                 title: item.name,
                                 subtitle: item.al.name,
                                 artist: tempar.join('、'),
@@ -495,7 +495,7 @@ const Player = () => {
     }
 
     useEffect(() => {
-        getAll().then((_tracks: Track[]) => {
+        dbHelper.getAllData(store).then((_tracks: Track[]) => {
             console.log('1 >> get tracks and check whether it has expired:',_tracks)
             // 若从数据库获取的音轨数等于 0 则启用预存数据并更新，否则检查获取的音轨是否过期
             _tracks.length > 0 ? handleAllUpdates(_tracks.filter(track => track.code)) : handleAllUpdates(tracks0);
@@ -510,12 +510,12 @@ const Player = () => {
         if (updates !== 0) {
             tracks.map((data) => {
                 if (data.unique_index > 0) {
-                    update(data)
+                    dbHelper.updateData(store,data)
                     length ++
                 }
             })
             if (updates < 0) {
-                deleteRecord(length + 1).then(() => {
+                dbHelper.deleteData(store,length + 1).then(() => {
                     console.log('DATA UPDATED: a piece of data changed','-')
                 })
             }
@@ -724,7 +724,7 @@ const Player = () => {
                     setOffset={setOffset}
                     size={size}
                     setSize={setSize}
-                    update={update}
+                    update={dbHelper.updateData}
                     layout={layout}
                     setLayout={setLayout}
                     otherLyric={otherLyric}

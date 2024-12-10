@@ -94,7 +94,7 @@ const Setting = ({isShowing, setIsShowing, tracks, setTracks, trackIndex, setTra
     setFontSize: React.Dispatch<SetStateAction<number>>,
     size: string,
     setSize: React.Dispatch<SetStateAction<string>>,
-    update: <T = any>(value: T, key?: any) => Promise<any>,
+    update: (storeName: string, data: object) => Promise<any>,
     layout: number,
     setLayout: React.Dispatch<SetStateAction<number>>,
     otherLyric: ({
@@ -294,7 +294,7 @@ const Setting = ({isShowing, setIsShowing, tracks, setTracks, trackIndex, setTra
 
     const changeTrack = async () => {
         let target = tracks[Number(inputs2) - 1]
-        await update({
+        await update('playlist',{
             ...target,
             timestamp: new Date().getTime(),
             unique_index: target.unique_index,

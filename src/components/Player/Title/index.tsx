@@ -1,6 +1,5 @@
 import {keyframes, styled} from "styled-components";
 import React, {useEffect} from "react";
-import {className} from "postcss-selector-parser";
 
 type propsType = {
     title: string;
