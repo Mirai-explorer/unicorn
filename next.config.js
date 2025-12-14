@@ -1,13 +1,13 @@
 /** @type {import('next').NextConfig} */
 
-import { withSentryConfig } from "@sentry/nextjs";
+const { withSentryConfig } = require("@sentry/nextjs");
 
 const nextConfig = {
     output: 'export',
     images: {
         unoptimized: true,
         domains: [
-            'imge.kugou.com'
+            'imgessl.kugou.com'
         ]
     },
     sentry: {
