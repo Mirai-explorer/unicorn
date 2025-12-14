@@ -55,7 +55,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v6.1.0
         with:
-          node-version: "22"
+          node-version: "25"
           cache: ${{ steps.detect-package-manager.outputs.manager }}
       - name: Setup Pages
         uses: actions/configure-pages@v3
@@ -79,7 +79,7 @@ jobs:
       - name: Build with Next.js
         run: ${{ steps.detect-package-manager.outputs.runner }} next build
       - name: Upload artifact
-        uses: actions/upload-artifact@v6.0.0
+        uses: actions/upload-pages-artifact@v3
         with:
           path: ./out
 
