@@ -15,18 +15,16 @@ export default [
         rules: {
             "react/react-in-jsx-scope": "off", // 禁用 React 17+ 的 JSX 转换要求
             "react/jsx-uses-react": "off",     // 同样禁用这个相关规则
-        },
-        overrides: [
-            {
-                "files": [
-                    "next.config.ts",
-                    "next.config.mjs",
-                    "*.config.js"
-                ],
-                "rules": {
-                    "@typescript-eslint/no-require-imports": "off"
-                }
-            }
-        ]
+        }
+    },
+    {
+        files: [
+            "next.config.ts",
+            "next.config.mjs",
+            "*.config.js"
+        ],
+        rules: {
+            "@typescript-eslint/no-require-imports": "off"
+        }
     }
 ];
