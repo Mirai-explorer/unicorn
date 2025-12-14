@@ -1,6 +1,7 @@
 import React from 'react';
 import HomeHeaderNav from "@/components/Home/Nav";
 import { Icons as Icon } from "@/components/Icons/index";
+import { GIcons as GIcon } from "@/components/Icons/index";
 import {styled} from "styled-components";
 import {useAside} from '@/components/Home/Header/AsideContext';
 
@@ -10,12 +11,12 @@ const navLinks = [
         name: '首页'
     },
     {
-        href: '/music',
-        name: '云播放器'
-    },
-    {
         href: '/blog',
         name: '博客'
+    },
+    {
+        href: '/music',
+        name: '云播放器'
     },
     {
         href: '/kit',
@@ -23,7 +24,11 @@ const navLinks = [
     },
     {
         href: '/new',
-        name: '新特性测试'
+        name: '技术测试'
+    },
+    {
+        href: '/new',
+        name: '更多'
     }
 ]
 
@@ -34,7 +39,7 @@ const NavLeft =
       align-items: center;
       flex: 1;
 
-      @media screen and (min-width: 992px) {
+      @media screen and (min-width: 1024px) {
         display: none;
       }
     `
@@ -44,26 +49,33 @@ const NavRight =
       display: flex;
       justify-content: flex-end;
       align-items: center;
-      flex: 1;
     `
 
 const HomeHeader = () => {
     const { state, dispatch } = useAside();
     return(
         <header
-            className="header sticky top-0 bg-[#ffffffdd] shadow flex items-center justify-center backdrop-saturate-[1.8] backdrop-blur-[5px]">
+            className="header fixed top-0 w-full bg-[#ffffffc0] flex items-center justify-center z-[1000] backdrop-saturate-[2] backdrop-blur-[4px]">
             <nav
-                className="navbar flex justify-evenly h-[70px] w-full !px-5 !py-1 gap-4 max-w-[992px] min-[992px]:justify-between">
+                className="navbar flex justify-evenly h-16 min-md:h-24 w-full gap-12 max-[1024px]:!px-8 max-[1520px]:!px-16 max-w-[1392px] min-[1024px]:justify-between">
                 <NavLeft>
                     <button
                         className="block w-5 rounded-xl"
                         aria-label="控制侧边栏显示"
                         onClick={() => dispatch({type: 'OPEN'})}
                     >
-                        <Icon className="icon-menu" name="Menu" height={20} width={20} fill="#333333"/>
+                        <svg width="24" height="24" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M18.0002 24H5.3335M26.6668 16H5.3335M26.6668 8H5.3335" stroke="url(#paint0_linear_255_245)" strokeWidth="2" strokeLinecap="round"/>
+                            <defs>
+                                <linearGradient id="paint0_linear_255_245" x1="16.0002" y1="8" x2="16.0002" y2="24" gradientUnits="userSpaceOnUse">
+                                    <stop stopColor="#EB695B"/>
+                                    <stop offset="1" stopColor="#F2ADA5"/>
+                                </linearGradient>
+                            </defs>
+                        </svg>
                     </button>
                 </NavLeft>
-                <div className="flex justify-center min-[992px]:justify-start items-center grow-[2] overflow-auto">
+                <div className="flex justify-center min-[1024px]:justify-start items-center overflow-auto w-full">
                     <HomeHeaderNav navLinks={navLinks}></HomeHeaderNav>
                 </div>
                 <NavRight>
@@ -72,7 +84,7 @@ const HomeHeader = () => {
                         aria-label="搜索"
                         onClick={() => dispatch({type: 'OPEN'})}
                     >
-                        <Icon className="icon-search" name="Search" height={20} width={20} fill="#333333"/>
+                        <GIcon className="icon-search" name="Search" height={24} width={24} fill="url(#searchGradient)"/>
                     </button>
                 </NavRight>
             </nav>

@@ -10,4 +10,11 @@ export default [
   pluginJs.configs.recommended,
   ...tseslint.configs.recommended,
   pluginReact.configs.flat.recommended,
+    {
+        // 添加自定义规则配置
+        rules: {
+            "react/react-in-jsx-scope": "off", // 禁用 React 17+ 的 JSX 转换要求
+            "react/jsx-uses-react": "off",     // 同样禁用这个相关规则
+        }
+    }
 ];

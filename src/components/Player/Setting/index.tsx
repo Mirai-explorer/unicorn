@@ -320,7 +320,7 @@ const Setting = ({isShowing, setIsShowing, tracks, setTracks, trackIndex, setTra
     }
 
     const handleFontSize = (value: string) => {
-        const pattern = /1 [6-9] | 2 [0-9] | 30/;;
+        const pattern = /1 [6-9] | 2 [0-9] | 30/;
         let matches = pattern.exec(value) && Number(pattern.exec(value)![0])
         if (matches === null || matches === 0) {
             if (Number(value) < 16) {

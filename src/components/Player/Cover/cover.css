@@ -1,0 +1,73 @@
+.cover-wrap {
+    flex-shrink: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    content-visibility: auto;
+    contain-intrinsic-size: 320px 320px;
+}
+
+
+@keyframes rotate {
+    from { transform: rotate3d(0, 0, 1, 0deg); }
+    to { transform: rotate3d(0, 0, 1, 360deg); }
+}
+
+.cover-shell {
+    border-radius: 50%;
+    box-shadow: 0 3px 6px rgba(0,0,0,.16);
+    animation: rotate 30s linear infinite;
+    animation-play-state: paused;
+
+    /* 性能优化属性 */
+    will-change: transform;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    perspective: 1000px;
+    contain: layout style paint;
+
+    &.thick, &.thin {
+        animation: none;
+    }
+
+    &.thick {
+        border-radius: 20%;
+    }
+
+    &.thin {
+        border-radius: 10%;
+    }
+
+    & .source {
+        border-radius: inherit;
+        transition: all 0.5s ease-out;
+
+        &[data-size="large"] {
+            width: 50vw;
+            height: 50vw;
+            min-width: 320px;
+            min-height: 320px;
+            max-width: 600px;
+            max-height: 600px;
+        }
+
+        &[data-size="default"] {
+            width: 30vw;
+            height: 30vw;
+            min-width: 160px;
+            min-height: 160px;
+            max-width: 320px;
+            max-height: 320px;
+        }
+
+        &[data-size="mini"] {
+            width: 15vw;
+            height: 15vw;
+            min-width: 64px;
+            min-height: 64px;
+            max-width: 80px;
+            max-height: 80px;
+        }
+    }
+}
