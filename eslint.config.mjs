@@ -19,7 +19,7 @@ export default [
         overrides: [
             {
                 "files": [
-                    "next.config.js",
+                    "next.config.ts",
                     "next.config.mjs",
                     "*.config.js"
                 ],
