@@ -1,6 +1,6 @@
 "use client";
 // import dependencies/usages
-import React, {useEffect, useRef, useState} from "react";
+import React, { useEffect, useRef, useState, lazy } from "react";
 import IndexedDBHelper from "@/utils/IndexedDBHelper";
 import {Track, fetchMusicSource, getTime, syncMediaSession, fetchLyric} from "./utils";
 import styled from 'styled-components';
@@ -8,14 +8,12 @@ import { ToastContainer, toast } from 'react-toastify';
 // import components
 import Title from "@/components/Player/Title";
 import Cover from "@/components/Player/Cover";
-import Lyric from "@/components/Player/Lyric";
 import Progress from "@/components/Player/Progress";
 import Controller from "@/components/Player/Controller";
 import Search from "@/components/Player/Search";
-import PlayList from "@/components/Player/PlayList";
 import Setting from "@/components/Player/Setting";
 // import styles
-import "../bundle.css";
+
 import 'react-toastify/dist/ReactToastify.css';
 // import extra data/config
 import tracks0 from "@/assets/data/tracks";
@@ -26,7 +24,7 @@ const dbHelper = new IndexedDBHelper(DBConfig);
 const store = 'playlist'
 
 // Define the type of item to fetch on update
-type itemType = {
+interface AudioSourceKugou {
     play_url: string,
     song_name: string,
     album_name: string,
@@ -45,7 +43,7 @@ type itemType = {
     }
 }
 
-type itemType2 = {
+interface AudioSourceNetease {
     al: {
         id: number,
         name: string,
@@ -65,6 +63,9 @@ type itemType2 = {
     },
     name: string
 }
+
+const Lyric = lazy(() => import('./Lyric'));
+const PlayList = lazy(() => import('./PlayList'));
 
 // Define the styles by 'styled-components'
 const MiraiPlayer =
@@ -220,7 +221,7 @@ const Player = () => {
     const onScrub = (value: number) => {
         if (audioRef.current) {
             audioRef.current.ontimeupdate = () => null;
-            reduce !== 'reduce' && setReduce('reduce');
+            if (reduce !== 'reduce') setReduce('reduce');
             setTrackProgress(value);
         }
     };
@@ -317,7 +318,7 @@ const Player = () => {
             tasks.map(async (res, i) => {
                 if (res) {
                     if (res.err_code === 0) {
-                        const item: itemType = res.data;
+                        const item: AudioSourceKugou = res.data;
                         const regex = /^(http|https):\/\/[a-zA-Z0-9\-.]+\.[a-zA-Z]{2,}(\/\S*)?$/;
                         if (regex.test(item.play_url)) {
                             dbHelper.updateData(store,{
@@ -338,9 +339,9 @@ const Player = () => {
                             throw new Error("Can't fetch the source")
                         }
                     } else if (res.data.status?.code) {
-                        const item: itemType2 = res.data.data;
+                        const item: AudioSourceNetease = res.data.data;
                         const tempar: string[] = [];
-                        item.ar.map((item: any) => tempar.push(item.name));
+                        item.ar.map((item: { id: number, name: string }) => tempar.push(item.name));
                         if (item.mp3.url.length > 0) {
                             dbHelper.updateData(store,{
                                 title: item.name,
@@ -498,7 +499,11 @@ const Player = () => {
         dbHelper.getAllData(store).then((_tracks: Track[]) => {
             console.log('1 >> get tracks and check whether it has expired:',_tracks)
             // 若从数据库获取的音轨数等于 0 则启用预存数据并更新，否则检查获取的音轨是否过期
-            _tracks.length > 0 ? handleAllUpdates(_tracks.filter(track => track.code)) : handleAllUpdates(tracks0);
+            if (_tracks.length > 0) {
+                handleAllUpdates(_tracks.filter(track => track.code))
+            } else {
+                handleAllUpdates(tracks0)
+            }
         });
         return(() => {
 
@@ -523,7 +528,7 @@ const Player = () => {
     }, [updates]);
 
     useEffect(() => {
-        toastMessage.value !== '' && notify(toastMessage.value)
+        if (toastMessage.value !== '') notify(toastMessage.value)
     }, [toastMessage]);
 
     useEffect(() => {

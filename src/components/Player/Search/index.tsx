@@ -5,7 +5,7 @@ import Icon from "../../Icons/player_icon";
 import cookie from "react-cookies";
 import JSONP from "fetch-jsonp";
 import axios from "axios";
-import crypto from "crypto-es";
+import { Utf8, AES, CBC } from "crypto-es";
 
 type resultType = {
     FileName: string,
@@ -220,19 +220,19 @@ const Search = ({isShowing, setIsShowing, setTracks, tracks, updates, setUpdate,
         setLoading(true);
         switch (type) {
             case 0:
-                const params = {
+                { const params = {
                     appid: 1014,
                     bitrate: 0,
                     callback: 'callback123',
                     clienttime: new Date().getTime(),
                     clientver: 1000,
-                    dfid: cookie.load('kg_dfid') || '4FHbnb44LtSM2JrXpX3riltQ',
+                    dfid: cookie.load('kg_dfid') || '3ewNYW0b39Iw1ez0WF0mZdxD',
                     filter: 10,
                     inputtype: 0,
                     iscorrection: 1,
                     isfuzzy: 0,
                     keyword: keyword,
-                    mid: cookie.load('kg_mid') || '50e0be703d34ee6401eedf772101571b',
+                    mid: cookie.load('kg_mid') || 'fb8dc308f5fd4db940f6eb4bd8cabff7',
                     page: 1,
                     pagesize: 30,
                     platform: 'WebFilter',
@@ -240,10 +240,10 @@ const Search = ({isShowing, setIsShowing, setTracks, tracks, updates, setUpdate,
                     srcappid: 2919,
                     token: '',
                     userid: 0,
-                    uuid: cookie.load('kg_mid') || '50e0be703d34ee6401eedf772101571b'
+                    uuid: cookie.load('kg_mid') || 'fb8dc308f5fd4db940f6eb4bd8cabff7'
                 }
                 // a jsonp mode
-                JSONP(`https://complexsearch.kugou.com/v2/search/song?appid=1014&bitrate=0&clienttime=${params.clienttime}&clientver=1000&dfid=${cookie.load('kg_dfid') || '4FHbnb44LtSM2JrXpX3riltQ'}&filter=10&inputtype=0&iscorrection=1&isfuzzy=0&keyword=${keyword}&mid=${cookie.load('kg_mid') || '50e0be703d34ee6401eedf772101571b'}&page=1&pagesize=30&platform=WebFilter&privilege_filter=0&srcappid=2919&token=&userid=0&uuid=${cookie.load('kg_mid') || '50e0be703d34ee6401eedf772101571b'}&signature=${sign(Object.entries(params))}`, {jsonpCallbackFunction: 'callback123'})
+                JSONP(`https://complexsearch.kugou.com/v2/search/song?appid=1014&bitrate=0&clienttime=${params.clienttime}&clientver=1000&dfid=${cookie.load('kg_dfid') || '3ewNYW0b39Iw1ez0WF0mZdxD'}&filter=10&inputtype=0&iscorrection=1&isfuzzy=0&keyword=${keyword}&mid=${cookie.load('kg_mid') || 'fb8dc308f5fd4db940f6eb4bd8cabff7'}&page=1&pagesize=30&platform=WebFilter&privilege_filter=0&srcappid=2919&token=&userid=0&uuid=${cookie.load('kg_mid') || 'fb8dc308f5fd4db940f6eb4bd8cabff7'}&signature=${sign(Object.entries(params))}`, {jsonpCallbackFunction: 'callback123'})
                     .then(res => res.json())
                     .then(data => {
                         setLoading(false)
@@ -276,18 +276,18 @@ const Search = ({isShowing, setIsShowing, setTracks, tracks, updates, setUpdate,
                         })
                         console.error('Please try again later:',err.message)
                     })
-                break;
+                break; }
             case 1:
                 // a jsonp mode
-                let data = [
+                { let data = [
                     `{"s":"${value}","limit":30,"offset":0,"type":1,"strategy":5,"queryCorrect":true}`,
                     ''
                 ]
-                const key = [crypto.enc.Utf8.parse('0CoJUm6Qyw8W8jud'), crypto.enc.Utf8.parse('m2d5ZcyUhxNUWqu4')]
-                const iv = crypto.enc.Utf8.parse('0102030405060708')
-                const encrypted = crypto.AES.encrypt(data[0], key[0], { iv: iv, mode: crypto.mode.CBC })
+                const key = [Utf8.parse('0CoJUm6Qyw8W8jud'), Utf8.parse('m2d5ZcyUhxNUWqu4')]
+                const iv = Utf8.parse('0102030405060708')
+                const encrypted = AES.encrypt(data[0], key[0], { iv: iv, mode: CBC })
                 data[1] = encrypted.toString()
-                const encrypted2 = crypto.AES.encrypt(data[1], key[1], { iv: iv, mode: crypto.mode.CBC })
+                const encrypted2 = AES.encrypt(data[1], key[1], { iv: iv, mode: CBC })
                 const encSecKey = "57177e98cbfae5064f3d1df01ba0c8d2c557608cb89d12a3b7cbfe04b9f784cbc0135a2b30e729b068905f3d8bcae62c7cac2836b19686d7ecfd1b58be569ceb286c9b60550df48c55df0d720b6d57edafec1bf9a07be8967d09a9273d4604da2f3ab15f0eec67de27c06513f74028796fb077676219030feb9d9f0b741765fe"
                 axios.post(`https://corsproxy.io/?${encodeURIComponent(`https://interface.music.163.com/weapi/search/get`)}`, {
                     params: encrypted2,
@@ -329,7 +329,7 @@ const Search = ({isShowing, setIsShowing, setTracks, tracks, updates, setUpdate,
                     })
                     console.error('Please try again later:',err.message)
                 })
-                break;
+                break; }
         }
         /*
         // a proxy mode
@@ -446,7 +446,7 @@ const Search = ({isShowing, setIsShowing, setTracks, tracks, updates, setUpdate,
                 navigator.clipboard
                     .writeText(err.config.url)
                     .then(
-                        (res) => {
+                        () => {
                             setToastMessage({
                                 value: '请求资源的URL已同步到剪贴板',
                                 timestamp: new Date().getTime()

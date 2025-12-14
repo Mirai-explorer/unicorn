@@ -1,194 +1,131 @@
 "use client"
-import React, {LegacyRef, RefCallback, RefObject, useEffect, useRef, useState} from 'react';
-import {keyframes, styled} from "styled-components";
-
-const Container =
-    styled.div`
-      width: 100%;
-      height: 100%;
-      overflow-y: auto;
-      scroll-behavior: smooth;
-      scroll-snap-type: y mandatory;
-      scroll-snap-stop: always;
-      scroll-timeline: --dotTimeline y;
-      
-      &::-webkit-scrollbar {
-        display: none;
-      }
-    `
-
-const PageCard =
-    styled.div`
-      display: flex;
-      width: 100%;
-      height: 100%;
-      scroll-snap-align: center;
-      overflow: hidden;
-      
-      &.blue {
-        background-color: rgb(224, 242, 254);
-      }
-
-      &.yellow {
-        background-color: rgb(254, 243, 199);
-      }
-
-      &.green {
-        background-color: rgb(220, 252, 231);
-      }
-    `
-
-const Typo =
-    styled.div`
-      position: relative;
-      left: 20%;
-      top: 20%;
-      display: grid;
-      max-height: 60%;
-      max-width: 60%;
-      width: auto;
-      grid-auto-rows: 80px auto;
-      grid-row-gap: 1rem;
-
-      opacity: 0;
-      transition: opacity .5s ease-in-out, transform .5s ease-in;
-      transform: translateX(-1rem);
-      visibility: hidden;
-      &.show {
-        opacity: 1;
-        transform: translateX(0);
-        visibility: visible;
-      }
-    `
-
-const Headline =
-    styled.div`
-      font-size: 2rem;
-      font-weight: 700;
-      
-      .blue & {
-        color: #0f2b46;
-      }
-      
-      .yellow & {
-        color: #5d5020;
-      }
-      
-      .green & {
-        color: #225f49;
-      }
-    `
-
-const Content =
-    styled.div`
-      font-size: 1.25rem;
-      line-height: 2rem;
-      
-      .blue & {
-        color: #006494;
-      }
-
-      .yellow & {
-        color: #876708;
-      }
-
-      .green & {
-        color: #1b7705;
-      }
-    `
-
-const progress =
-    keyframes`
-      0% {
-        left: 0;
-      }
-      
-      50% {
-        left: calc(50% - 8px);
-      }
-      
-      
-      100% {
-        left: calc(100% - 16px);
-      }
-    `
-
-const TimeLine =
-    styled.div`
-      position: relative;
-      width: 16px;
-      height: 16px;
-      border-radius: 8px;
-      background-color: #00b0ff;
-      animation-name: ${progress};
-      animation-duration: 1ms;
-      animation-timing-function: ease;
-      animation-range: 0 100%;
-      animation-timeline: --dotTimeline;
-    `
+import React, { useEffect, useRef, useState } from 'react';
+import "./bundle.css";
+import "./new_chunk.css";
 
 const New = () => {
-    const target = useRef<HTMLDivElement>(null)
-    const eleRef = useRef<Array<HTMLDivElement | null >>([])
-    const [show, setShow] = useState(false)
-    const scrollToView = (direct: number) => {
-        console.log(target.current!.scrollTop)
-        if (!direct) {
-            target.current!.scrollTop -= target.current!.clientHeight
-        } else {
-            target.current!.scrollTop += target.current!.clientHeight
-        }
-    }
+    // 自定义Hook：检测元素是否在视口中
+    const useIntersectionObserver = (options = {}) => {
+        const [isIntersecting, setIsIntersecting] = useState(false);
+        const elementRef = useRef(null);
 
+        useEffect(() => {
+            const element = elementRef.current;
+            if (!element) return;
+
+            const observer = new IntersectionObserver(([entry]) => {
+                setIsIntersecting(entry.isIntersecting);
+            }, {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px',
+                ...options
+            });
+
+            observer.observe(element);
+
+            return () => {
+                observer.unobserve(element);
+            };
+        }, [options]);
+
+        return [elementRef, isIntersecting] as const;
+    };
+
+    // Hero组件
+    const Hero = () => {
+        return (
+            <section className="hero">
+                <h1>React下滑渐显效果</h1>
+                <p>向下滚动页面，体验React实现的文字平滑浮现效果</p>
+                <div className="scroll-indicator">
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 5V19M12 19L19 12M12 19L5 12" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                </div>
+            </section>
+        );
+    };
+
+    // Section组件 - 带有渐显效果
+    const Section = ({ title, children, delay = 0 } : { title?: string, children: React.ReactNode, delay?: number | string }) => {
+        const [elementRef, isIntersecting] = useIntersectionObserver();
+
+        return (
+            <section
+                ref={elementRef}
+                className={`section ${isIntersecting ? 'visible' : ''}`}
+                style={{ transitionDelay: isIntersecting ? `${delay}ms` : '0ms' }}
+            >
+                <h2>{title}</h2>
+                {children}
+            </section>
+        );
+    };
+
+    // Card组件
+    const Card = ({ title, content } : { title: string, content: string}) => {
+        return (
+            <div className="card">
+                <h3>{title}</h3>
+                <p>{content}</p>
+            </div>
+        );
+    };
+
+    // Footer组件
+    const Footer = () => {
+        return (
+            <footer className="footer">
+                <p>© 2023 React下滑渐显效果演示 | 使用React Hooks实现</p>
+            </footer>
+        );
+    };
     useEffect(() => {
-        const items = eleRef.current
-        const io = new IntersectionObserver(entries => {
-            entries.forEach(item => {
-                if (item.intersectionRatio === 1) {
-                    setShow(true)
-                } else {
-                    setShow(false)
-                }
-            })
-        }, {
-            root: null,
-            rootMargin: '0px 0px',
-            threshold: 1
-        })
-        items.forEach(item => item && io.observe(item))
 
-        return(() => {
-            io.disconnect()
-        })
     }, []);
     return(
-        <Container className="old" ref={target}>
-            <PageCard className="blue" ref={(target => eleRef.current[0] = target) as LegacyRef<any>}>
-                <Typo className={show ? 'show':''}>
-                    <Headline>这是标题</Headline>
-                    <Content>这是一段文字</Content>
-                </Typo>
-            </PageCard>
-            <PageCard className="yellow" ref={(target => eleRef.current[1] = target) as LegacyRef<any>}>
-                <Typo className={show ? 'show':''}>
-                    <Headline>这是标题</Headline>
-                    <Content>这是一段文字</Content>
-                </Typo>
-            </PageCard>
-            <PageCard className="green" ref={(target => eleRef.current[2] = target) as LegacyRef<any>}>
-                <Typo className={show ? 'show':''}>
-                    <Headline>这是标题</Headline>
-                    <Content>这是一段文字</Content>
-                </Typo>
-            </PageCard>
-            <div className="fixed w-[160px] h-[16px] z-50 bottom-4 left-8 bg-white shadow-[#00000016] rounded-xl">
-                <TimeLine></TimeLine>
+        <div className="root">
+            <Hero />
+            <div className="container">
+                <Section title="关于React渐显效果">
+                    <p>这种下滑渐显效果使用React函数组件和Hooks实现，展示了现代前端开发的最佳实践。</p>
+                    <p>通过自定义Hook封装Intersection Observer API，我们可以轻松地为任何组件添加渐显效果。</p>
+                </Section>
+
+                <Section title="实现原理" delay="100">
+                    <p>使用React的useRef和useState Hook，结合Intersection Observer API，检测组件是否进入视口。</p>
+                    <p>当组件进入视口时，通过状态更新触发CSS过渡动画，实现平滑的渐显效果。</p>
+                </Section>
+
+                <Section title="技术优势" delay="200">
+                    <div className="card-container">
+                        <Card
+                            title="组件化"
+                            content="将渐显效果封装为可复用的React组件，提高代码的可维护性。"
+                        />
+                        <Card
+                            title="性能优化"
+                            content="使用Intersection Observer API，相比传统滚动事件监听性能更好。"
+                        />
+                        <Card
+                            title="易于使用"
+                            content="通过自定义Hook，可以轻松为任何组件添加渐显效果。"
+                        />
+                    </div>
+                </Section>
+
+                <Section title="使用示例" delay="300">
+                    <p>要使用这个渐显效果，只需：</p>
+                    <ol>
+                        <li>导入useIntersectionObserver自定义Hook</li>
+                        <li>在组件中使用该Hook获取ref和isIntersecting状态</li>
+                        <li>根据isIntersecting状态添加相应的CSS类</li>
+                        <li>定义合适的CSS过渡效果</li>
+                    </ol>
+                </Section>
             </div>
-            <div className="fixed w-[80px] h-[80px] z-50 bottom-8 right-8 flex flex-col justify-evenly items-center bg-white shadow-[#00000016] rounded-xl">
-                <button className="w-full h-[50%]" onClick={() => scrollToView(0)}>up</button>
-                <button className="w-full h-[50%]" onClick={() => scrollToView(1)}>down</button>
-            </div>
-        </Container>
+            <Footer />
+        </div>
     )
 }
 
