@@ -255,6 +255,16 @@ export const usePlayerUI = () => {
         }
     }, []);
 
+    const toggleFullscreen = () => {
+        if (typeof document === 'undefined') return;
+
+        if (document.fullscreenElement) {
+            document.exitFullscreen().catch(console.error);
+        } else {
+            document.documentElement.requestFullscreen().catch(console.error);
+        }
+    }
+
     // 🎯 键盘快捷键处理
     const handleKeyPress = useCallback((event: KeyboardEvent) => {
         // 防止在输入框中触发快捷键
@@ -423,6 +433,7 @@ export const usePlayerUI = () => {
 
         // 响应式处理
         handleResize,
+        toggleFullscreen,
         handleKeyPress,
 
         // 加载状态控制

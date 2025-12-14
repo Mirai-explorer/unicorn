@@ -1,9 +1,27 @@
+import { usePlayer } from "@/hooks";
+
 export function ExpandActions() {
+    const { ui } = usePlayer();
     return (
         <section className="expand">
-            <button className="icon_button setting" />
-            <button className="icon_button setting" />
-            <button className="icon_button setting" />
+            <button className="icon_button loop">
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24">
+                    <g fill="none" stroke="#fff" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5">
+                        <path
+                            d="m16.388 3l1.003.976c.448.436.672.654.593.839C17.906 5 17.59 5 16.955 5h-7.76C5.22 5 2 8.134 2 12c0 1.487.477 2.866 1.29 4m4.322 5l-1.003-.976c-.448-.436-.672-.654-.593-.839C6.094 19 6.41 19 7.045 19h7.76C18.78 19 22 15.866 22 12a6.84 6.84 0 0 0-1.29-4"></path>
+                        <path d="M13 15V9.316c0-.26-.282-.408-.48-.252l-1.52 1.2"></path>
+                    </g>
+                </svg>
+            </button>
+            <button
+                className="icon_button fullscreen"
+                onClick={ui.toggleFullscreen}
+            >
+                <svg width="32" height="32" viewBox="0 0 1024 1024">
+                    <path fill="#FFFFFF" d="M42.666667 256a213.333333 213.333333 0 0 1 213.333333-213.333333h512a213.333333 213.333333 0 0 1 213.333333 213.333333v512a213.333333 213.333333 0 0 1-213.333333 213.333333H256a213.333333 213.333333 0 0 1-213.333333-213.333333V256z m213.333333-128a128 128 0 0 0-128 128v512a128 128 0 0 0 128 128h512a128 128 0 0 0 128-128V256a128 128 0 0 0-128-128H256z"></path>
+                    <path fill="#FFFFFF" d="M533.333333 256a42.666667 42.666667 0 0 1 42.666667-42.666667H682.666667a128 128 0 0 1 128 128v106.666667a42.666667 42.666667 0 1 1-85.333334 0V341.333333a42.666667 42.666667 0 0 0-42.666666-42.666666h-106.666667a42.666667 42.666667 0 0 1-42.666667-42.666667zM256 533.333333a42.666667 42.666667 0 0 1 42.666667 42.666667V682.666667a42.666667 42.666667 0 0 0 42.666666 42.666666h106.666667a42.666667 42.666667 0 1 1 0 85.333334H341.333333a128 128 0 0 1-128-128v-106.666667a42.666667 42.666667 0 0 1 42.666667-42.666667z"></path>
+                </svg>
+            </button>
         </section>
     );
 }
