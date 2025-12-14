@@ -7,7 +7,7 @@ const nextConfig = {
     images: {
         unoptimized: true,
         domains: [
-            'imge.kugou.com'
+            'imgessl.kugou.com'
         ]
     },
     sentry: {
