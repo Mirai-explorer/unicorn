@@ -59,7 +59,7 @@ body {
 
 .cover {
     display: flex;
-    width: clamp(320px, calc(20vw + 2rem), 480px);
+    width: 420px;
     aspect-ratio: 1 / 1;
     border-radius: 1rem;
 }
@@ -87,11 +87,13 @@ body {
 .title {
     font-size: 32px;
     font-weight: 600;
+    line-height: 1;
 }
 
 .artists {
     font-size: 20px;
     font-weight: 600;
+    line-height: 1;
 }
 
 .lyrics {
@@ -660,6 +662,17 @@ button {
     right: calc(50% - 656px);
 }
 
+@media (min-width: 1025px) {
+    .aside {
+        container: cover / size;
+    }
+
+    @container cover (max-height: 560px) {
+        .cover {
+            height: clamp(120px, 100%, 420px);
+        }
+    }
+}
 
 /* 1440px 以下：缩小左右布局*/
 @media (max-width: 1440px) {
@@ -670,7 +683,7 @@ button {
         gap: 1rem;
     }
     .aside .cover {
-        width: clamp(288px, calc(25vw + 2rem) ,320px);
+        width: clamp(288px, calc(25vw + 2rem) ,420px);
     }
     .lyric_line {
         font-size: 28px;
@@ -723,7 +736,7 @@ button {
     }
 
     .aside .cover {
-        width: 288px;
+        width: clamp(256px, calc(25vw + 2rem) ,288px);
     }
 
     .core {
@@ -769,7 +782,7 @@ button {
     }
 
     .aside .cover {
-        width: clamp(256px, 40vw ,288px);
+        width: clamp(152px, calc(25vw + 2rem) ,256px);
     }
 
     .core {
@@ -788,10 +801,12 @@ button {
 
     .title {
         font-size: clamp(24px, 5vw, 32px);
+        line-height: 2rem;
     }
 
-    .artists, .time_display {
+    .artists {
         font-size: clamp(16px, calc(5vw * 2/3), 20px);
+        line-height: 1.25rem;
     }
 
     .time_display {
@@ -833,6 +848,12 @@ button {
     }
 }
 
+@media (orientation: landscape) and (max-height: 768px) {
+    .aside {
+        padding: 1rem 0;
+    }
+}
+
 
 /* 480px 以下：小手机终端 */
 @media (max-width: 480px) {
@@ -871,7 +892,7 @@ button {
     }
 
     .aside .cover {
-        width: clamp(196px, calc(50vw + 1rem) ,256px);
+        width: 152px;
     }
 
     .core {
